@@ -12,19 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
-
-class LocalObjectChangedEvent extends LocalEvent implements rt.ObjectChangedEvent {
-
-  final List<LocalEvent> events;
-
+rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
+  rdm.local.LocalEvent.call(this, gap.drive.realtime.EventType.OBJECT_CHANGED, target_);
   // TODO I think this may be true for ObjectChanged and false for everything else?
   bool get bubbles => null; // TODO implement this getter
-
-  final String type = ModelEventType.OBJECT_CHANGED.value;
-
-  final bool _isTerminal;
-
-  LocalObjectChangedEvent._(this.events, _target, [this._isTerminal = false])
-    : super._(_target);
-}
+  this.events = events;
+  this.isTerminal_ = isTerminal_ || false;
+};
+goog.inherits(rdm.local.LocalObjectChangedEvent, rdm.local.LocalEvent);

@@ -12,10 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
+rdm.local.LocalValueChangedEvent = function(target_, property, newValue, oldValue) {
+  rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.EventType.VALUE_CHANGED, target_);
+  rdm.bubbles = null; // TODO implement this getter
+  rdm.newValue = newValue;
+  rdm.oldValue = oldValue;
+  this.property = property;
+};
+goog.inherits(rdm.local.LocalValueChangedEvent, rdm.local.LocalUndoableEvent);
 
-/// Local implementation of retain and release
-class LocalRetainable {
-  void retain() {}
-  void release() {}
-}
+rdm.local.LocalValueChangedEvent.getInverse => function() {
+  return new rdm.local.LocalValueChangedEvent(this.target_, property, newValue, oldValue);
+};
+

@@ -12,20 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
+rdm.local.LocalTextDeletedEvent = function(target_, index, test) {
+  rdm.local.LocalUndoableEvent.call(this, gapi.realtime.EventType.TEXT_DELETED, target_);
+  this.index = index;
+  this.text = test;
+  this.bubbles = null;
+};
+goog.inherits(rdm.local.LocalTextDeletedEvent, rdm.local.LocalUndoableEvent);
 
-// TODO this should not actually extend LocalEvent,
-// TODO and rt.UndoRedoStateChangedEvent should not extend rt.BaseModelEvent
-class LocalUndoRedoStateChangedEvent extends LocalEvent implements rt.UndoRedoStateChangedEvent {
-
-  bool get bubbles => null; // TODO implement this getter
-
-  final bool canRedo;
-
-  final bool canUndo;
-
-  final String type = ModelEventType.UNDO_REDO_STATE_CHANGED.value;
-
-  LocalUndoRedoStateChangedEvent._(this.canRedo, this.canUndo)
-    : super._(null);
-}
+rdm.local.LocalTextDeletedEvent.prototype.getInverse = function() {
+  return new rdm.local.LocalTextInsertedEvent(this.target_, index, text);
+};

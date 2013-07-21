@@ -12,26 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
+rdm.local.LocalTextInsertedEvent = function(target_, index, text) {
+  rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.EventType.TEXT_INSERTED, target_);
+  this.bubbles = null; // TODO implement this getter
+  this.index = index;
+  this.text = test;
+};
+goog.inherits(rdm.local.LocalTextInsertedEvent, rdm.local.LocalUndoableEvent);
 
-abstract class LocalEvent extends LocalRetainable implements rt.BaseModelEvent {
-  /// Local events have no js Proxy object
-  final js.Proxy $unsafe = null;
-
-  /// Local events are always isLocal
-  final bool isLocal = true;
-
-  /// Local events have no session
-  final String sessionId = null;
-
-  /// Local events have no js Proxy object
-  dynamic toJs() => null;
-
-  /// Local events have no user
-  final String userId = null;
-
-  // the object that generated the event
-  final LocalModelObject _target;
-
-  LocalEvent._(this._target);
-}
+rdm.local.LocalTextDeletedEvent.prototype.getInverse = function() {
+  return new rdm.local.LocalTextDeletedEvent(this.target_, index, text);
+};

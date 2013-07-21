@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
-
-class LocalReferenceShiftedEvent extends LocalEvent implements rt.ReferenceShiftedEvent {
-  bool get bubbles => null; // TODO implement this getter
-
-  final int newIndex;
-
-  final int oldIndex;
-
-  final String type = ModelEventType.REFERENCE_SHIFTED.value;
-
-  LocalReferenceShiftedEvent._(this.newIndex, this.oldIndex, _target) : super._(_target);
-}
-
+rdm.local.LocalEvent = function(type, target_) {
+  goog.events.Event.call(this, type, target_);
+  this.isLocal = true;
+  this.sessionId = null;
+  this.userId = null;
+  this.target_ = target_;
+};
+goog.inherits(rdm.local.LocalEvent, goog.events.Event);

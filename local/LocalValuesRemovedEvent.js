@@ -12,18 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
+rdm.local.LocalValuesRemovedEvent = function(target_, index, values) {
+  rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.VALUES_REMOVED, target_);
+  this.bubbles = null; // TODO implement this getter
+  this.index = index;
+  this.values = values;
+};
+goog.inherits(rdm.local.LocalValuesRemovedEvent, rdm.local.LocalUndoableEvent);
 
-class LocalTextDeletedEvent extends LocalUndoableEvent implements rt.TextDeletedEvent {
-  bool get bubbles => null; // TODO implement this getter
-
-  final int index;
-
-  final String text;
-
-  final String type = ModelEventType.TEXT_DELETED.value;
-
-  LocalTextDeletedEvent._(this.index, this.text, _target) : super._(_target);
-
-  LocalTextInsertedEvent get inverse => new LocalTextInsertedEvent._(index, text, _target);
+rdm.local.LocalValuesAddedEvent.getInverse = function() {
+  return new rdm.local.LocalValuesAddedEvent(this.target_, index, values);
 }

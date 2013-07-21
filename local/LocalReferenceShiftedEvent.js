@@ -12,21 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
-
-class LocalValuesSetEvent extends LocalUndoableEvent implements rt.ValuesSetEvent {
-
-  bool get bubbles => null; // TODO implement this getter
-
-  final int index;
-
-  final List newValues;
-
-  final List oldValues;
-
-  final String type = ModelEventType.VALUES_SET.value;
-
-  LocalValuesSetEvent._(this.index, this.newValues, this.oldValues, _target) : super._(_target);
-
-  LocalValuesSetEvent get inverse => new LocalValuesSetEvent._(index, oldValues, newValues, _target);
-}
+rdm.local.LocalReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
+  rdm.local.LocalEvent.call(this, gapi.drive.realtime.EventType.REFERENCE_SHIFTED, target_);
+  this.bubbles = null; // TODO implement this getter
+  this.newIndex = newIndex;
+  this.oldIndex = oldIndex;
+};
+goog.inherits(rdm.local.LocalReferenceShiftedEvent, rdm.local.LocalEvent);

@@ -12,19 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of local_realtime_data_model;
-
-class LocalValuesAddedEvent extends LocalUndoableEvent implements rt.ValuesAddedEvent {
-
-  bool get bubbles => null; // TODO implement this getter
-
-  final int index;
-
-  final String type = ModelEventType.VALUES_ADDED.value;
-
-  final List values;
-
-  LocalValuesAddedEvent._(this.index, this.values, _target) : super._(_target);
-
-  LocalValuesRemovedEvent get inverse => new LocalValuesRemovedEvent._(index, values, _target);
-}
+rdm.local.LocalUndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
+  goog.events.Event.call(this, gapi.drive.realtime.UNDO_REDO_STATE_CHANGED, target_);
+  this.canUndo = canUndo;
+  this.canRedo = canRedo;
+};
+goog.inherits(rdm.local.LocalUndoRedoStateChangedEvent, goog.events.Event);
