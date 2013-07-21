@@ -15,5 +15,11 @@
   <script src="qunit-1.12.0.js"></script>
   <script src="tests.js"></script>
   <button id='authorizeButton'>authorize</button>
+  <script type="text/javascript">
+  	window.onload = function() {
+  		var realtimeLoader = new rtclient.RealtimeLoader(realtimeOptions);
+  		realtimeLoader.start();
+  	};
+  </script>
 </body>
 </html>

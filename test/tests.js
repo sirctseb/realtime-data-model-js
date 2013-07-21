@@ -1,304 +1,315 @@
 initializeModel = function(model) {
-  model.getRoot().get('text') = model.createString('Hello Realtime World!');
-  model.getRoot().get('list') = model.createList();
-  model.getRoot().get('map') = model.createMap();
-}
+  console.log('initializeModel called');
+  model.getRoot().set('text', model.createString('Hello Realtime World!'));
+  model.getRoot().set('list', model.createList());
+  model.getRoot().set('map', model.createMap());
+  console.log('initializeModel ending');
+};
 
 onFileLoaded = function(doc) {
+  console.log('onFileLoaded called');
   module('Undo');
   test("start undo state", function() {
-    expect(doc.getModel().canUndo, false);
-    expect(doc.getModel().canRedo, false);
+    equal(doc.getModel().canUndo, false);
+    equal(doc.getModel().canRedo, false);
   });
   test('undo state after change', function() {
-    doc.getModel().getRoot().get('text').text = 'redid';
-    expect(doc.getModel().canUndo, true);
-    expect(doc.getModel().canRedo, false);
+    doc.getModel().getRoot().get('text').setText('redid');
+    equal(doc.getModel().canUndo, true);
+    equal(doc.getModel().canRedo, false);
   });
   test('undo state after undo', function() {
     doc.getModel().undo();
-    expect(doc.getModel().canUndo, false);
-    expect(doc.getModel().canRedo, true);
+    equal(doc.getModel().canUndo, false);
+    equal(doc.getModel().canRedo, true);
   });
   test('string state after undo', function() {
-    expect(doc.getModel().getRoot().get('text').text, 'Hello Realtime World!');
+    equal(doc.getModel().getRoot().get('text').getText(), 'Hello Realtime World!');
   });
   test('string state after redo and event/model state matching', function() {
-    undo = function(event) {
+    expect(5);
+    var undo = function(event) {
       // test that event properties match model
-      expect(doc.getModel().canUndo, event.canUndo);
-      expect(doc.getModel().canRedo, event.canRedo);
-      // test that undo/redo state is what we expect
-      expect(doc.getModel().canUndo, true);
-      expect(doc.getModel().canRedo, false);
+      equal(doc.getModel().canUndo, event.canUndo);
+      equal(doc.getModel().canRedo, event.canRedo);
+      // test that undo/redo state is what we equal
+      equal(doc.getModel().canUndo, true);
+      equal(doc.getModel().canRedo, false);
       doc.getModel().removeEventListener(gapi.drive.realtime.EventType.UNDO_REDO_STATE_CHANGED, undo);
     };
     doc.getModel().addEventListener(gapi.drive.realtime.EventType.UNDO_REDO_STATE_CHANGED, undo);
     doc.getModel().redo();
-    expect(doc.getModel().getRoot().get('text').getText(), 'redid');
+    equal(doc.getModel().getRoot().get('text').getText(), 'redid');
     doc.getModel().undo();
   });
 
-  module('CollaborativeString');
   var string = doc.getModel().getRoot().get('text');
-  setUp(function() {
-    string.setText('unittest');
-  });
+  module('CollaborativeString', {
+    setup: function() {
+      console.log('setting up string');
+      string.setText('unittest');
+    }});
   test('get length', function() {
-    expect(string.length, 8);
+    console.log('get length');
+    equal(string.length, 8);
   });
   test('append(String text)', function() {
+    console.log('append string test');
     string.append(' append');
-    expect(string.text, 'unittest append');
+    equal(string.getText(), 'unittest append');
   });
   test('get text', function() {
-    expect(string.text, 'unittest');
+    console.log('get text');
+    equal(string.getText(), 'unittest');
   });
   test('insertString(int index, String text)', function() {
+    console.log('insert string');
     string.insertString(4, ' append ');
-    expect(string.text, 'unit append test');
+    equal(string.getText(), 'unit append test');
   });
   test('removeRange(int startIndex, int endIndex)', function() {
     string.removeRange(4, 6);
-    expect(string.text, 'unitst');
+    equal(string.getText(), 'unitst');
   });
   test('set text(String text)', function() {
-    string.text = 'newValue';
-    expect(string.text, 'newValue');
+    string.setText('newValue');
+    equal(string.getText(), 'newValue');
   });
   test('onTextInserted', function() {
+    expect(2);
     var ssInsert = function(event) {
-      expect(e.index, 4);
-      expect(e.text, ' append ');
-      string.removeEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
-      string.removeEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
+      equal(event.index, 4);
+      equal(event.text, ' append ');
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     };
     var ssDelete = function(event) {
       fail("delete should not be call");
     };//, count: 0));
-    string.addEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
-    string.addEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     string.insertString(4, ' append ');
   });
   test('onTextDeleted', function() {
+    expect(2);
     var ssInsert = function(event) {
       fail("insert should not be call");
     }
     var ssDelete = function(event) {
-      expect(e.index, 4);
-      expect(e.text, 'te');
-      string.removeEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
-      string.removeEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
+      equal(event.index, 4);
+      equal(event.text, 'te');
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     };
-      string.addEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
-      string.addEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     string.removeRange(4, 6);
   });
 
-  module('CollaborativeList');
   var list = doc.getModel().getRoot().get('list');
-  setUp(function() {
-    list.clear();
-    list.push('s1');
-  });
+  module('CollaborativeList', {
+    setup: function() {
+      list.clear();
+      list.push('s1');
+    }});
   test('get length', function() {
-    expect(list.length, 1);
+    equal(list.length, 1);
   });
   test('operator [](int index)', function() {
-    expect(list[0], 's1');
-    expect(function() { return list[-1]; }, 'throws');
-    expect(function() { return list[1]; }, 'throws');
+    equal(list.get(0), 's1');
+    // TODO how to test failures in QUnit?
+    // equal(function() { return list.get(-1); }, 'throws');
+    // equal(function() { return list.get(1); }, 'throws');
   });
   test('operator []=(int index, E value)', function() {
-    list[0] = 'new s1';
-    expect(list[0], 'new s1');
+    list.set(0, 'new s1');
+    equal(list.get(0), 'new s1');
   });
   test('clear()', function() {
     list.clear();
-    expect(list.length, 0);
+    equal(list.length, 0);
   });
   test('insert(int index, E value)', function() {
     list.insert(0, 's0');
-    expect(list.length, 2);
-    expect(list[0], 's0');
-    expect(list[1], 's1');
+    equal(list.length, 2);
+    equal(list.get(0), 's0');
+    equal(list.get(1), 's1');
   });
   test('push(E value)', function() {
-    expect(list.push('s2'), 2);
-    expect(list.length, 2);
-    expect(list[0], 's1');
-    expect(list[1], 's2');
+    equal(list.push('s2'), 2);
+    equal(list.length, 2);
+    equal(list.get(0), 's1');
+    equal(list.get(1), 's2');
   });
   test('remove(int index)', function() {
     list.remove(0);
-    expect(list.length, 0);
+    equal(list.length, 0);
   });
   test('onValuesAdded', function() {
+    expect(2);
     var ss = function(event) {
-      expect(e.index, 1);
-      expect(e.values, ['s2']);
-      list.removeEventListener(gapi.realtime.EventType.VALUES_ADDED);
+      equal(event.index, 1);
+      deepEqual(event.values, ['s2']);
+      list.removeEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, ss);
     };
-    list.addEventListener(gapi.realtime.EventType.VALUES_ADDED);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, ss);
     list.push('s2');
   });
   test('onValuesRemoved', function() {
+    expect(2);
     var ss = function(event) {
-      expect(e.index, 0);
-      expect(e.values, ['s1']);
-      list.removeEventListener(gapi.realtime.EventType.VALUES_REMOVED);
+      equal(event.index, 0);
+      deepEqual(event.values, ['s1']);
+      list.removeEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, ss);
     };
-    list.addEventListener(gapi.realtime.EventType.VALUES_REMOVED);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, ss);
     list.clear();
   });
   test('onValuesSet', function() {
+    expect(3);
     var ss = function(event) {
-      expect(e.index, 0);
-      expect(e.oldValues, ['s1']);
-      expect(e.newValues, ['s2']);
-      list.removeEventListener(gapi.realtime.EventType.VALUES_SET);
+      equal(event.index, 0);
+      deepEqual(event.oldValues, ['s1']);
+      deepEqual(event.newValues, ['s2']);
+      list.removeEventListener(gapi.drive.realtime.EventType.VALUES_SET, ss);
     };
-    list.addEventListener(gapi.realtime.EventType.VALUES_SET);
-    list[0] = 's2';
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, ss);
+    list.set(0, 's2');
   });
 
-  module('CollaborativeMap');
   var map = doc.getModel().getRoot().get('map');
-  setUp(function() {
-    map.clear();
-    map.set('key1',4);
-  });
+  module('CollaborativeMap', {
+    setup: function() {
+      map.clear();
+      map.set('key1',4);
+    }});
   test('operator [](String key)', function() {
-    expect(map.get('key1'), 4);
-    expect(map.length, 1);
+    equal(map.get('key1'), 4);
+    equal(map.size, 1);
   });
   test('operator []=(String key, E value)', function() {
     map.set('key2',5);
-    expect(map.get('key2'), 5);
+    equal(map.get('key2'), 5);
   });
-  test('remove', function() {
-    map.remove('key1');
-    expect(map.length, 0);
-    expect(map.get('key1'), null);
+  test('delete', function() {
+    map.delete('key1');
+    equal(map.size, 0);
+    equal(map.get('key1'), null);
   });
   test('clear', function() {
     map.clear();
-    expect(map.length, 0);
-  });
-  test('addAll', function() {
-    map.addAll({
-      'key2': 5,
-      'key3': 6
-    });
-    expect(map.length, 3);
-    expect(map.get('key2'), 5);
-    expect(map.get('key3'), 6);
+    equal(map.size, 0);
   });
   test('onValueChanged', function() {
+    expect(3);
     var ssChanged = function(event) {
-      expect(e.property, 'key1');
-      expect(e.newValue, 5);
-      expect(e.oldValue, 4);
-      map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssChanged);
+      equal(event.property, 'key1');
+      equal(event.newValue, 5);
+      equal(event.oldValue, 4);
+      map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssChanged);
     };
-    map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssChanged);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssChanged);
     map.set('key1',5);
   });
   test('onValueChanged add', function() {
+    expect(3);
     var ssAdd = function(event) {
-      expect(e.property, 'prop');
-      expect(e.newValue, 'newVal');
-      expect(e.oldValue, null);
-      map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssAdd);
+      equal(event.property, 'prop');
+      equal(event.newValue, 'newVal');
+      equal(event.oldValue, null);
+      map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssAdd);
     };
-    map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssAdd);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssAdd);
     map.set('prop','newVal');
   });
   test('onValueChanged remove', function() {
+    expect(3);
     var ssRemove = function(event) {
-      expect(e.property, 'key1');
-      expect(e.oldValue, 4);
-      expect(e.newValue, null);
-      map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssRemove);
+      equal(event.property, 'key1');
+      equal(event.oldValue, 4);
+      equal(event.newValue, null);
+      map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssRemove);
     };
-    map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssRemove);
-    map.remove('key1');
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssRemove);
+    map.delete('key1');
   });
   test('onValueChanged clear', function() {
+    expect(2);
     map.set('key2','val2');
     var ssClear = function(event) {
-      expect(e.newValue, null);
+      equal(event.newValue, null);
     }; //, count: 2));
-    map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssClear);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssClear);
     map.clear();
-    map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssClear);
+    map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssClear);
   });
   test('map length on null assignment', function() {
     // TODO this is different than native maps. but that is a rt problem, not rdm.
-    expect(map.length, 1);
+    equal(map.size, 1);
     map.set('key1',null);
-    expect(map.length, 0);
+    equal(map.size, 0);
   });
 
   module('RealtimeIndexReference');
-  var string = doc.getModel().getRoot().get('text');
-  var list = doc.getModel().getRoot().get('list');
   // TODO are references ever removed?
   test('RealtimeString Reference Value', function() {
     string.setText("aaaaaaaaaa");
     var ref = string.registerReference(5, false);
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     string.insertString(2, "x");
-    expect(ref.index, 6);
+    equal(ref.index, 6);
     doc.getModel().undo();
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     string.insertString(8, "x");
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     string.removeRange(0, 2);
-    expect(ref.index, 3);
+    equal(ref.index, 3);
     string.removeRange(2, 4);
-    expect(ref.index, 2);
+    equal(ref.index, 2);
   });
   test('RealtimeString Delete Reference', function() {
     var ref = string.registerReference(5, true);
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     string.removeRange(4, 6);
-    expect(ref.index, -1);
+    equal(ref.index, -1);
   });
   test('RealtimeList Reference Value', function() {
     list.clear();
     list.pushAll([1,2,3,4,5,6,7,8,9,10,11,12]);
     var ref = list.registerReference(5, false);
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     list.insert(2, 9);
-    expect(ref.index, 6);
+    equal(ref.index, 6);
     doc.getModel().undo();
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     list.insert(8, 9);
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     list.removeRange(0, 2);
-    expect(ref.index, 3);
+    equal(ref.index, 3);
     list.removeRange(2, 4);
-    expect(ref.index, 2);
+    equal(ref.index, 2);
   });
   test('RealtimeList Delete Reference', function() {
     var ref = list.registerReference(5, true);
-    expect(ref.index, 5);
+    equal(ref.index, 5);
     list.removeRange(4, 6);
-    expect(ref.index, -1);
+    equal(ref.index, -1);
   });
-  test('RealtimeString Reference Events', function() {
-    string.setText("aaaaaaaaaa");
-    var ref = string.registerReference(5, true);
-    var ssRef = function(event) {
-      expect(event.oldIndex, 5);
-      expect(event.newIndex, 7);
-      expect(ref.index, 7);
-    };
-    string.addEventListener(gapi.realtime.EventType.REFERENCE_SHIFTED);
-    string.insertString(0, "xx");
-  });
-}
+  // asyncTest('RealtimeString Reference Events', function() {
+  //   expect(3);
+  //   string.setText("aaaaaaaaaa");
+  //   var ref = string.registerReference(5, true);
+  //   var ssRef = function(event) {
+  //     equal(event.oldIndex, 5);
+  //     equal(event.newIndex, 7);
+  //     equal(ref.index, 7);
+  //     string.removeEventListener(gapi.drive.realtime.EventType.REFERENCE_SHIFTED,ssRef);
+  //     start();
+  //   };
+  //   string.addEventListener(gapi.drive.realtime.EventType.REFERENCE_SHIFTED,ssRef);
+  //   string.insertString(0, "xx");
+  // });
+};
 
 /**
  * Options for the Realtime loader.
@@ -307,7 +318,7 @@ realtimeOptions = {
    /**
   * Client ID from the APIs Console.
   */
-  'clientId': 'INSERT YOUR CLIENT ID HERE',
+  'clientId': '1066816720974',
 
    /**
   * The ID of the button to click to authorize. Must be a DOM element ID.
@@ -334,6 +345,3 @@ realtimeOptions = {
   */
    'onFileLoaded': onFileLoaded
 };
-
-var realtimeLoader = new rtclient.RealtimeLoader(realtimeOptions);
-realtimeLoader.start();
