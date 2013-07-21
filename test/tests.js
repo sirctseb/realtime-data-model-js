@@ -1,64 +1,49 @@
-import 'dart:html';
-import 'dart:async';
-
-import 'package:js/js.dart' as js;
-import 'package:js/js_wrapping.dart' as jsw;
-import 'package:realtime_data_model/realtime_data_model.dart' as rt;
-import 'package:realtime_data_model/realtime_data_model_custom.dart' as rtc;
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
-
-initializeModel(rt.Model model) {
-  model.root['text'] = model.createString('Hello Realtime World!');
-  model.root['list'] = model.createList();
-  model.root['map'] = model.createMap();
+initializeModel(model) {
+  model.getRoot().get('text') = model.createString('Hello Realtime World!');
+  model.getRoot().get('list') = model.createList();
+  model.getRoot().get('map') = model.createMap();
 }
 
-onFileLoaded(rt.Document doc) {
-  doc.retain();
-
-  useHtmlConfiguration();
-
+onFileLoaded(doc) {
   group('Undo', () {
     test("start undo state", () {
-      expect(doc.model.canUndo, false);
-      expect(doc.model.canRedo, false);
+      expect(doc.getModel().canUndo, false);
+      expect(doc.getModel().canRedo, false);
     });
     test('undo state after change', () {
-      doc.model.root['text'].text = 'redid';
-      expect(doc.model.canUndo, true);
-      expect(doc.model.canRedo, false);
+      doc.getModel().getRoot().get('text').text = 'redid';
+      expect(doc.getModel().canUndo, true);
+      expect(doc.getModel().canRedo, false);
     });
     test('undo state after undo', () {
-      doc.model.undo();
-      expect(doc.model.canUndo, false);
-      expect(doc.model.canRedo, true);
+      doc.getModel().undo();
+      expect(doc.getModel().canUndo, false);
+      expect(doc.getModel().canRedo, true);
     });
     test('string state after undo', () {
-      expect(doc.model.root['text'].text, 'Hello Realtime World!');
+      expect(doc.getModel().getRoot().get('text').text, 'Hello Realtime World!');
     });
     test('string state after redo and event/model state matching', () {
-      StreamSubscription ssUndo;
-      ssUndo = doc.model.onUndoRedoStateChanged.listen(expectAsync1((event) {
+      undo = function(event) {
         // test that event properties match model
-        expect(doc.model.canUndo, event.canUndo);
-        expect(doc.model.canRedo, event.canRedo);
+        expect(doc.getModel().canUndo, event.canUndo);
+        expect(doc.getModel().canRedo, event.canRedo);
         // test that undo/redo state is what we expect
-        expect(doc.model.canUndo, true);
-        expect(doc.model.canRedo, false);
-        ssUndo.cancel();
+        expect(doc.getModel().canUndo, true);
+        expect(doc.getModel().canRedo, false);
+        doc.getModel().removeEventListener(gapi.drive.realtime.EventType.UNDO_REDO_STATE_CHANGED, undo);
       }));
-      doc.model.redo();
-      expect(doc.model.root['text'].text, 'redid');
-      doc.model.undo();
+      doc.getModel().addEventListener(gapi.drive.realtime.EventType.UNDO_REDO_STATE_CHANGED, undo);
+      doc.getModel().redo();
+      expect(doc.getModel().getRoot().get('text').getText(), 'redid');
+      doc.getModel().undo();
     });
   });
 
   group('CollaborativeString', () {
-    var string = doc.model.root['text'];
-    string.retain();
+    var string = doc.getModel().getRoot().get('text');
     setUp((){
-      string.text = 'unittest';
+      string.setText('unittest');
     });
     test('get length', () {
       expect(string.length, 8);
@@ -83,38 +68,37 @@ onFileLoaded(rt.Document doc) {
       expect(string.text, 'newValue');
     });
     test('onTextInserted', () {
-      StreamSubscription ssInsert;
-      StreamSubscription ssDelete;
-      ssInsert = string.onTextInserted.listen(expectAsync1((rt.TextInsertedEvent e) {
+      var ssInsert = function(event) {
         expect(e.index, 4);
         expect(e.text, ' append ');
-        ssInsert.cancel();
-        ssDelete.cancel();
-      }));
-      ssDelete = string.onTextDeleted.listen(expectAsync1((rt.TextDeletedEvent e) {
+        string.removeEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
+        string.removeEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
+      };
+      var ssDelete = function(event) {
         fail("delete should not be call");
       }, count: 0));
+      string.addEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
+      string.addEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
       string.insertString(4, ' append ');
     });
     test('onTextDeleted', () {
-      StreamSubscription ssInsert;
-      StreamSubscription ssDelete;
-      ssInsert = string.onTextInserted.listen(expectAsync1((rt.TextInsertedEvent e) {
+      var ssInsert = function(event) {
         fail("insert should not be call");
-      }, count: 0));
-      ssDelete = string.onTextDeleted.listen(expectAsync1((rt.TextDeletedEvent e) {
+      }
+      var ssDelete = function(event) {
         expect(e.index, 4);
         expect(e.text, 'te');
-        ssInsert.cancel();
-        ssDelete.cancel();
-      }));
+        string.removeEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
+        string.removeEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
+      };
+        string.addEventListener(gapi.realtime.EventType.TEXT_INSERTED, ssInsert);
+        string.addEventListener(gapi.realtime.EventType.TEXT_DELETED, ssDelete);
       string.removeRange(4, 6);
     });
   });
 
   group('CollaborativeList', () {
-    var list = doc.model.root['list'];
-    list.retain();
+    var list = doc.getModel().getRoot().get('list');
     setUp((){
       list.clear();
       list.push('s1');
@@ -152,53 +136,52 @@ onFileLoaded(rt.Document doc) {
       expect(list.length, 0);
     });
     test('onValuesAdded', () {
-      StreamSubscription ss;
-      ss = list.onValuesAdded.listen(expectAsync1((rt.ValuesAddedEvent e) {
+      var ss = function(event) {
         expect(e.index, 1);
         expect(e.values, ['s2']);
-        ss.cancel();
-      }));
+        list.removeEventListener(gapi.realtime.EventType.VALUES_ADDED);
+      };
+        list.addEventListener(gapi.realtime.EventType.VALUES_ADDED);
       list.push('s2');
     });
     test('onValuesRemoved', () {
-      StreamSubscription ss;
-      ss = list.onValuesRemoved.listen(expectAsync1((rt.ValuesRemovedEvent e) {
+      var ss = function(event) {
         expect(e.index, 0);
         expect(e.values, ['s1']);
-        ss.cancel();
-      }));
+        list.removeEventListener(gapi.realtime.EventType.VALUES_REMOVED);
+      };
+        list.addEventListener(gapi.realtime.EventType.VALUES_REMOVED);
       list.clear();
     });
     test('onValuesSet', () {
-      StreamSubscription ss;
-      ss = list.onValuesSet.listen(expectAsync1((rt.ValuesSetEvent e) {
+      var ss = function(event) {
         expect(e.index, 0);
         expect(e.oldValues, ['s1']);
         expect(e.newValues, ['s2']);
-        ss.cancel();
-      }));
+        list.removeEventListener(gapi.realtime.EventType.VALUES_SET);
+      };
+        list.addEventListener(gapi.realtime.EventType.VALUES_SET);
       list[0] = 's2';
     });
   });
   group('CollaborativeMap', () {
-    var map = doc.model.root['map'];
-    map.retain();
+    var map = doc.getModel().getRoot().get('map');
     setUp(() {
       map.clear();
-      map['key1'] = 4;
+      map.set('key1'] = 4;
     });
     test('operator [](String key)', () {
-      expect(map['key1'], 4);
+      expect(map.get('key1'), 4);
       expect(map.length, 1);
     });
     test('operator []=(String key, E value)', () {
-      map['key2'] = 5;
-      expect(map['key2'], 5);
+      map.set('key2',5);
+      expect(map.get('key2'), 5);
     });
     test('remove', () {
       map.remove('key1');
       expect(map.length, 0);
-      expect(map['key1'], null);
+      expect(map.get('key1'), null);
     });
     test('clear', () {
       map.clear();
@@ -210,68 +193,66 @@ onFileLoaded(rt.Document doc) {
         'key3': 6
       });
       expect(map.length, 3);
-      expect(map['key2'], 5);
-      expect(map['key3'], 6);
+      expect(map.get('key2'), 5);
+      expect(map.get('key3'), 6);
     });
     test('onValueChanged', () {
-      StreamSubscription ssChanged;
-      ssChanged = map.onValueChanged.listen(expectAsync1((rt.ValueChangedEvent e) {
+      var ssChanged = function(event) {
         expect(e.property, 'key1');
         expect(e.newValue, 5);
         expect(e.oldValue, 4);
-        ssChanged.cancel();
-      }));
-      map['key1'] = 5;
+        map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssChanged);
+      };
+      map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssChanged);
+      map.set('key1',5);
     });
     test('onValueChanged add', () {
-      StreamSubscription ssAdd;
-      ssAdd = map.onValueChanged.listen(expectAsync1((rt.ValueChangedEvent e) {
+      var ssAdd = function(event) {
         expect(e.property, 'prop');
         expect(e.newValue, 'newVal');
         expect(e.oldValue, null);
-        ssAdd.cancel();
+        map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssAdd);
       }));
-      map['prop'] = 'newVal';
+      map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssAdd);
+      map.set('prop','newVal');
     });
     test('onValueChanged remove', () {
-      StreamSubscription ssRemove;
-      ssRemove = map.onValueChanged.listen(expectAsync1((rt.ValueChangedEvent e) {
+      var ssRemove = function(event) {
         expect(e.property, 'key1');
         expect(e.oldValue, 4);
         expect(e.newValue, null);
-        ssRemove.cancel();
+        map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssRemove);
       }));
+      map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssRemove);
       map.remove('key1');
     });
     test('onValueChanged clear', () {
-      map['key2'] = 'val2';
-      StreamSubscription ssClear;
-      ssClear = map.onValueChanged.listen(expectAsync1((rt.ValueChangedEvent e) {
+      map.set('key2','val2');
+      var ssClear = function(event) {
         expect(e.newValue, null);
       }, count: 2));
+      map.addEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssClear);
       map.clear();
-      ssClear.cancel();
+      map.removeEventListener(gapi.realtime.EventType.VALUE_CHANGED, ssClear);
     });
     test('map length on null assignment', () {
       // TODO this is different than native maps. but that is a rt problem, not rdm.
       expect(map.length, 1);
-      map['key1'] = null;
+      map.set('key1',null);
       expect(map.length, 0);
     });
   });
   group('RealtimeIndexReference', () {
-    rt.CollaborativeString string = doc.model.root['text'];
-    rt.CollaborativeList list = doc.model.root['list'];
-    string.retain();
-    list.retain();
+    var string = doc.getModel().getRoot().get('text');
+    var list = doc.getModel().getRoot().get('list');
     // TODO are references ever removed?
     test('RealtimeString Reference Value', () {
-      string.text = "aaaaaaaaaa";
-      rt.IndexReference ref = string.registerReference(5, false);
+      string.setText("aaaaaaaaaa");
+      var ref = string.registerReference(5, false);
       expect(ref.index, 5);
       string.insertString(2, "x");
       expect(ref.index, 6);
-      doc.model.undo();
+      doc.getModel().undo();
       expect(ref.index, 5);
       string.insertString(8, "x");
       expect(ref.index, 5);
@@ -281,7 +262,7 @@ onFileLoaded(rt.Document doc) {
       expect(ref.index, 2);
     });
     test('RealtimeString Delete Reference', () {
-      rt.IndexReference ref = string.registerReference(5, true);
+      var ref = string.registerReference(5, true);
       expect(ref.index, 5);
       string.removeRange(4, 6);
       expect(ref.index, -1);
@@ -289,11 +270,11 @@ onFileLoaded(rt.Document doc) {
     test('RealtimeList Reference Value', () {
       list.clear();
       list.pushAll([1,2,3,4,5,6,7,8,9,10,11,12]);
-      rt.IndexReference ref = list.registerReference(5, false);
+      var ref = list.registerReference(5, false);
       expect(ref.index, 5);
       list.insert(2, 9);
       expect(ref.index, 6);
-      doc.model.undo();
+      doc.getModel().undo();
       expect(ref.index, 5);
       list.insert(8, 9);
       expect(ref.index, 5);
@@ -303,20 +284,20 @@ onFileLoaded(rt.Document doc) {
       expect(ref.index, 2);
     });
     test('RealtimeList Delete Reference', () {
-      rt.IndexReference ref = list.registerReference(5, true);
+      var ref = list.registerReference(5, true);
       expect(ref.index, 5);
       list.removeRange(4, 6);
       expect(ref.index, -1);
     });
     test('RealtimeString Reference Events', () {
-      string.text = "aaaaaaaaaa";
-      rt.IndexReference ref = string.registerReference(5, true);
-      StreamSubscription ssRef;
-      ssRef = ref.onReferenceShifted.listen(expectAsync1((rt.ReferenceShiftedEvent event) {
+      string.setText("aaaaaaaaaa");
+      var ref = string.registerReference(5, true);
+      var ssRef = function(event) {
         expect(event.oldIndex, 5);
         expect(event.newIndex, 7);
         expect(ref.index, 7);
-      }));
+      };
+      string.addEventListener(gapi.realtime.EventType.REFERENCE_SHIFTED);
       string.insertString(0, "xx");
     });
   });
@@ -325,7 +306,7 @@ onFileLoaded(rt.Document doc) {
 /**
  * Options for the Realtime loader.
  */
-get realtimeOptions => {
+realtimeOptions = {
    /**
   * Client ID from the APIs Console.
   */
@@ -357,7 +338,5 @@ get realtimeOptions => {
    'onFileLoaded': onFileLoaded
 };
 
-
-main() {
-  rt.start(realtimeOptions);
-}
+var realtimeLoader = new rtclient.RealtimeLoader(realtimeOptions);
+realtimeLoader.start();
