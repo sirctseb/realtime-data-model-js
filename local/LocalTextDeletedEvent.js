@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalTextDeletedEvent');
+
 rdm.local.LocalTextDeletedEvent = function(target_, index, test) {
   rdm.local.LocalUndoableEvent.call(this, gapi.realtime.EventType.TEXT_DELETED, target_);
   this.index = index;

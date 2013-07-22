@@ -12,18 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalValueChangedEvent');
+goog.provide('rdm.local.LocalUndoableEvent');
 
-rdm.local.LocalValueChangedEvent = function(target_, property, newValue, oldValue) {
-  rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.EventType.VALUE_CHANGED, target_);
-  rdm.bubbles = null; // TODO implement this getter
-  rdm.newValue = newValue;
-  rdm.oldValue = oldValue;
-  this.property = property;
+rdm.local.LocalUndoableEvent = function(type, target_) {
+  rdm.local.LocalEvent(type, target_)
 };
-goog.inherits(rdm.local.LocalValueChangedEvent, rdm.local.LocalUndoableEvent);
+goog.inherits(rdm.local.LocalUndoableEvent, rdm.local.LocalEvent);
 
-rdm.local.LocalValueChangedEvent.getInverse => function() {
-  return new rdm.local.LocalValueChangedEvent(this.target_, property, newValue, oldValue);
+
+rdm.local.LocalUndoableEvent.prototype.executeAndEmit_ = function() {
+  target_.executeAndEmitEvent_(this);
 };
-

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalTextInsertedEvent');
+
 rdm.local.LocalTextInsertedEvent = function(target_, index, text) {
   rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.EventType.TEXT_INSERTED, target_);
   this.bubbles = null; // TODO implement this getter

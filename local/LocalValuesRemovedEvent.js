@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalValuesRemovedEvent');
+
 rdm.local.LocalValuesRemovedEvent = function(target_, index, values) {
   rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.VALUES_REMOVED, target_);
   this.bubbles = null; // TODO implement this getter

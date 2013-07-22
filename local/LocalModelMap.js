@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalModelMap');
+
 rdm.local.LocalModelMap = function(initialValue) {
   rdm.local.LocalModelObject.call(this);
   this.map_ = initialValue || {};

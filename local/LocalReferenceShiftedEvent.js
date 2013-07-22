@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalReferenceShiftedEvent');
+
 rdm.local.LocalReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
   rdm.local.LocalEvent.call(this, gapi.drive.realtime.EventType.REFERENCE_SHIFTED, target_);
   this.bubbles = null; // TODO implement this getter

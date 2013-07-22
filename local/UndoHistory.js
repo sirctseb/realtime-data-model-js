@@ -12,16 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-rdm.local.LocalUndoableEvent = function(type, target_) {
-  rdm.local.LocalEvent(type, target_)
-};
-goog.inherits(rdm.local.LocalUndoableEvent, rdm.local.LocalEvent);
-
-
-rdm.local.LocalUndoableEvent.prototype.executeAndEmit_ = function() {
-  target_.executeAndEmitEvent_(this);
-};
-
+goog.provide('rdm.local.UndoHistory');
 
 /** [UndoHistory] manages the history of actions performed in the app */
 // TODO events grouped into a single object changed event are still grouped

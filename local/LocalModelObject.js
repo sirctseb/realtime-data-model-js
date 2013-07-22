@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalModelObject');
+
 rdm.local.LocalModelObject = function() {
   this.id = rdm.local.LocalModelObject.idNum_.toString();
   rdm.local.LocalModelObject.idNum_++;

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalIndexReferenceContainer');
+
 // Implements index reference management
 rdm.local.LocalIndexReferenceContainer = function() {
   rdm.local.LocalModelObject.call(this);

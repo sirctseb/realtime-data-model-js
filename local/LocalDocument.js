@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalDocument');
+
 rdm.local.LocalDocument = function() {
   this.model_ = new rdm.local.LocalModel();
 };

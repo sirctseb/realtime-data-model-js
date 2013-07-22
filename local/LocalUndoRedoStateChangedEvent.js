@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalUndoRedoStateChangedEvent');
+
 rdm.local.LocalUndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
   goog.events.Event.call(this, gapi.drive.realtime.UNDO_REDO_STATE_CHANGED, target_);
   this.canUndo = canUndo;

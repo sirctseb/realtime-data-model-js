@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalModel');
+
 rdm.local.LocalModel = function() {
   this.undoHistory_ = new rdm.local.UndoHistory();
   // TODO is this ever true?

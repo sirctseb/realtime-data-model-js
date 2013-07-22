@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+goog.provide('rdm.local.LocalObjectChangedEvent');
+
 rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
   rdm.local.LocalEvent.call(this, gap.drive.realtime.EventType.OBJECT_CHANGED, target_);
   // TODO I think this may be true for ObjectChanged and false for everything else?
