@@ -32,7 +32,7 @@ rdm.local.LocalModelObject.emitEventsAndChanged_ = function(controllers, events)
   }
   // construct change event before firing actual events
   var event = new rdm.local.LocalObjectChangedEvent(this, events, terminal);
-  for(int i = 0; i < events.length; i++) {
+  for(var i = 0; i < events.length; i++) {
     // execute events
     this.executeEvent_(events[i]);
     // fire actual events

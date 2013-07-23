@@ -23,12 +23,11 @@ rdm.local.LocalDocument.prototype.getModel = function() {
 
 rdm.local.LocalDocument.prototype.close = function() {};
 rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn) {
-    try {
-      successFn(json.stringify(model.root));
-    } catch(e) {
-      // TODO is anything passed to the failure function? the exception?
-      failureFn(e);
-    }
+  try {
+    successFn(json.stringify(model.root));
+  } catch(e) {
+    // TODO is anything passed to the failure function? the exception?
+    failureFn(e);
   }
 };
 

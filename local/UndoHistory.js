@@ -39,7 +39,7 @@ rdm.local.UndoHistory_  = function(model) {
     }
   });
 
-  model.root.onObjectChanged.listen((LocalObjectChangedEvent e) {
+  model.root.onObjectChanged.listen(function(e) {
     if(this.initScope_) {
       // don't add to undo history in initialization
     } else if(this.undoScope_) {
@@ -97,8 +97,8 @@ rdm.local.UndoHistory.prototype.initializeModel = function(initialize, model) {
 
 rdm.local.UndoHistory.prorotype.undo = function() {
   // store current undo/redo state
-  bool canUndo_ = this.canUndo;
-  bool canRedo_ = this.canRedo;
+  var canUndo_ = this.canUndo;
+  var canRedo_ = this.canRedo;
 
   // set undo latch
   this.undoScope_ = true;
@@ -129,8 +129,8 @@ rdm.local.UndoHistory.prorotype.undo = function() {
 
 rdm.local.UndoHistory.prototype.redo = function() {
   // store current undo/redo state
-  bool canUndo_ = this.canUndo;
-  bool canRedo_ = this.canRedo;
+  var canUndo_ = this.canUndo;
+  var canRedo_ = this.canRedo;
 
   // set redo latch
   this.redoScope_ = true;

@@ -73,13 +73,13 @@ rdm.local.LocalModelString.prototype.executeEvent_ = function(event) {
   // TODO deal with type warnings
   if(event.type == gapi.drive.realtime.EventType.TEXTDELETED) {
     // update string
-    string_ = string_.slice(0, event.index) + string_.slice(event.index + event.text.length);
+    this.string_ = this.string_.slice(0, event.index) + this.string_.slice(event.index + event.text.length);
     // update references
     shiftReferencesOnDelete_(event.index, event.text.length);
   } else if(event.type == gapi.drive.realtime.EventType.TEXTINSERTED) {
     // update string
-    string_ = string_.slice(0, event.index0 + event.text + string_.slice(event.index);
+    this.string_ = this.string_.slice(0, event.index) + event.text + this.string_.slice(event.index);
     // update references
-    shiftReferencesOnInsert_(event.index, event.text.length);
+    this.shiftReferencesOnInsert_(event.index, event.text.length);
   }
 };

@@ -13,25 +13,3 @@
 // limitations under the License.
 
 goog.provide('rdm.local');
-
-goog.require('LocalDocument.js');
-goog.require('LocalEvent.js');
-goog.require('LocalIndexReference.js');
-goog.require('LocalIndexReferenceContainer.js');
-goog.require('LocalModel.js');
-goog.require('LocalModelList.js');
-goog.require('LocalModelMap.js');
-goog.require('LocalModelObject.js');
-goog.require('LocalModelString.js');
-goog.require('LocalObjectChangedEvent.js');
-goog.require('LocalReferenceShiftedEvent.js');
-goog.require('LocalRetainable.js');
-goog.require('LocalTextDeletedEvent.js');
-goog.require('LocalTextInsertedEvent.js');
-goog.require('LocalUndoRedoStateChangedEvent.js');
-goog.require('LocalValueChangedEvent.js');
-goog.require('LocalValuesAddedEvent.js');
-goog.require('LocalValuesRemovedEvent.js');
-goog.require('LocalValuesSetEvent.js');
-goog.require('ModelEventType.js');
-goog.require('UndoHistory.js');

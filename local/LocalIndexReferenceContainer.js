@@ -19,18 +19,18 @@ rdm.local.LocalIndexReferenceContainer = function() {
   rdm.local.LocalModelObject.call(this);
   this.indexReferences_ = [];
 }
-goog.inherits(rdm.local.LocalIndexReferenceContainer, rdm.loca.LocalModelObject);
+goog.inherits(rdm.local.LocalIndexReferenceContainer, rdm.local.LocalModelObject);
 
-rdm.local.LocalIndexReferenceContainer.prototype.registerReference = function(int index, bool canBeDeleted) {
+rdm.local.LocalIndexReferenceContainer.prototype.registerReference = function(index, canBeDeleted) {
   // create the reference
-  var ref = new rdm.local.LocalIndexReference._(index, canBeDeleted, this);
+  var ref = new rdm.local.LocalIndexReference(this, index, canBeDeleted);
   // add to list of references
   indexReferences_.add(ref);
   return ref;
 };
 
 
-rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnDelete_ = function(int index, int length) {
+rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnDelete_ = function(index, length) {
   // check for reference shifts
   indexReferences_.map(function(ref) {
     // if index is to the right of deletion, shift by deleted length
@@ -49,9 +49,9 @@ rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnDelete_ = func
 };
 
 
-rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnInsert_ = function(int index, int length) {
+rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnInsert_ = function(index, length) {
   // check for reference shifts
-  indexReferences_.map((LocalIndexReference ref) {
+  indexReferences_.map(function(ref) {
     // if index is to the right on insert index, increase reference
     if(ref.index >= index) {
       ref.shift_(ref.index + length);

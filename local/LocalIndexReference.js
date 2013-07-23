@@ -27,7 +27,7 @@ rdm.local.LocalIndexReference = function(index, canBeDeleted, referencedObject) 
 };
 goog.inherits(rdm.local.LocalIndexReference, rdm.local.LocalModelObject);
 
-rdm.local.LocalIndexReference.prototype.shift_ = function(int newIndex) {
+rdm.local.LocalIndexReference.prototype.shift_ = function(newIndex) {
   var oldIndex = this.index;
   this.index = newIndex;
   // _onReferenceShifted.add(new LocalReferenceShiftedEvent._(index, oldIndex, referencedObject));

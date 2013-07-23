@@ -17,7 +17,7 @@ goog.provide('rdm.local.LocalObjectChangedEvent');
 rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
   rdm.local.LocalEvent.call(this, gap.drive.realtime.EventType.OBJECT_CHANGED, target_);
   // TODO I think this may be true for ObjectChanged and false for everything else?
-  bool get bubbles => null; // TODO implement this getter
+  this.bubbles = null; // TODO implement this getter
   this.events = events;
   this.isTerminal_ = isTerminal_ || false;
 };

@@ -95,7 +95,7 @@ rdm.local.LocalModelList.prototype.pushAll = function(values) {
   this.emitEventsAndChanged_([_onValuesAdded], [event]);
 }
 
-rdm.local.LocalModelList.prototype.remove = function(int index) {
+rdm.local.LocalModelList.prototype.remove = function(index) {
   // add event to stream
   var event = new rdm.local.LocalValuesRemovedEvent(this, index, [this.list_[index]]);
   this.emitEventsAndChanged([_onValuesRemoved], [event]);
@@ -109,7 +109,7 @@ rdm.local.LocalModelList.prototype.removeRange = function(startIndex, endIndex) 
 
 rdm.local.LocalModelList.prototype.removeValue = function(value) {
   // get index of value for event
-  int index = this.list_.indexOf(value);
+  var index = this.list_.indexOf(value);
   if(index != -1) {
     // add to stream
     var event = new rdm.local.LocalValuesRemovedEvent(this, index, [value]);
@@ -129,7 +129,7 @@ rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
   // start propagating changes if element is model object and not already subscribed
   if(element instanceof rdm.local.LocalModelObject && !ssMap_[element.id]) {
     ssMap_[element.id] =
-      element._onPostObjectChanged.listen((e) {
+      element._onPostObjectChanged.listen(function(e) {
         // fire on normal object changed stream
         _onObjectChanged.add(e);
         // fire on propogation stream

@@ -19,7 +19,7 @@ rdm.local.LocalModelMap = function(initialValue) {
   this.map_ = initialValue || {};
   map_.map(function(key) {
     if(ssMap_[key] instanceof rdm.local.LocalModelObject) {
-      ssMap_[key] = map_[key].onPostObjectChanged_.listen((e) {
+      ssMap_[key] = map_[key].onPostObjectChanged_.listen(function(e) {
         // fire normal change event
         onObjectChanged_.add(e);
         // fire on propagation stream
@@ -73,7 +73,7 @@ rdm.local.LocalModelMap.prototype.isEmpty = function() {
 
 
 rdm.local.LocalModelMap.prototype.items = function() {
-  return map_.keys().map(function(key) { return [key, map_[key]]); };
+  return this.map_.keys().map(function(key) { return [key, this.map_[key]]; });
 };
 
 
@@ -94,7 +94,7 @@ rdm.local.LocalModelMap.prototype.set = function(key, value) {
 // TODO return TypePromotingList object
 rdm.local.LocalModelMap.prototype.values = function() {
   // TODO hasOwnProperty?
-  return map_.keys().map(functino(key) { map_[key]; });
+  return this.map_.keys().map(function(key) { this.map_[key]; });
 };
 
 
@@ -103,19 +103,19 @@ rdm.local.LocalModelMap.prototype.values = function() {
 
 rdm.local.LocalModelMap.executeEvent_ = function(event) {
   if(event.type == gapi.drive.realtime.EventType.VALUECHANGED) {
-      map_[event.property] = event.newValue;
+      this.map_[event.property] = event.newValue;
       // stop propagating changes if we're writing over a model object
-      if(ssMap_[event.property]) {
-        ssMap_[event.property].cancel();
-        ssMap_[event.property] = null;
+      if(this.ssMap_[event.property]) {
+        this.ssMap_[event.property].cancel();
+        this.ssMap_[event.property] = null;
       }
       // propagate changes on model data objects
       if(event.newValue instanceof rdm.local.LocalModelObject) {
-        ssMap_[event.property] = event.newValue.onPostObjectChanged_.listen((e) {
+        this.ssMap_[event.property] = event.newValue.onPostObjectChanged_.listen(function(e) {
           // fire normal change event
-          onObjectChanged_.add(e);
+          this.onObjectChanged_.add(e);
           // fire on propagation stream
-          onPostObjectChangedController_.add(e);
+          this.onPostObjectChangedController_.add(e);
         });
       }
   }
