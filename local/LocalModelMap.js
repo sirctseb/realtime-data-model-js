@@ -103,7 +103,7 @@ rdm.local.LocalModelMap.prototype.values = function() {
 // Stream<rt.ValueChangedEvent> get onValueChanged => onValueChanged_.stream;
 
 rdm.local.LocalModelMap.executeEvent_ = function(event) {
-  if(event.type == gapi.drive.realtime.EventType.VALUECHANGED) {
+  if(event.type == rdm.local.LocalEventType.VALUECHANGED) {
       this.map_[event.property] = event.newValue;
       // stop propagating changes if we're writing over a model object
       if(this.ssMap_[event.property]) {

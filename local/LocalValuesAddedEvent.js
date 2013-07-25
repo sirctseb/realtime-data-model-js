@@ -16,7 +16,7 @@ goog.provide('rdm.local.LocalValuesAddedEvent');
 goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalValuesAddedEvent = function(target_, index, values) {
-  rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.EventType.VALUES_ADDED, target_);
+  rdm.local.LocalUndoableEvent.call(this, rdm.local.LocalEventType.VALUES_ADDED, target_);
   this.bubbles = null; // TODO implement this getter
   this.index = index;
   this.values = values;

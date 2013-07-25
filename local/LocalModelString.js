@@ -72,12 +72,12 @@ rdm.local.LocalModelString.prototype.text = function(text) {
 rdm.local.LocalModelString.prototype.executeEvent_ = function(event) {
   // handle insert and delete events
   // TODO deal with type warnings
-  if(event.type == gapi.drive.realtime.EventType.TEXTDELETED) {
+  if(event.type == rdm.local.LocalEventType.TEXTDELETED) {
     // update string
     this.string_ = this.string_.slice(0, event.index) + this.string_.slice(event.index + event.text.length);
     // update references
     shiftReferencesOnDelete_(event.index, event.text.length);
-  } else if(event.type == gapi.drive.realtime.EventType.TEXTINSERTED) {
+  } else if(event.type == rdm.local.LocalEventType.TEXTINSERTED) {
     // update string
     this.string_ = this.string_.slice(0, event.index) + event.text + this.string_.slice(event.index);
     // update references

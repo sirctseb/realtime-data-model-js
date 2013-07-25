@@ -170,14 +170,14 @@ rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
 
 // TODO we could alternatively listen for our own events and do the modifications there
 rdm.local.LocalModelList.prototype.executeEvent_ = function(event) {
-  if(event.type == gapi.drive.realtime.EventType.VALUES_SET) {
+  if(event.type == rdm.local.LocalEventType.VALUES_SET) {
       Array.prototype.splice.apply(this.list_, [event.index, event.newValues.length].concat(event.newValues));
-  } else if(event.type == gapi.drive.realtime.EventType.VALUES_REMOVED) {
+  } else if(event.type == rdm.local.LocalEventType.VALUES_REMOVED) {
       // update list
       this.list_.splice(event.index, event.values.length);
       // update references
       shiftReferencesOnDelete_(event.index, event.values.length);
-  } else if(event.type == gapi.drive.realtime.EventType.VALUES_ADDED) {
+  } else if(event.type == rdm.local.LocalEventType.VALUES_ADDED) {
       // update list
       Array.prototype.splice.apply(this.list_, [event.index, 0].concat(event.newValues));
       // update references
