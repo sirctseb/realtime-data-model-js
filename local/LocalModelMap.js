@@ -18,16 +18,16 @@ goog.require('rdm.local.LocalModelObject');
 rdm.local.LocalModelMap = function(initialValue) {
   rdm.local.LocalModelObject.call(this);
   this.map_ = initialValue || {};
-  map_.map(function(key) {
-    if(ssMap_[key] instanceof rdm.local.LocalModelObject) {
-      ssMap_[key] = map_[key].onPostObjectChanged_.listen(function(e) {
+  for(var key in this.map_) {
+    if(this.ssMap_[key] instanceof rdm.local.LocalModelObject) {
+      this.ssMap_[key] = this.map_[key].onPostObjectChanged_.listen(function(e) {
         // fire normal change event
-        onObjectChanged_.add(e);
+        this.onObjectChanged_.add(e);
         // fire on propagation stream
-        onPostObjectChangedController_.add(e);
+        this.onPostObjectChangedController_.add(e);
       });
     }
-  });
+  };
   // TODO size property
   // TODO 
   // map of subscriptions for object changed events for model objects contained in this

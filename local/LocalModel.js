@@ -16,14 +16,15 @@ goog.provide('rdm.local.LocalModel');
 goog.require('rdm.local.UndoHistory');
 
 rdm.local.LocalModel = function() {
-  this.undoHistory_ = new rdm.local.UndoHistory(this);
   // TODO is this ever true?
   this.isReadyOnly = true;
   this.canUndo = false;
   this.canRedo = false;
+  this.root_ = new rdm.local.LocalModelMap();
 };
 
 rdm.local.LocalModel.initialize_ = function(initializeModel) {
+  this.undoHistory_ = new rdm.local.UndoHistory(this);
   if(initialize != null) {
     undoHistory_.initializeModel(initialize);
   }
@@ -32,9 +33,9 @@ rdm.local.LocalModel.initialize_ = function(initializeModel) {
 // TODO need to implement compound operations. meaningful for undo/redo
 // TODO also, what is beginCreationCompoundOperation
 rdm.local.LocalModel.prototype.beginCreationCompoundOperation = function() {};
-rdm.local.LocalModel.endCompoundOperation = function() {};
-rdm.local.LocalModel.getRoot = function() {
-  return new realteim_data_model.local.LocalModelMap();
+rdm.local.LocalModel.prototype.endCompoundOperation = function() {};
+rdm.local.LocalModel.prototype.getRoot = function() {
+  return this.root_;
 };
 
 // TODO is this ever false?

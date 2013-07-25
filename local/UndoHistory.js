@@ -39,7 +39,7 @@ rdm.local.UndoHistory = function(model) {
     }
   });
 
-  model.root.onObjectChanged.listen(function(e) {
+  model.getRoot().onObjectChanged.listen(function(e) {
     if(this.initScope_) {
       // don't add to undo history in initialization
     } else if(this.undoScope_) {
