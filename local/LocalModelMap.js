@@ -79,7 +79,6 @@ rdm.local.LocalModelMap.prototype.keys = function() {
 rdm.local.LocalModelMap.prototype.set = function(key, value) {
   // send the event
   var event = new rdm.local.LocalValueChangedEvent(this, key, value, this.map_[key]);
-  console.log('made event with newValue: ' + event.newValue + ', which should be ' + value);
   this.emitEventsAndChanged_( [event]);
   // TODO this is the wrong return value. should be the old value, not the new one
   return value;
@@ -94,10 +93,7 @@ rdm.local.LocalModelMap.prototype.values = function() {
 
 
 rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
-  console.log('LMM executing event ' + event.type);
   if(event.type == rdm.local.LocalEventType.VALUE_CHANGED) {
-    console.log('setting ' + event.property + ' to ' + event.newValue);
-    console.log('was ' + event.oldValue);
     this.map_[event.property] = event.newValue;
     // stop propagating changes if we're writing over a model object
     // TODO i think this breaks if a collaborative object is in the map twice
