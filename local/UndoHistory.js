@@ -45,7 +45,7 @@ rdm.local.UndoHistory = function(model) {
 
   // TODO define event types so we don't have to use literal here
   var this_ = this;
-  model.getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED + '-post', function(e) {
+  model.getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, function(e) {
     if(this_.initScope_) {
       // don't add to undo history in initialization
     } else if(this_.undoScope_) {
@@ -119,7 +119,6 @@ rdm.local.UndoHistory.prototype.undo = function() {
   inverses.map(function(e) {
     var event = new rdm.local.LocalObjectChangedEvent(e.target_, [e]);
     e.target_.dispatchEvent(event);
-    e.target_.dispatchEvent(event.postEvent_);
   });
   // unset undo latch
   this.undoScope_ = false;
@@ -148,11 +147,6 @@ rdm.local.UndoHistory.prototype.redo = function() {
   inverses.map(function(e) {
     var event = new rdm.local.LocalObjectChangedEvent(e.target_, [e]);
     e.target_.dispatchEvent(event);
-    e.target_.dispatchEvent(event.postEvent_);
-    // e.target_.onObjectChanged_.add(event);
-    // TODO how to do post change event?
-    // TODO param in LocalEvent to make "post" event that appends post to type so we can listen separately
-    // e.target_.onPostObjectChangedController_.add(event);
   });
   // increment index
   this.index_++;

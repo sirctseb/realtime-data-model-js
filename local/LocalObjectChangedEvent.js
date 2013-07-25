@@ -15,18 +15,11 @@
 goog.provide('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.LocalEvent');
 
-rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_, isPost_) {
-  // TODO this is really bad
-  var type = rdm.local.LocalEventType.OBJECT_CHANGED;
-  if(isPost_) type = type + '-post';
-  rdm.local.LocalEvent.call(this, type, target_);
+rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
+  rdm.local.LocalEvent.call(this, rdm.local.LocalEventType.OBJECT_CHANGED, target_);
   // TODO I think this may be true for ObjectChanged and false for everything else?
   this.bubbles = null; // TODO implement this getter
   this.events = events;
   this.isTerminal_ = isTerminal_ || false;
-  if(!isPost_) {
-    this.postEvent_ = new rdm.local.LocalObjectChangedEvent(target_, events, isTerminal_, true);
-    this.postEvent_.original_ = this;
-  }
 };
 goog.inherits(rdm.local.LocalObjectChangedEvent, rdm.local.LocalEvent);

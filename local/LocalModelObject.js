@@ -43,8 +43,6 @@ rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
   }
   // fire change event on normal stream
   this.dispatchEvent(event);
-  // fire on propagation stream
-  this.dispatchEvent(event.postEvent_);
   if(terminal) {
     rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
   }

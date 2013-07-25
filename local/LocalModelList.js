@@ -131,15 +131,8 @@ rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
 // check if value is a model object and start propagating object changed events
 rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
   // start propagating changes if element is model object and not already subscribed
-  if(element instanceof rdm.local.LocalModelObject && !ssMap_[element.id]) {
-    ssMap_[element.id] = function(e) {
-      // fire on normal object changed stream
-      this.dispatchEvent(e.original_);
-      // fire on propogation stream
-      this.dispatchEvent(e);
-    };
-    // TODO this is bad
-    element.addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED + '-post');
+  if(element instanceof rdm.local.LocalModelObject) {
+    element.setParentEventTarget(null);
   }
 }
 // check if value is a model object and stop propagating object changed events
@@ -147,8 +140,7 @@ rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
   // stop propagation if overwritten element is model object and it is no longer anywhere in the list
   // TODO this depends on this method being called _after_ the element is removed from this.list_
   if(element instanceof rdm.local.LocalModelObject && !this.list_.indexOf(element) != -1) {
-    element.removeEventListener(rdm.local.LocalEventType.OBJECT_CHANGED + '-post', ssMap_[element.id]);
-    ssMap_[element.id] = null;
+    element.setParentEventTarget(null);
   }
 }
 

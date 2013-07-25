@@ -19,13 +19,8 @@ rdm.local.LocalModelMap = function(initialValue) {
   rdm.local.LocalModelObject.call(this);
   this.map_ = initialValue || {};
   for(var key in this.map_) {
-    if(this.ssMap_[key] instanceof rdm.local.LocalModelObject) {
-      this.ssMap_[key] = this.map_[key].onPostObjectChanged_.listen(function(e) {
-        // fire normal change event
-        this.onObjectChanged_.add(e);
-        // fire on propagation stream
-        this.onPostObjectChangedController_.add(e);
-      });
+    if(this.map_[key] instanceof rdm.local.LocalModelObject) {
+      this.map_[key].setParentEventTarget(this);
     }
   };
   // TODO size property
@@ -102,26 +97,15 @@ rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
       delete this.map_[event.property];
     }
     // stop propagating changes if we're writing over a model object
-    // TODO i think this breaks if a collaborative object is in the map twice
-    if(this.ssMap_[event.property]) {
-      event.oldValue.removeEventListener(rdm.local.LocalEventType.OBJECT_CHANGED + '-post',
-        this.ssMap_[event.property]);
-      this.ssMap_[event.property] = null;
+    // TODO so a collaborative object can't be in two other collaborative objects?
+    if(event.oldValue instanceof rdm.local.LocalModelObject) {
+      event.oldValue.setParentEventTarget(null);
     }
     // propagate changes on model data objects
     var this_ = this;
     if(event.newValue instanceof rdm.local.LocalModelObject) {
-      // create and store handler function
-      this.ssMap_[event.property] = function(e) {
-        // dispatch original change event
-        this_.dispatchEvent(e.original_);
-        // dispatch propogation event
-        this_.dispatchEvent(e);
-      }
-      // listen for changes
-      // TODO this is a really bad system
-      event.newValue.addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED + '-post',
-        this.ssMap_[event.property]);
+      // set this as bubble parent of object
+      event.newValue.setParentEventTarget(this);
     }
   }
 };
