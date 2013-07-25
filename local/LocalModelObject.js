@@ -13,11 +13,14 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModelObject');
+goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModelObject = function() {
+  goog.events.EventTarget.call(this);
   this.id = rdm.local.LocalModelObject.idNum_.toString();
   rdm.local.LocalModelObject.idNum_++;
 };
+goog.inherits(rdm.local.LocalModelObject, goog.events.EventTarget);
 rdm.local.LocalModelObject.idNum_ = 0;
 rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
 
@@ -25,7 +28,7 @@ rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
 // Stream<rt.ValueChangedEvent> get onValueChanged => null; // TODO implement this getter
 
 // create an emit a LocalObjectChangedEvent from a list of events
-rdm.local.LocalModelObject.emitEventsAndChanged_ = function(controllers, events) {
+rdm.local.LocalModelObject.emitEventsAndChanged_ = function(events) {
   var terminal = !rdm.local.LocalModelObject.inEmitEventsAndChangedScope_;
   if(terminal) {
     rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = true;
@@ -36,12 +39,13 @@ rdm.local.LocalModelObject.emitEventsAndChanged_ = function(controllers, events)
     // execute events
     this.executeEvent_(events[i]);
     // fire actual events
-    this.controllers[i].add(events[i]);
+    this.dispatchEvent(events[i]);
   }
   // fire change event on normal stream
   this.onObjectChanged_.add(event);
   // fire on propagation stream
-  this.onPostObjectChangedController_.add(event);
+  // TODO implement post change
+  // this.onPostObjectChangedController_.add(event);
   if(terminal) {
     rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
   }
@@ -52,16 +56,10 @@ rdm.local.LocalModelObject.executeAndEmitEvent_ = function(event) {
   // make change
   this.executeEvent_(event);
   // emit event
-  this.eventStreamControllers_[event.type].add(event);
+  this.dispatchEvent(event);
 };
 
 
 rdm.local.LocalModelObject.executeEvent_ = function(event) {
   // TODO implement custom objects
 };
-
-
-// TODO
-// map from event type to stream controller they go on
-// TODO with this we don't need to pass controllers to emitEventsAndChanged_
-// Map<String, StreamController> eventStreamControllers_ = {};

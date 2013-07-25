@@ -14,19 +14,22 @@
 
 goog.provide('rdm.local.LocalModel');
 goog.require('rdm.local.UndoHistory');
+goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModel = function() {
+  goog.events.EventTarget.call(this);
   // TODO is this ever true?
   this.isReadyOnly = true;
   this.canUndo = false;
   this.canRedo = false;
   this.root_ = new rdm.local.LocalModelMap();
 };
+goog.inherits(rdm.local.LocalModel, goog.events.EventTarget);
 
-rdm.local.LocalModel.initialize_ = function(initializeModel) {
+rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
   this.undoHistory_ = new rdm.local.UndoHistory(this);
-  if(initialize != null) {
-    undoHistory_.initializeModel(initialize);
+  if(initializeModel != null) {
+    this.undoHistory_.initializeModel(initializeModel);
   }
 };
 
@@ -73,5 +76,3 @@ rdm.local.LocalModel.prototype.redo = function() {
   // redo events
   undoHistory_.redo();
 }
-
-// Stream<rt.UndoRedoStateChangedEvent> get onUndoRedoStateChanged => _onUndoRedoStateChanged.stream;

@@ -13,10 +13,14 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalDocument');
+goog.require('goog.events.EventTarget');
 
 rdm.local.LocalDocument = function() {
+  goog.events.EventTarget.call(this);
   this.model_ = new rdm.local.LocalModel();
 };
+goog.inherits(rdm.local.LocalDocument, goog.events.EventTarget);
+
 rdm.local.LocalDocument.prototype.getModel = function() {
   return this.model_;
 };
@@ -31,11 +35,4 @@ rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn
   }
 };
 
-// TODO how to do events?
-// StreamController<rt.CollaboratorLeftEvent> _onCollaboratorLeft = new StreamController<rt.CollaboratorLeftEvent>.broadcast();
-// StreamController<rt.CollaboratorJoinedEvent> _onCollaboratorJoined = new StreamController<rt.CollaboratorJoinedEvent>.broadcast();
-// // TODO support implementing a document supplier class to retrieve documents and give them back in json
-// StreamController<rt.DocumentSaveStateChangedEvent> _onDocumentSaveStateChanged = new StreamController<rt.DocumentSaveStateChangedEvent>.broadcast();
-// Stream<rt.CollaboratorLeftEvent> get onCollaboratorLeft => _onCollaboratorLeft.stream;
-// Stream<rt.CollaboratorJoinedEvent> get onCollaboratorJoined => _onCollaboratorJoined.stream;
-// Stream<rt.DocumentSaveStateChangedEvent> get onDocumentSaveStateChanged => _onDocumentSaveStateChanged.stream;
+// TODO support implementing a document supplier class to retrieve documents and give them back in json

@@ -85,8 +85,8 @@ rdm.local.LocalModelMap.prototype.keys = function() {
 
 rdm.local.LocalModelMap.prototype.set = function(key, value) {
   // send the event
-  var event = new rdm.local.LocalValueChangedEvent(this, value, map_[key], key);
-  this.emitEventAndChanged_([onValueChanged_], [event]);
+  var event = new rdm.local.LocalValueChangedEvent(this, value, this.map_[key], key);
+  this.emitEventsAndChanged_([onValueChanged_], [event]);
   // TODO this is the wrong return value. should be the old value, not the new one
   return value;
 };
