@@ -31,8 +31,10 @@ rdm.local.LocalModelList = function(initialValue) {
   // map from object ids of contained elements to subscriptions to their object changed streams
   this.ssMap_ = {};
 };
-goog.inherits(rdm.local.LocalModelList, rdm.local.IndexReferenceContainer);
-rdm.local.LocalModelList.prototype.asArray() = function() {
+goog.inherits(rdm.local.LocalModelList, rdm.local.LocalIndexReferenceContainer);
+
+
+rdm.local.LocalModelList.prototype.asArray = function() {
   return goog.array.clone(this.list_);
 };
 

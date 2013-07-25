@@ -19,7 +19,7 @@ goog.provide('rdm.local.UndoHistory');
 // TODO during undo in the realtime implementation, but are split up here
 // TODO undo state events are not in the same order with respect to other events
 // TODO as seen by client code. also rt sometimes sends two of the same events
-rdm.local.UndoHistory_  = function(model) {
+rdm.local.UndoHistory = function(model) {
   this.model = model;
   this.history_ = [[]];
   this.index_ = 0;
@@ -68,7 +68,7 @@ rdm.local.UndoHistory_  = function(model) {
 
 
 // Add a list of events to the current undo index
-rdm.local.UndoHistory_.prototype.addUndoEvents_ = function(events, terminateSet, prepend) {
+rdm.local.UndoHistory.prototype.addUndoEvents_ = function(events, terminateSet, prepend) {
   terminateSet = terminateSet == undefined ? false : terminateSet;
   prepend = prepend == undefined ? false : prepend;
   // if this is the first of a set and we're not undoing or redoing,
@@ -95,7 +95,7 @@ rdm.local.UndoHistory.prototype.initializeModel = function(initialize, model) {
   this.initScope_ = false;
 };
 
-rdm.local.UndoHistory.prorotype.undo = function() {
+rdm.local.UndoHistory.prototype.undo = function() {
   // store current undo/redo state
   var canUndo_ = this.canUndo;
   var canRedo_ = this.canRedo;

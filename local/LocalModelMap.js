@@ -33,7 +33,7 @@ rdm.local.LocalModelMap = function(initialValue) {
   // map of subscriptions for object changed events for model objects contained in this
   this.ssMap_ = {};
 };
-goog.inherits(rdm.local.LocalModelMap, rdm.local.LocalModel.Object);
+goog.inherits(rdm.local.LocalModelMap, rdm.local.LocalModelObject);
   // // TODO event
   // @override void operator []=(String key, V value) {
   //   // send the event

@@ -63,12 +63,12 @@ rdm.local.LocalModel.prototype.createString = function(initialValue) {
   return new rdm.local.LocalModelString(initialValue);
 }
 
-void rdm.local.LocalModel.prototype.undo = function() {
+rdm.local.LocalModel.prototype.undo = function() {
   // TODO check canUndo
   // undo events
   undoHistory_.undo();
 }
-void rdm.local.LocalModel.prototype.redo = function() {
+rdm.local.LocalModel.prototype.redo = function() {
   // TODO check canRedo
   // redo events
   undoHistory_.redo();
