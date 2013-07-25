@@ -21,7 +21,7 @@ rdm.local.LocalModelList = function(initialValue) {
   this.list_.map(function(element) { propogateChanges_(element); });
   // TODO add tests for length property
   Object.defineProperty(this, 'length', {
-    get: function() { return this.list_.length(); },
+    get: function() { return this.list_.length; },
     set: function(l) {
       if(l < this.list_.length) {
         this.removeRange(l, this.list_.length);
@@ -39,8 +39,9 @@ rdm.local.LocalModelList.prototype.asArray = function() {
 };
 
 rdm.local.LocalModelList.prototype.clear = function() {
+  if(this.list_.length == 0) return;
   // add event to stream
-  var event = new rdm.local.LocalValuesRemovedEvent._(this, 0, goog.array.clone(this.list_));
+  var event = new rdm.local.LocalValuesRemovedEvent(this, 0, goog.array.clone(this.list_));
   // TODO take old stream controller parameter out of these calls
   this.emitEventsAndChanged_([event]);
 };
@@ -54,7 +55,7 @@ rdm.local.LocalModelList.prototype.insert = function(index, value) {
 rdm.local.LocalModelList.prototype.insertAll = function(index, values) {
   // add event to stream
   // TODO clone values?
-  var event = new rdm.local.LocalValuesAddedEvent._(this, index, values);
+  var event = new rdm.local.LocalValuesAddedEvent(this, index, values);
   this.emitEventsAndChanged_([event]);
 };
 
@@ -87,27 +88,27 @@ rdm.local.LocalModelList.prototype.push = function(value) {
   // add event to stream
   // TODO make sure this is the index provided when inserting at the end
   var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, [value]);
-  this.emitEventsAndChanged_( [event]);
+  this.emitEventsAndChanged_([event]);
   return this.list_.length;
 }
 
 rdm.local.LocalModelList.prototype.pushAll = function(values) {
   // add event to stream
   // TODO make sure this is the index provided when inserting at the end
-  var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, values);
-  this.emitEventsAndChanged_( [event]);
+  var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, goog.array.clone(values));
+  this.emitEventsAndChanged_([event]);
 }
 
 rdm.local.LocalModelList.prototype.remove = function(index) {
   // add event to stream
   var event = new rdm.local.LocalValuesRemovedEvent(this, index, [this.list_[index]]);
-  this.emitEventsAndChanged([_onValuesRemoved], [event]);
+  this.emitEventsAndChanged_([event]);
 }
 
 rdm.local.LocalModelList.prototype.removeRange = function(startIndex, endIndex) {
   // add event to stream
   var event = new rdm.local.LocalValuesRemovedEvent(this, startIndex, this.list_.slice(startIndex, endIndex));
-  this.emitEventsAndChanged_( [event]);
+  this.emitEventsAndChanged_([event]);
 }
 
 rdm.local.LocalModelList.prototype.removeValue = function(value) {
@@ -116,7 +117,7 @@ rdm.local.LocalModelList.prototype.removeValue = function(value) {
   if(index != -1) {
     // add to stream
     var event = new rdm.local.LocalValuesRemovedEvent(this, index, [value]);
-    this.emitEventsAndChanged_( [event]);
+    this.emitEventsAndChanged_([event]);
   }
 }
 
@@ -151,24 +152,6 @@ rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
   }
 }
 
-// TODO
-// LocalModelList(initialValue) {
-  // onValuesAdded.listen((LocalValuesAddedEvent e) {
-  //   e.values.forEach((element) => _propagateChanges(element));
-  // });
-  // onValuesRemoved.listen((LocalValuesRemovedEvent e){
-  //   e.values.forEach((element) => _stopPropagatingChanges(element));
-  // });
-  // onValuesSet.listen((LocalValuesSetEvent e) {
-  //   e.oldValues.forEach((element) => _stopPropagatingChanges(element));
-  //   e.newValues.forEach((element) => _propagateChanges(element));
-  // });
-
-  // _eventStreamControllers[ModelEventType.VALUES_SET.value] = _onValuesSet;
-  // _eventStreamControllers[ModelEventType.VALUES_ADDED.value] = _onValuesAdded;
-  // _eventStreamControllers[ModelEventType.VALUES_REMOVED.value] = _onValuesRemoved;
-// }
-
 // TODO we could alternatively listen for our own events and do the modifications there
 rdm.local.LocalModelList.prototype.executeEvent_ = function(event) {
   if(event.type == rdm.local.LocalEventType.VALUES_SET) {
@@ -177,11 +160,11 @@ rdm.local.LocalModelList.prototype.executeEvent_ = function(event) {
       // update list
       this.list_.splice(event.index, event.values.length);
       // update references
-      shiftReferencesOnDelete_(event.index, event.values.length);
+      this.shiftReferencesOnDelete_(event.index, event.values.length);
   } else if(event.type == rdm.local.LocalEventType.VALUES_ADDED) {
       // update list
-      Array.prototype.splice.apply(this.list_, [event.index, 0].concat(event.newValues));
+      Array.prototype.splice.apply(this.list_, [event.index, 0].concat(event.values));
       // update references
-      shiftReferencesOnInsert_(event.index, event.values.length);
+      this.shiftReferencesOnInsert_(event.index, event.values.length);
   }
 }

@@ -19,7 +19,7 @@ rdm.local.LocalTextInsertedEvent = function(target_, index, text) {
   rdm.local.LocalUndoableEvent.call(this, rdm.local.LocalEventType.TEXT_INSERTED, target_);
   this.bubbles = null; // TODO implement this getter
   this.index = index;
-  this.text = test;
+  this.text = text;
 };
 goog.inherits(rdm.local.LocalTextInsertedEvent, rdm.local.LocalUndoableEvent);
 

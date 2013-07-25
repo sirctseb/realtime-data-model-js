@@ -117,10 +117,9 @@ rdm.local.UndoHistory.prototype.undo = function() {
   inverses.map(function(e) { e.executeAndEmit_(); });
   // do object changed events
   inverses.map(function(e) {
-    var event = new rdm.local.LocalObjectChangedEvent([e], e.target_);
+    var event = new rdm.local.LocalObjectChangedEvent(e.target_, [e]);
     e.target_.dispatchEvent(event);
-    // TODO implement post events
-    // e.target_.onPostObjectChangedController_.add(event);
+    e.target_.dispatchEvent(event.postEvent_);
   });
   // unset undo latch
   this.undoScope_ = false;
@@ -147,8 +146,9 @@ rdm.local.UndoHistory.prototype.redo = function() {
   inverses.map(function(e) { e.executeAndEmit_(); });
   // do object changed events
   inverses.map(function(e) {
-    var event = new rdm.local.LocalObjectChangedEvent([e], e.target_);
-    this.model.dispatchEvent(event);
+    var event = new rdm.local.LocalObjectChangedEvent(e.target_, [e]);
+    e.target_.dispatchEvent(event);
+    e.target_.dispatchEvent(event.postEvent_);
     // e.target_.onObjectChanged_.add(event);
     // TODO how to do post change event?
     // TODO param in LocalEvent to make "post" event that appends post to type so we can listen separately

@@ -24,16 +24,16 @@ goog.inherits(rdm.local.LocalIndexReferenceContainer, rdm.local.LocalModelObject
 
 rdm.local.LocalIndexReferenceContainer.prototype.registerReference = function(index, canBeDeleted) {
   // create the reference
-  var ref = new rdm.local.LocalIndexReference(this, index, canBeDeleted);
+  var ref = new rdm.local.LocalIndexReference(index, canBeDeleted, this);
   // add to list of references
-  indexReferences_.add(ref);
+  this.indexReferences_.push(ref);
   return ref;
 };
 
 
 rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnDelete_ = function(index, length) {
   // check for reference shifts
-  indexReferences_.map(function(ref) {
+  this.indexReferences_.map(function(ref) {
     // if index is to the right of deletion, shift by deleted length
     if(ref.index >= index + length) {
       ref.shift_(ref.index - length);
@@ -52,7 +52,7 @@ rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnDelete_ = func
 
 rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnInsert_ = function(index, length) {
   // check for reference shifts
-  indexReferences_.map(function(ref) {
+  this.indexReferences_.map(function(ref) {
     // if index is to the right on insert index, increase reference
     if(ref.index >= index) {
       ref.shift_(ref.index + length);

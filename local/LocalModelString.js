@@ -52,7 +52,7 @@ rdm.local.LocalModelString.prototype.removeRange = function(startIndex, endIndex
   // get removed text for event
   var removed = this.string_.slice(startIndex, endIndex);
   // add event to stream
-  var deleteEvent = new rdm.local.LocalTextDeletedEvent(this.startIndex, removed);
+  var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, startIndex, removed);
   this.emitEventsAndChanged_( [deleteEvent]);
 };
 
@@ -72,12 +72,12 @@ rdm.local.LocalModelString.prototype.setText = function(text) {
 rdm.local.LocalModelString.prototype.executeEvent_ = function(event) {
   // handle insert and delete events
   // TODO deal with type warnings
-  if(event.type == rdm.local.LocalEventType.TEXTDELETED) {
+  if(event.type == rdm.local.LocalEventType.TEXT_DELETED) {
     // update string
     this.string_ = this.string_.slice(0, event.index) + this.string_.slice(event.index + event.text.length);
     // update references
-    shiftReferencesOnDelete_(event.index, event.text.length);
-  } else if(event.type == rdm.local.LocalEventType.TEXTINSERTED) {
+    this.shiftReferencesOnDelete_(event.index, event.text.length);
+  } else if(event.type == rdm.local.LocalEventType.TEXT_INSERTED) {
     // update string
     this.string_ = this.string_.slice(0, event.index) + event.text + this.string_.slice(event.index);
     // update references

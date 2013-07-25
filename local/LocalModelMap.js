@@ -29,7 +29,10 @@ rdm.local.LocalModelMap = function(initialValue) {
     }
   };
   // TODO size property
-  // TODO 
+  var this_ = this;
+  Object.defineProperties(this, {
+    "size": { get: function() { return Object.keys(this_.map_).length; }}
+  });
   // map of subscriptions for object changed events for model objects contained in this
   this.ssMap_ = {};
 };
@@ -95,6 +98,9 @@ rdm.local.LocalModelMap.prototype.values = function() {
 rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
   if(event.type == rdm.local.LocalEventType.VALUE_CHANGED) {
     this.map_[event.property] = event.newValue;
+    if(this.map_[event.property] == null) {
+      delete this.map_[event.property];
+    }
     // stop propagating changes if we're writing over a model object
     // TODO i think this breaks if a collaborative object is in the map twice
     if(this.ssMap_[event.property]) {
