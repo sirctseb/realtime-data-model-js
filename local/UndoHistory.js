@@ -88,7 +88,7 @@ rdm.local.UndoHistory.prototype.addUndoEvents_ = function(events, terminateSet, 
 };
 
 
-rdm.local.UndoHistory.prototype.initializeModel = function(initialize, model) {
+rdm.local.UndoHistory.prototype.initializeModel = function(initialize) {
   // call initialization callback with initScope_ set to true
   this.initScope_ = true;
   initialize(m);

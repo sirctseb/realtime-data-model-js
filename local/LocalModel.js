@@ -16,19 +16,18 @@ goog.provide('rdm.local.LocalModel');
 goog.require('rdm.local.UndoHistory');
 
 rdm.local.LocalModel = function() {
-  this.undoHistory_ = new rdm.local.UndoHistory();
+  this.undoHistory_ = new rdm.local.UndoHistory(this);
   // TODO is this ever true?
   this.isReadyOnly = true;
   this.canUndo = false;
   this.canRedo = false;
 };
-  /// Create a local model with a callback
-  // LocalModel([initialize]) {
-  //   _undoHistory = new UndoHistory(this);
-  //   if(initialize != null) {
-  //     _undoHistory.initializeModel(initialize, this);
-  //   }
-  // }
+
+rdm.local.LocalModel.initialize_ = function(initializeModel) {
+  if(initialize != null) {
+    undoHistory_.initializeModel(initialize);
+  }
+};
 
 // TODO need to implement compound operations. meaningful for undo/redo
 // TODO also, what is beginCreationCompoundOperation
