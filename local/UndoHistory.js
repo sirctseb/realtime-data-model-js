@@ -27,40 +27,45 @@ rdm.local.UndoHistory = function(model) {
   this.undoScope_ = false;
   this.redoScope_ = false;
   this.initScope_ = false;
+  var this_ = this;
   Object.defineProperties(this, {
     "firstOfSet_": {
-      get: function() { return this.lastWasTerminal_ && !this.undoScope_ && !this.redoScope_; }
+      get: function() { return this_.lastWasTerminal_ && !this_.undoScope_ && !this_.redoScope_; }
     },
     "canUndo": {
-      get: function() { return this.index_ > 0; }
+      get: function() { return this_.index_ > 0; }
     },
     "canRedo": {
-      get: function() { return this.index_ < this.history_.length; }
+      get: function() {
+        var ret = this_.index_ < this_.history_.length - 1;
+        return ret;
+      }
     }
   });
 
   // TODO define event types so we don't have to use literal here
-  model.getRoot().addEventListener('object-changed', function(e) {
-    if(this.initScope_) {
+  var this_ = this;
+  model.getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED + '-post', function(e) {
+    if(this_.initScope_) {
       // don't add to undo history in initialization
-    } else if(this.undoScope_) {
+    } else if(this_.undoScope_) {
       // if undoing, add inverse of events to history
-      this.addUndoEvents_(e.events, false, true);
-    } else if(redoScope_) {
+      this_.addUndoEvents_(e.events, false, true);
+    } else if(this_.redoScope_) {
       // if redoing, add events to history
-      this.addUndoEvents_(e.events, false, true);
+      this_.addUndoEvents_(e.events, false, true);
     } else {
       // store current undo/redo state
-      var canUndo_ = this.canUndo;
-      var canRedo_ = this.canRedo;
+      var canUndo_ = this_.canUndo;
+      var canRedo_ = this_.canRedo;
 
       // add event to current undo set
-      this.addUndoEvents_(e.events.slice(0).reverse(), e.isTerminal_);
-      this.lastWasTerminal_ = e.isTerminal_;
+      this_.addUndoEvents_(e.events.slice(0).reverse(), e.isTerminal_);
+      this_.lastWasTerminal_ = e.isTerminal_;
 
       // if undo/redo state changed, send event
-      if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-        this.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent._(this.canRedo, this.canUndo));
+      if(canUndo_ != this_.canUndo || canRedo_ != this_.canRedo) {
+        this_.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent(this_.canRedo, this_.canUndo));
       }
     }
   });
@@ -77,9 +82,9 @@ rdm.local.UndoHistory.prototype.addUndoEvents_ = function(events, terminateSet, 
     this.history_.splice(this.index_, this.history_.length, []);
   }
   if(prepend) {
-    Array.splice.apply(this.history_[this.index_], [0,0].concat(events));
+    Array.prototype.splice.apply(this.history_[this.index_], [0,0].concat(events));
   } else {
-    Array.push.apply(this.history_[this.index_], events);
+    Array.prototype.push.apply(this.history_[this.index_], events);
   }
   if(terminateSet) {
     this.history_.push([]);
@@ -112,7 +117,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
   inverses.map(function(e) { e.executeAndEmit_(); });
   // do object changed events
   inverses.map(function(e) {
-    var event = new rdm.local.LocalObjectChangedEvent._([e], e.target_);
+    var event = new rdm.local.LocalObjectChangedEvent([e], e.target_);
     e.target_.dispatchEvent(event);
     // TODO implement post events
     // e.target_.onPostObjectChangedController_.add(event);
@@ -122,7 +127,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-    this.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent._(this.canRedo, this.canUndo));
+    this.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent(this.canRedo, this.canUndo));
   }
 };
 
@@ -142,7 +147,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
   inverses.map(function(e) { e.executeAndEmit_(); });
   // do object changed events
   inverses.map(function(e) {
-    var event = new rdm.local.LocalObjectChangedEvent._([e], e.target_);
+    var event = new rdm.local.LocalObjectChangedEvent([e], e.target_);
     this.model.dispatchEvent(event);
     // e.target_.onObjectChanged_.add(event);
     // TODO how to do post change event?

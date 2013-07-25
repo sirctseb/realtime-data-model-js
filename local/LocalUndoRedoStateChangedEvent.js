@@ -15,7 +15,7 @@
 goog.provide('rdm.local.LocalUndoRedoStateChangedEvent');
 
 rdm.local.LocalUndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
-  goog.events.Event.call(this, gapi.drive.realtime.UNDO_REDO_STATE_CHANGED, target_);
+  goog.events.Event.call(this, rdm.local.LocalEventType.UNDO_REDO_STATE_CHANGED, target_);
   this.canUndo = canUndo;
   this.canRedo = canRedo;
 };

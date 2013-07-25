@@ -22,6 +22,7 @@
   <button id='authorizeButton'>authorize</button>
   <script type="text/javascript">
   	window.onload = function() {
+      QUnit.config.reorder = false;
       rdm.start(realtimeOptions, true);
       // console.log(rdm);
       // console.log(rdm.local);

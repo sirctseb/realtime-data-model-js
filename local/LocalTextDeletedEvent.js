@@ -16,7 +16,7 @@ goog.provide('rdm.local.LocalTextDeletedEvent');
 goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalTextDeletedEvent = function(target_, index, test) {
-  rdm.local.LocalUndoableEvent.call(this, gapi.realtime.EventType.TEXT_DELETED, target_);
+  rdm.local.LocalUndoableEvent.call(this, rdm.local.LocalEventType.TEXT_DELETED, target_);
   this.index = index;
   this.text = test;
   this.bubbles = null;
@@ -24,5 +24,5 @@ rdm.local.LocalTextDeletedEvent = function(target_, index, test) {
 goog.inherits(rdm.local.LocalTextDeletedEvent, rdm.local.LocalUndoableEvent);
 
 rdm.local.LocalTextDeletedEvent.prototype.getInverse = function() {
-  return new rdm.local.LocalTextInsertedEvent(this.target_, index, text);
+  return new rdm.local.LocalTextInsertedEvent(this.target_, this.index, this.text);
 };

@@ -32,37 +32,37 @@ goog.inherits(rdm.local.LocalModelString, rdm.local.LocalIndexReferenceContainer
 
 rdm.local.LocalModelString.prototype.append = function(text) {
   // add event to stream
-  var insertEvent = new rdm.local.LocalTextInsertedEvent(this, string_.length, text);
-  emitEventsAndChanged_([onTextInserted_], [insertEvent]);
+  var insertEvent = new rdm.local.LocalTextInsertedEvent(this, this.string_.length, text);
+  this.emitEventsAndChanged_( [insertEvent]);
 };
 
 
 rdm.local.LocalModelString.prototype.getText = function() {
-  return string_;
+  return this.string_;
 };
 
 
 rdm.local.LocalModelString.prototype.insertString = function(index, text) {
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, index, text);
-  emitEventsAndChanged_([onTextInserted_], [insertEvent]);
+  this.emitEventsAndChanged_( [insertEvent]);
 };
 
 
 rdm.local.LocalModelString.prototype.removeRange = function(startIndex, endIndex) {
   // get removed text for event
-  var removed = string_.slice(startIndex, endIndex);
+  var removed = this.string_.slice(startIndex, endIndex);
   // add event to stream
   var deleteEvent = new rdm.local.LocalTextDeletedEvent(this.startIndex, removed);
-  emitEventsAndChanged_([onTextDeleted_], [deleteEvent]);
+  this.emitEventsAndChanged_( [deleteEvent]);
 };
 
 
-rdm.local.LocalModelString.prototype.text = function(text) {
+rdm.local.LocalModelString.prototype.setText = function(text) {
   // trivial edit decomposition algorithm
   // add event to stream
-  var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, 0, string_);
+  var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, 0, this.string_);
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, 0, text);
-  emitEventsAndChanged_([onTextDeleted_, onTextInserted_], [deleteEvent, insertEvent]);
+  this.emitEventsAndChanged_([deleteEvent, insertEvent]);
 }
 
 // TODO

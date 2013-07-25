@@ -16,11 +16,11 @@ goog.provide('rdm.local.LocalUndoableEvent');
 goog.require('rdm.local.LocalEvent');
 
 rdm.local.LocalUndoableEvent = function(type, target_) {
-  rdm.local.LocalEvent(type, target_)
+  rdm.local.LocalEvent.call(this, type, target_)
 };
 goog.inherits(rdm.local.LocalUndoableEvent, rdm.local.LocalEvent);
 
 
 rdm.local.LocalUndoableEvent.prototype.executeAndEmit_ = function() {
-  target_.executeAndEmitEvent_(this);
+  this.target_.executeAndEmitEvent_(this);
 };

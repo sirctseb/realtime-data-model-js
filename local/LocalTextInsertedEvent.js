@@ -23,6 +23,6 @@ rdm.local.LocalTextInsertedEvent = function(target_, index, text) {
 };
 goog.inherits(rdm.local.LocalTextInsertedEvent, rdm.local.LocalUndoableEvent);
 
-rdm.local.LocalTextDeletedEvent.prototype.getInverse = function() {
-  return new rdm.local.LocalTextDeletedEvent(this.target_, index, text);
+rdm.local.LocalTextInsertedEvent.prototype.getInverse = function() {
+  return new rdm.local.LocalTextDeletedEvent(this.target_, this.index, this.text);
 };

@@ -17,14 +17,14 @@ goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalValueChangedEvent = function(target_, property, newValue, oldValue) {
   rdm.local.LocalUndoableEvent.call(this, rdm.local.LocalEventType.VALUE_CHANGED, target_);
-  rdm.bubbles = null; // TODO implement this getter
-  rdm.newValue = newValue;
-  rdm.oldValue = oldValue;
+  this.bubbles = null; // TODO implement this getter
+  this.newValue = newValue;
+  this.oldValue = oldValue;
   this.property = property;
 };
 goog.inherits(rdm.local.LocalValueChangedEvent, rdm.local.LocalUndoableEvent);
 
-rdm.local.LocalValueChangedEvent.getInverse = function() {
-  return new rdm.local.LocalValueChangedEvent(this.target_, property, newValue, oldValue);
+rdm.local.LocalValueChangedEvent.prototype.getInverse = function() {
+  return new rdm.local.LocalValueChangedEvent(this.target_, this.property, this.newValue, this.oldValue);
 };
 

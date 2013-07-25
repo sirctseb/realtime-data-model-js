@@ -16,13 +16,13 @@ goog.provide('rdm.local.LocalValuesRemovedEvent');
 goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalValuesRemovedEvent = function(target_, index, values) {
-  rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.VALUES_REMOVED, target_);
+  rdm.local.LocalUndoableEvent.call(this, rdm.local.LocalEventType.VALUES_REMOVED, target_);
   this.bubbles = null; // TODO implement this getter
   this.index = index;
   this.values = values;
 };
 goog.inherits(rdm.local.LocalValuesRemovedEvent, rdm.local.LocalUndoableEvent);
 
-rdm.local.LocalValuesAddedEvent.getInverse = function() {
-  return new rdm.local.LocalValuesAddedEvent(this.target_, index, values);
+rdm.local.LocalValuesRemovedEvent.prototype.getInverse = function() {
+  return new rdm.local.LocalValuesAddedEvent(this.target_, this.index, this.values);
 }

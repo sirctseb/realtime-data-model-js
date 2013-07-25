@@ -23,6 +23,6 @@ rdm.local.LocalValuesAddedEvent = function(target_, index, values) {
 };
 goog.inherits(rdm.local.LocalValuesAddedEvent, rdm.local.LocalUndoableEvent);
 
-rdm.local.LocalValuesAddedEvent.getInverse = function() {
-  return new LocalValuesRemovedEvent(this._target, index, values);
+rdm.local.LocalValuesAddedEvent.prototype.getInverse = function() {
+  return new LocalValuesRemovedEvent(this._target, this.index, this.values);
 };

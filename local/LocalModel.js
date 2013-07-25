@@ -20,8 +20,10 @@ rdm.local.LocalModel = function() {
   goog.events.EventTarget.call(this);
   // TODO is this ever true?
   this.isReadyOnly = true;
-  this.canUndo = false;
-  this.canRedo = false;
+  Object.defineProperties(this, {
+    "canUndo": { get: function() { return this.undoHistory_.canUndo; } },
+    "canRedo": { get: function() { return this.undoHistory_.canRedo; } }
+  });
   this.root_ = new rdm.local.LocalModelMap();
 };
 goog.inherits(rdm.local.LocalModel, goog.events.EventTarget);
@@ -69,10 +71,10 @@ rdm.local.LocalModel.prototype.createString = function(initialValue) {
 rdm.local.LocalModel.prototype.undo = function() {
   // TODO check canUndo
   // undo events
-  undoHistory_.undo();
+  this.undoHistory_.undo();
 }
 rdm.local.LocalModel.prototype.redo = function() {
   // TODO check canRedo
   // redo events
-  undoHistory_.redo();
+  this.undoHistory_.redo();
 }

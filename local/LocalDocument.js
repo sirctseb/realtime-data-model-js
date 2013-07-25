@@ -15,9 +15,9 @@
 goog.provide('rdm.local.LocalDocument');
 goog.require('goog.events.EventTarget');
 
-rdm.local.LocalDocument = function() {
+rdm.local.LocalDocument = function(model) {
   goog.events.EventTarget.call(this);
-  this.model_ = new rdm.local.LocalModel();
+  this.model_ = model;
 };
 goog.inherits(rdm.local.LocalDocument, goog.events.EventTarget);
 
@@ -28,7 +28,7 @@ rdm.local.LocalDocument.prototype.getModel = function() {
 rdm.local.LocalDocument.prototype.close = function() {};
 rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn) {
   try {
-    successFn(json.stringify(model.root));
+    successFn(JSON.stringify(this.model_.getRoot()));
   } catch(e) {
     // TODO is anything passed to the failure function? the exception?
     failureFn(e);

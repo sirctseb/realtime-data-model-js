@@ -28,7 +28,7 @@ rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
 // Stream<rt.ValueChangedEvent> get onValueChanged => null; // TODO implement this getter
 
 // create an emit a LocalObjectChangedEvent from a list of events
-rdm.local.LocalModelObject.emitEventsAndChanged_ = function(events) {
+rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
   var terminal = !rdm.local.LocalModelObject.inEmitEventsAndChangedScope_;
   if(terminal) {
     rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = true;
@@ -42,17 +42,16 @@ rdm.local.LocalModelObject.emitEventsAndChanged_ = function(events) {
     this.dispatchEvent(events[i]);
   }
   // fire change event on normal stream
-  this.onObjectChanged_.add(event);
+  this.dispatchEvent(event);
   // fire on propagation stream
-  // TODO implement post change
-  // this.onPostObjectChangedController_.add(event);
+  this.dispatchEvent(event.postEvent_);
   if(terminal) {
     rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
   }
 };
 
 
-rdm.local.LocalModelObject.executeAndEmitEvent_ = function(event) {
+rdm.local.LocalModelObject.prototype.executeAndEmitEvent_ = function(event) {
   // make change
   this.executeEvent_(event);
   // emit event
@@ -60,6 +59,6 @@ rdm.local.LocalModelObject.executeAndEmitEvent_ = function(event) {
 };
 
 
-rdm.local.LocalModelObject.executeEvent_ = function(event) {
+rdm.local.LocalModelObject.prototype.executeEvent_ = function(event) {
   // TODO implement custom objects
 };
