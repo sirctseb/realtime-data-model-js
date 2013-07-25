@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalObjectChangedEvent');
+goog.require('rdm.local.LocalEvent');
 
 rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
   rdm.local.LocalEvent.call(this, gap.drive.realtime.EventType.OBJECT_CHANGED, target_);

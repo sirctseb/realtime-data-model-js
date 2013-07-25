@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModelMap');
+goog.require('rdm.local.LocalModelObject');
 
 rdm.local.LocalModelMap = function(initialValue) {
   rdm.local.LocalModelObject.call(this);

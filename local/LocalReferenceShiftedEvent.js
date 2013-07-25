@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalReferenceShiftedEvent');
+goog.require('rdm.local.LocalEvent');
 
 rdm.local.LocalReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
   rdm.local.LocalEvent.call(this, gapi.drive.realtime.EventType.REFERENCE_SHIFTED, target_);

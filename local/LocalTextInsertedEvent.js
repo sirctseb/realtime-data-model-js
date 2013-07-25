@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalTextInsertedEvent');
+goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalTextInsertedEvent = function(target_, index, text) {
   rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.EventType.TEXT_INSERTED, target_);

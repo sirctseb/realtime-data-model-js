@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalUndoableEvent');
+goog.require('rdm.local.LocalEvent');
 
 rdm.local.LocalUndoableEvent = function(type, target_) {
   rdm.local.LocalEvent(type, target_)

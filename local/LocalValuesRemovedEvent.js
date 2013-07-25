@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalValuesRemovedEvent');
+goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalValuesRemovedEvent = function(target_, index, values) {
   rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.VALUES_REMOVED, target_);

@@ -7,7 +7,12 @@
   <!-- Load the Realtime libraries -->
   <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
   <!-- Load the utility library. -->
-  <script type="text/javascript" src="realtime-client-utils.js"></script>
+  <!-- // <script type="text/javascript" src="realtime-client-utils.js"></script>  -->
+  <script type="text/javascript" src="../closure-library/closure/goog/base.js"></script>
+  <script type="text/javascript" src="../rdm-deps.js"></script>
+  <!-- // <script type="text/javascript" src="../realtime_data_model.js"></script> -->
+  <script type="text/javascript">goog.require('goog.events'); goog.require('rdm'); </script>
+  <!--<script type="text/javascript" src="../rdm.js"></script>-->
 </head>
 <body>
   <div id="qunit"></div>
@@ -17,8 +22,11 @@
   <button id='authorizeButton'>authorize</button>
   <script type="text/javascript">
   	window.onload = function() {
-  		var realtimeLoader = new rtclient.RealtimeLoader(realtimeOptions);
-  		realtimeLoader.start();
+      // console.log(rdm);
+      // console.log(rdm.local);
+      // var model = new rdm.local.LocalModel();
+  		// var realtimeLoader = new rtclient.RealtimeLoader(realtimeOptions);
+  		// realtimeLoader.start();
   	};
   </script>
 </body>

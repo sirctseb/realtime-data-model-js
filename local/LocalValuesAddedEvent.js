@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalValuesAddedEvent');
+goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalValuesAddedEvent = function(target_, index, values) {
   rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.EventType.VALUES_ADDED, target_);

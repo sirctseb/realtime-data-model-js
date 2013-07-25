@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalIndexReference');
+goog.require('rdm.local.LocalModelObject');
 
 // TODO realtime api shows model as param to constructor
 rdm.local.LocalIndexReference = function(index, canBeDeleted, referencedObject) {

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModel');
+goog.require('rdm.local.UndoHistory');
 
 rdm.local.LocalModel = function() {
   this.undoHistory_ = new rdm.local.UndoHistory();

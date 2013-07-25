@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModelString');
+goog.require('rdm.local.LocalIndexReferenceContainer');
 
 rdm.local.LocalModelString = function(initialValue) {
   rdm.local.LocalIndexReferenceContainer.call(this);

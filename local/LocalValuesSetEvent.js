@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalValuesSetEvent');
+goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalValuesSetEvent = function(target_, index, newValues, oldValues) {
   rdm.local.LocalUndoableEvent.call(this, gapi.drive.realtime.VALUES_SET, target_);
