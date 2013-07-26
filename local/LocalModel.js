@@ -73,12 +73,12 @@ rdm.local.LocalModel.prototype.createString = function(initialValue) {
 }
 
 rdm.local.LocalModel.prototype.undo = function() {
-  // TODO check canUndo
+  if(!this.canUndo) return;
   // undo events
   this.undoHistory_.undo();
 }
 rdm.local.LocalModel.prototype.redo = function() {
-  // TODO check canRedo
+  if(!this.canRedo) return;
   // redo events
   this.undoHistory_.redo();
 }
