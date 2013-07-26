@@ -19,6 +19,7 @@ goog.require('rdm.local.LocalModelObject');
 rdm.local.LocalIndexReference = function(index, canBeDeleted, referencedObject) {
   rdm.local.LocalModelObject.call(this);
   this.index = index;
+  // TODO make these getters?
   this.canBeDeleted = canBeDeleted;
   this.referencedObject = referencedObject;
 };
