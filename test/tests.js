@@ -332,6 +332,15 @@ onFileLoaded = function(doc) {
     string.insertString(0, "xx");
     equal(ref.index, 9);
   });
+  test('resurrect index', function() {
+    var ref = string.registerReference(2, true);
+    string.removeRange(1,3);
+    equal(ref.index, -1);
+    ref.index = 3;
+    equal(ref.index, 3);
+    string.insertString(0, "x");
+    equal(ref.index, 4);
+  });
   module('Events');
   test('Object Change Bubbling', function() {
     var order = '';
