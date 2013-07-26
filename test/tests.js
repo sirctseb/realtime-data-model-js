@@ -295,20 +295,28 @@ onFileLoaded = function(doc) {
     list.removeRange(4, 6);
     equal(ref.index, -1);
   });
-  // asyncTest('RealtimeString Reference Events', function() {
-  //   expect(3);
-  //   string.setText("aaaaaaaaaa");
-  //   var ref = string.registerReference(5, true);
-  //   var ssRef = function(event) {
-  //     equal(event.oldIndex, 5);
-  //     equal(event.newIndex, 7);
-  //     equal(ref.index, 7);
-  //     string.removeEventListener(rdm.local.LocalEventType.REFERENCE_SHIFTED,ssRef);
-  //     start();
-  //   };
-  //   string.addEventListener(rdm.local.LocalEventType.REFERENCE_SHIFTED,ssRef);
-  //   string.insertString(0, "xx");
-  // });
+  test('RealtimeString Reference Events', function() {
+    expect(3);
+    string.setText("aaaaaaaaaa");
+    var ref = string.registerReference(5, true);
+    var ssRef = function(event) {
+      equal(event.oldIndex, 5);
+      equal(event.newIndex, 7);
+      equal(ref.index, 7);
+      ref.removeEventListener(rdm.local.LocalEventType.REFERENCE_SHIFTED,ssRef);
+    };
+    ref.addEventListener(rdm.local.LocalEventType.REFERENCE_SHIFTED,ssRef);
+    string.insertString(0, "xx");
+  });
+  test('Assign index', function() {
+    string.setText("aaaaaaaaaa");
+    var ref = string.registerReference(5, true);
+    equal(ref.index, 5);
+    ref.index = 7;
+    equal(ref.index, 7);
+    string.insertString(0, "xx");
+    equal(ref.index, 9);
+  });
 };
 
 /**
