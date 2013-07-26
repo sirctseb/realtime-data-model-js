@@ -17,12 +17,17 @@ goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModelObject = function() {
   goog.events.EventTarget.call(this);
-  this.id = rdm.local.LocalModelObject.idNum_.toString();
+  this.id_ = rdm.local.LocalModelObject.idNum_.toString();
   rdm.local.LocalModelObject.idNum_++;
 };
 goog.inherits(rdm.local.LocalModelObject, goog.events.EventTarget);
 rdm.local.LocalModelObject.idNum_ = 0;
 rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
+
+
+rdm.local.LocalModelObject.prototype.getId = function() {
+  return this.id_;
+};
 
 // TODO implement custom objects
 
