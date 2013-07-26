@@ -15,21 +15,17 @@
 goog.provide('rdm.local.LocalIndexReference');
 goog.require('rdm.local.LocalModelObject');
 
-// TODO realtime api shows model as param to constructor
+// TODO(cjb) realtime api shows model as param to constructor but I don't see why we would need it
 rdm.local.LocalIndexReference = function(index, canBeDeleted, referencedObject) {
   rdm.local.LocalModelObject.call(this);
   this.index = index;
   this.canBeDeleted = canBeDeleted;
   this.referencedObject = referencedObject;
-
-  // Stream<LocalReferenceShiftedEvent> get onReferenceShifted => _onReferenceShifted.stream;
-
-  // update index and send event for a shift
 };
 goog.inherits(rdm.local.LocalIndexReference, rdm.local.LocalModelObject);
 
 rdm.local.LocalIndexReference.prototype.shift_ = function(newIndex) {
   var oldIndex = this.index;
   this.index = newIndex;
-  // _onReferenceShifted.add(new LocalReferenceShiftedEvent._(index, oldIndex, referencedObject));
+  this.dispatchEvent(new rdm.local.LocalReferenceShiftedEvent(this, this.index, oldIndex));
 };
