@@ -35,4 +35,9 @@ rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn
   }
 };
 
+// TODO should we return one collaborator with isMe?
+rdm.local.LocalDocument.prototype.getCollaborators = function() {
+  return [];
+}
+
 // TODO support implementing a document supplier class to retrieve documents and give them back in json
