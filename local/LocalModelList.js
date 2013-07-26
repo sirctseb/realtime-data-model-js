@@ -135,7 +135,9 @@ rdm.local.LocalModelList.prototype.removeValue = function(value) {
     // add to stream
     var event = new rdm.local.LocalValuesRemovedEvent(this, index, [value]);
     this.emitEventsAndChanged_([event]);
+    return true;
   }
+  return false;
 }
 
 rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
