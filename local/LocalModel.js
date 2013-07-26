@@ -18,8 +18,10 @@ goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModel = function() {
   goog.events.EventTarget.call(this);
+
   // TODO is this ever true?
-  this.isReadyOnly = true;
+  this.isReadyOnly = false;
+  // pass canUndo and canRedo through to undo history object
   Object.defineProperties(this, {
     "canUndo": { get: function() { return this.undoHistory_.canUndo; } },
     "canRedo": { get: function() { return this.undoHistory_.canRedo; } }
