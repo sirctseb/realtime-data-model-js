@@ -27,6 +27,7 @@ rdm.local.LocalModel = function() {
     "canRedo": { get: function() { return this.undoHistory_.canRedo; } }
   });
   this.root_ = new rdm.local.LocalModelMap();
+  this.isInitialized_ = false;
 };
 goog.inherits(rdm.local.LocalModel, goog.events.EventTarget);
 
@@ -35,6 +36,7 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
   if(initializeModel != null) {
     this.undoHistory_.initializeModel(initializeModel);
   }
+  this.isInitialized_ = true;
 };
 
 // TODO need to implement compound operations. meaningful for undo/redo
@@ -47,7 +49,7 @@ rdm.local.LocalModel.prototype.getRoot = function() {
 
 // TODO is this ever false?
 rdm.local.LocalModel.prototype.isInitialized = function() {
-  return true;
+  return isInitialized_;
 };
 
 // TODO need to implement compound operations. meaningful for undo/redo
