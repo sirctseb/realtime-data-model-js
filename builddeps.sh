@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# build dependency file (deprecated)
+python closure-library/closure/bin/calcdeps.py -i realtime_data_model.js -o deps > rdm-deps.js
+
+# combine and run closure compiler
+python closure-library/closure/bin/build/closurebuilder.py \
+	--root=closure-library/ \
+	--root=rdm \
+	--namespace="rdm" \
+	--output_mode=compiled \
+	--compiler_jar=compiler.jar \
+	> rdm.js
