@@ -16,7 +16,7 @@ goog.provide('rdm.local.LocalReferenceShiftedEvent');
 goog.require('rdm.local.LocalEvent');
 
 rdm.local.LocalReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
-  rdm.local.LocalEvent.call(this, rdm.local.LocalEventType.REFERENCE_SHIFTED, target_);
+  rdm.local.LocalEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
   this.bubbles = null; // TODO implement this getter
   this.newIndex = newIndex;
   this.oldIndex = oldIndex;

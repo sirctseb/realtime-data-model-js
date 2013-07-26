@@ -16,7 +16,7 @@ goog.provide('rdm.local.LocalTextInsertedEvent');
 goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalTextInsertedEvent = function(target_, index, text) {
-  rdm.local.LocalUndoableEvent.call(this, rdm.local.LocalEventType.TEXT_INSERTED, target_);
+  rdm.local.LocalUndoableEvent.call(this, rdm.EventType.TEXT_INSERTED, target_);
   this.bubbles = null; // TODO implement this getter
   this.index = index;
   this.text = text;

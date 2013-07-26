@@ -16,7 +16,7 @@ goog.provide('rdm.local.LocalValueChangedEvent');
 goog.require('rdm.local.LocalUndoableEvent');
 
 rdm.local.LocalValueChangedEvent = function(target_, property, newValue, oldValue) {
-  rdm.local.LocalUndoableEvent.call(this, rdm.local.LocalEventType.VALUE_CHANGED, target_);
+  rdm.local.LocalUndoableEvent.call(this, rdm.EventType.VALUE_CHANGED, target_);
   this.bubbles = null; // TODO implement this getter
   this.newValue = newValue;
   this.oldValue = oldValue;

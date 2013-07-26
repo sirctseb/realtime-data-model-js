@@ -61,10 +61,10 @@ rdm.local.LocalModelString.prototype.setText = function(text) {
 
 
 rdm.local.LocalModelString.prototype.executeEvent_ = function(event) {
-  if(event.type == rdm.local.LocalEventType.TEXT_DELETED) {
+  if(event.type == rdm.EventType.TEXT_DELETED) {
     this.string_ = this.string_.slice(0, event.index) + this.string_.slice(event.index + event.text.length);
     this.shiftReferencesOnDelete_(event.index, event.text.length);
-  } else if(event.type == rdm.local.LocalEventType.TEXT_INSERTED) {
+  } else if(event.type == rdm.EventType.TEXT_INSERTED) {
     this.string_ = this.string_.slice(0, event.index) + event.text + this.string_.slice(event.index);
     this.shiftReferencesOnInsert_(event.index, event.text.length);
   }

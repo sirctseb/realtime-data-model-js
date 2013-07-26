@@ -91,7 +91,7 @@ rdm.local.LocalModelMap.prototype.values = function() {
 
 
 rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
-  if(event.type == rdm.local.LocalEventType.VALUE_CHANGED) {
+  if(event.type == rdm.EventType.VALUE_CHANGED) {
     this.map_[event.property] = event.newValue;
     if(this.map_[event.property] == null) {
       delete this.map_[event.property];

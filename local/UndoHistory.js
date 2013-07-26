@@ -44,7 +44,7 @@ rdm.local.UndoHistory = function(model) {
   });
 
   var this_ = this;
-  model.getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, function(e) {
+  model.getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, function(e) {
     if(this_.initScope_) {
       // don't add to undo history in initialization
     } else if(this_.undoScope_) {

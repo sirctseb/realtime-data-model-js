@@ -154,14 +154,14 @@ rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
 }
 
 rdm.local.LocalModelList.prototype.executeEvent_ = function(event) {
-  if(event.type == rdm.local.LocalEventType.VALUES_SET) {
+  if(event.type == rdm.EventType.VALUES_SET) {
       Array.prototype.splice.apply(this.list_, [event.index, event.newValues.length].concat(event.newValues));
-  } else if(event.type == rdm.local.LocalEventType.VALUES_REMOVED) {
+  } else if(event.type == rdm.EventType.VALUES_REMOVED) {
       // update list
       this.list_.splice(event.index, event.values.length);
       // update references
       this.shiftReferencesOnDelete_(event.index, event.values.length);
-  } else if(event.type == rdm.local.LocalEventType.VALUES_ADDED) {
+  } else if(event.type == rdm.EventType.VALUES_ADDED) {
       // update list
       Array.prototype.splice.apply(this.list_, [event.index, 0].concat(event.values));
       // update references

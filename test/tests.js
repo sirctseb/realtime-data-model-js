@@ -35,9 +35,9 @@ onFileLoaded = function(doc) {
       // test that undo/redo state is what we equal
       equal(doc.getModel().canUndo, true);
       equal(doc.getModel().canRedo, false);
-      doc.getModel().removeEventListener(rdm.local.LocalEventType.UNDO_REDO_STATE_CHANGED, undo);
+      doc.getModel().removeEventListener(rdm.EventType.UNDO_REDO_STATE_CHANGED, undo);
     };
-    doc.getModel().addEventListener(rdm.local.LocalEventType.UNDO_REDO_STATE_CHANGED, undo);
+    doc.getModel().addEventListener(rdm.EventType.UNDO_REDO_STATE_CHANGED, undo);
     doc.getModel().redo();
     equal(doc.getModel().getRoot().get('text').getText(), 'redid');
     doc.getModel().undo();
@@ -80,14 +80,14 @@ onFileLoaded = function(doc) {
     var ssInsert = function(event) {
       equal(event.index, 4);
       equal(event.text, ' append ');
-      string.removeEventListener(rdm.local.LocalEventType.TEXT_INSERTED, ssInsert);
-      string.removeEventListener(rdm.local.LocalEventType.TEXT_DELETED, ssDelete);
+      string.removeEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
+      string.removeEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
     };
     var ssDelete = function(event) {
       fail("delete should not be call");
     };//, count: 0));
-    string.addEventListener(rdm.local.LocalEventType.TEXT_INSERTED, ssInsert);
-    string.addEventListener(rdm.local.LocalEventType.TEXT_DELETED, ssDelete);
+    string.addEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
+    string.addEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
     string.insertString(4, ' append ');
   });
   test('onTextDeleted', function() {
@@ -98,11 +98,11 @@ onFileLoaded = function(doc) {
     var ssDelete = function(event) {
       equal(event.index, 4);
       equal(event.text, 'te');
-      string.removeEventListener(rdm.local.LocalEventType.TEXT_INSERTED, ssInsert);
-      string.removeEventListener(rdm.local.LocalEventType.TEXT_DELETED, ssDelete);
+      string.removeEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
+      string.removeEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
     };
-    string.addEventListener(rdm.local.LocalEventType.TEXT_INSERTED, ssInsert);
-    string.addEventListener(rdm.local.LocalEventType.TEXT_DELETED, ssDelete);
+    string.addEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
+    string.addEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
     string.removeRange(4, 6);
   });
 
@@ -150,9 +150,9 @@ onFileLoaded = function(doc) {
     var ss = function(event) {
       equal(event.index, 1);
       deepEqual(event.values, ['s2']);
-      list.removeEventListener(rdm.local.LocalEventType.VALUES_ADDED, ss);
+      list.removeEventListener(rdm.EventType.VALUES_ADDED, ss);
     };
-    list.addEventListener(rdm.local.LocalEventType.VALUES_ADDED, ss);
+    list.addEventListener(rdm.EventType.VALUES_ADDED, ss);
     list.push('s2');
   });
   test('onValuesRemoved', function() {
@@ -160,9 +160,9 @@ onFileLoaded = function(doc) {
     var ss = function(event) {
       equal(event.index, 0);
       deepEqual(event.values, ['s1']);
-      list.removeEventListener(rdm.local.LocalEventType.VALUES_REMOVED, ss);
+      list.removeEventListener(rdm.EventType.VALUES_REMOVED, ss);
     };
-    list.addEventListener(rdm.local.LocalEventType.VALUES_REMOVED, ss);
+    list.addEventListener(rdm.EventType.VALUES_REMOVED, ss);
     list.clear();
   });
   test('onValuesSet', function() {
@@ -171,9 +171,9 @@ onFileLoaded = function(doc) {
       equal(event.index, 0);
       deepEqual(event.oldValues, ['s1']);
       deepEqual(event.newValues, ['s2']);
-      list.removeEventListener(rdm.local.LocalEventType.VALUES_SET, ss);
+      list.removeEventListener(rdm.EventType.VALUES_SET, ss);
     };
-    list.addEventListener(rdm.local.LocalEventType.VALUES_SET, ss);
+    list.addEventListener(rdm.EventType.VALUES_SET, ss);
     list.set(0, 's2');
   });
 
@@ -221,9 +221,9 @@ onFileLoaded = function(doc) {
       equal(event.property, 'key1');
       equal(event.newValue, 5);
       equal(event.oldValue, 4);
-      map.removeEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssChanged);
+      map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssChanged);
     };
-    map.addEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssChanged);
+    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssChanged);
     map.set('key1',5);
   });
   test('onValueChanged add', function() {
@@ -232,9 +232,9 @@ onFileLoaded = function(doc) {
       equal(event.property, 'prop');
       equal(event.newValue, 'newVal');
       equal(event.oldValue, null);
-      map.removeEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssAdd);
+      map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssAdd);
     };
-    map.addEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssAdd);
+    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssAdd);
     map.set('prop','newVal');
   });
   test('onValueChanged remove', function() {
@@ -243,9 +243,9 @@ onFileLoaded = function(doc) {
       equal(event.property, 'key1');
       equal(event.oldValue, 4);
       equal(event.newValue, null);
-      map.removeEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssRemove);
+      map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssRemove);
     };
-    map.addEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssRemove);
+    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssRemove);
     map.delete('key1');
   });
   test('onValueChanged clear', function() {
@@ -254,9 +254,9 @@ onFileLoaded = function(doc) {
     var ssClear = function(event) {
       equal(event.newValue, null);
     }; //, count: 2));
-    map.addEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssClear);
+    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssClear);
     map.clear();
-    map.removeEventListener(rdm.local.LocalEventType.VALUE_CHANGED, ssClear);
+    map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssClear);
   });
   test('map length on null assignment', function() {
     // TODO this is different than native maps. but that is a rt problem, not rdm.
@@ -318,9 +318,9 @@ onFileLoaded = function(doc) {
       equal(event.oldIndex, 5);
       equal(event.newIndex, 7);
       equal(ref.index, 7);
-      ref.removeEventListener(rdm.local.LocalEventType.REFERENCE_SHIFTED,ssRef);
+      ref.removeEventListener(rdm.EventType.REFERENCE_SHIFTED,ssRef);
     };
-    ref.addEventListener(rdm.local.LocalEventType.REFERENCE_SHIFTED,ssRef);
+    ref.addEventListener(rdm.EventType.REFERENCE_SHIFTED,ssRef);
     string.insertString(0, "xx");
   });
   test('Assign index', function() {
@@ -353,9 +353,9 @@ onFileLoaded = function(doc) {
     var stringEvent = function(e) {
       order = order + 'stringEvent';
     }
-    string.addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, stringEvent);
-    doc.getModel().getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, rootBubble);
-    doc.getModel().getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, rootCapture, true);
+    string.addEventListener(rdm.EventType.OBJECT_CHANGED, stringEvent);
+    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootBubble);
+    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootCapture, true);
     string.insertString(0, 'x');
     equal(order, 'rootCapturestringEventrootBubble');
   });
