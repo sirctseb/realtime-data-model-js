@@ -23,15 +23,13 @@ rdm.local.LocalModelMap = function(initialValue) {
       this.map_[key].setParentEventTarget(this);
     }
   };
-  // TODO size property
   var this_ = this;
   Object.defineProperties(this, {
     "size": { get: function() { return Object.keys(this_.map_).length; }}
   });
-  // map of subscriptions for object changed events for model objects contained in this
-  this.ssMap_ = {};
 };
 goog.inherits(rdm.local.LocalModelMap, rdm.local.LocalModelObject);
+
 
 rdm.local.LocalModelMap.prototype.clear = function() {
   // remove each key and let it produce the event
@@ -42,15 +40,18 @@ rdm.local.LocalModelMap.prototype.clear = function() {
 
 
 rdm.local.LocalModelMap.prototype.delete = function(key) {
+  // save value for return
+  var ret = this.map_[key] || null;
   // create the event
   var event = new rdm.local.LocalValueChangedEvent(this, key, null, this.map_[key]);
   // send the event
   this.emitEventsAndChanged_([event]);
+  return ret;
 };
 
 
 rdm.local.LocalModelMap.prototype.get = function(key) {
-  return this.map_[key];
+  return this.map_[key] || null;
 };
 
 
@@ -75,17 +76,16 @@ rdm.local.LocalModelMap.prototype.keys = function() {
 
 
 rdm.local.LocalModelMap.prototype.set = function(key, value) {
+  // save the current value for return
+  var ret = this.map_[key];
   // send the event
   var event = new rdm.local.LocalValueChangedEvent(this, key, value, this.map_[key]);
-  this.emitEventsAndChanged_( [event]);
-  // TODO this is the wrong return value. should be the old value, not the new one
-  return value;
+  this.emitEventsAndChanged_([event]);
+  return ret;
 };
 
 
-// TODO return TypePromotingList object
 rdm.local.LocalModelMap.prototype.values = function() {
-  // TODO hasOwnProperty?
   return this.map_.keys().map(function(key) { this.map_[key]; });
 };
 
@@ -102,9 +102,7 @@ rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
       event.oldValue.setParentEventTarget(null);
     }
     // propagate changes on model data objects
-    var this_ = this;
     if(event.newValue instanceof rdm.local.LocalModelObject) {
-      // set this as bubble parent of object
       event.newValue.setParentEventTarget(this);
     }
   }
