@@ -59,17 +59,34 @@ rdm.local.LocalModelList.prototype.insertAll = function(index, values) {
   this.emitEventsAndChanged_([event]);
 };
 
-// TODO anything with comparator?
-rdm.local.LocalModelList.prototype.lastIndexOf = function(value, comparator) {
-  this.list_.lastIndexOf(value);
+rdm.local.LocalModelList.prototype.lastIndexOf = function(value, opt_comparatorFn) {
+  if(opt_comparatorFn) {
+    for(var i = this.list_.length - 1; i >= 0; i--) {
+      if(opt_comparatorFn(this.list_[i], value)) {
+        return i;
+      }
+    }
+  } else {
+    return this.list_.lastIndexOf(value);
+  }
+  return -1;
 };
 
 rdm.local.LocalModelList.prototype.get = function(index) {
   return this.list_[index];
 }
 
-rdm.local.LocalModelList.prototype.indexOf = function(value, comparator) {
-  return this.list_.indexOf(value);
+rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
+  if(opt_comparatorRn) {
+    for(var i = 0; i < this.list_.length; i++) {
+      if(opt_comparatorFn(this.list_[i], value)) {
+        return i;
+      }
+    }
+  } else {
+    return this.list_.indexOf(value);
+  }
+  return -1;
 };
 
 rdm.local.LocalModelList.prototype.set = function(index, value) {
