@@ -332,6 +332,24 @@ onFileLoaded = function(doc) {
     string.insertString(0, "xx");
     equal(ref.index, 9);
   });
+  module('Events');
+  test('Object Change Bubbling', function() {
+    var order = '';
+    var rootCapture = function(e) {
+      order = order + 'rootCapture';
+    }
+    var rootBubble = function(e) {
+      order = order + 'rootBubble';
+    }
+    var stringEvent = function(e) {
+      order = order + 'stringEvent';
+    }
+    string.addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, stringEvent);
+    doc.getModel().getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, rootBubble);
+    doc.getModel().getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, rootCapture, true);
+    string.insertString(0, 'x');
+    equal(order, 'rootCapturestringEventrootBubble');
+  });
 };
 
 /**
