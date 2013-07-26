@@ -183,12 +183,27 @@ onFileLoaded = function(doc) {
       map.clear();
       map.set('key1',4);
     }});
+  test('absent key', function() {
+    strictEqual(map.get('absent'), null);
+  });
+  test('null value', function() {
+    strictEqual(map.get('nullkey'), null);
+    equal(map.has('nullkey'), false);
+    map.set('nullkey', null);
+    strictEqual(map.get('nullkey'), null);
+    equal(map.has('nullkey'), false);
+  });
+  test('size with null', function() {
+    equal(map.size, 1);
+    map.set('nullkey', null);
+    equal(map.size, 1);
+  })
   test('operator [](String key)', function() {
     equal(map.get('key1'), 4);
     equal(map.size, 1);
   });
-  test('operator []=(String key, E value)', function() {
-    map.set('key2',5);
+  test('set(key, value)', function() {
+    strictEqual(map.set('key2',5), undefined);
     equal(map.get('key2'), 5);
   });
   test('delete', function() {
