@@ -1,7 +1,5 @@
 goog.provide('rdm');
 
-// goog.require('rdm.local');
-// goog.addDependency('local/local.js', ['rdm.local'], []);
 goog.require('rdm.local');
 
 
@@ -13,6 +11,7 @@ rdm.start = function(realtimeOptions, local) {
   if(local) {
     var model = new rdm.local.LocalModel(realtimeOptions['initializeModel']);
     // initialize
+    // TODO (cjb) consider doing this in model constructor
     model.initialize_(realtimeOptions["initializeModel"]);
     // create a document with the model
     var document = new rdm.local.LocalDocument(model);

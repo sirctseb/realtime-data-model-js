@@ -16,7 +16,9 @@ goog.provide('rdm.local.LocalEvent');
 
 rdm.local.LocalEvent = function(type, target_) {
   goog.events.Event.call(this, type, target_);
+  // in the local implementation, all events are local
   this.isLocal = true;
+  // no sessionId or userId in the local implementation
   this.sessionId = null;
   this.userId = null;
   this.target_ = target_;

@@ -28,8 +28,6 @@ rdm.local.LocalModelList = function(initialValue) {
       }
     }
   });
-  // map from object ids of contained elements to subscriptions to their object changed streams
-  this.ssMap_ = {};
 };
 goog.inherits(rdm.local.LocalModelList, rdm.local.LocalIndexReferenceContainer);
 
@@ -92,17 +90,11 @@ rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
 rdm.local.LocalModelList.prototype.set = function(index, value) {
   // TODO js errors?
   // if (index < 0 || index >= length) throw new RangeError.value(index);
-  // add event to stream
   var event = new rdm.local.LocalValuesSetEvent(this, index, [value], [this.list_[index]]);
   this.emitEventsAndChanged_([event]);
 }
 
-// Stream<rt.ValuesAddedEvent> get onValuesAdded => _onValuesAdded.stream;
-// Stream<rt.ValuesRemovedEvent> get onValuesRemoved => _onValuesRemoved.stream;
-// Stream<rt.ValuesSetEvent> get onValuesSet => _onValuesSet.stream;
-
 rdm.local.LocalModelList.prototype.push = function(value) {
-  // add event to stream
   // TODO make sure this is the index provided when inserting at the end
   var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, [value]);
   this.emitEventsAndChanged_([event]);
@@ -110,14 +102,12 @@ rdm.local.LocalModelList.prototype.push = function(value) {
 }
 
 rdm.local.LocalModelList.prototype.pushAll = function(values) {
-  // add event to stream
   // TODO make sure this is the index provided when inserting at the end
   var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, goog.array.clone(values));
   this.emitEventsAndChanged_([event]);
 }
 
 rdm.local.LocalModelList.prototype.remove = function(index) {
-  // add event to stream
   var event = new rdm.local.LocalValuesRemovedEvent(this, index, [this.list_[index]]);
   this.emitEventsAndChanged_([event]);
 }
@@ -147,23 +137,22 @@ rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
   this.emitEventsAndChanged_([event]);
 }
 
-// check if value is a model object and start propagating object changed events
+// check if value is a model object and set this as parent
 rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
-  // start propagating changes if element is model object and not already subscribed
   if(element instanceof rdm.local.LocalModelObject) {
     element.setParentEventTarget(null);
   }
 }
-// check if value is a model object and stop propagating object changed events
+
+// check if value is a model object and remove self as parent
 rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
   // stop propagation if overwritten element is model object and it is no longer anywhere in the list
   // TODO this depends on this method being called _after_ the element is removed from this.list_
-  if(element instanceof rdm.local.LocalModelObject && !this.list_.indexOf(element) != -1) {
+  if(element instanceof rdm.local.LocalModelObject && this.list_.indexOf(element) == -1) {
     element.setParentEventTarget(null);
   }
 }
 
-// TODO we could alternatively listen for our own events and do the modifications there
 rdm.local.LocalModelList.prototype.executeEvent_ = function(event) {
   if(event.type == rdm.local.LocalEventType.VALUES_SET) {
       Array.prototype.splice.apply(this.list_, [event.index, event.newValues.length].concat(event.newValues));

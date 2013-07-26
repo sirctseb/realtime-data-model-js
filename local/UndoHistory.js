@@ -43,7 +43,6 @@ rdm.local.UndoHistory = function(model) {
     }
   });
 
-  // TODO define event types so we don't have to use literal here
   var this_ = this;
   model.getRoot().addEventListener(rdm.local.LocalEventType.OBJECT_CHANGED, function(e) {
     if(this_.initScope_) {
@@ -105,7 +104,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
   var canUndo_ = this.canUndo;
   var canRedo_ = this.canRedo;
 
-  // set undo latch
+  // set undo scope flag
   this.undoScope_ = true;
   // decrement index
   this.index_--;
@@ -120,7 +119,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
     var event = new rdm.local.LocalObjectChangedEvent(e.target_, [e]);
     e.target_.dispatchEvent(event);
   });
-  // unset undo latch
+  // unset undo scope flag
   this.undoScope_ = false;
 
   // if undo/redo state changed, send event
@@ -135,7 +134,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
   var canUndo_ = this.canUndo;
   var canRedo_ = this.canRedo;
 
-  // set redo latch
+  // set redo scope flag
   this.redoScope_ = true;
   // save current events
   var inverses = this.history_[this.index_].map(function(e) { return e.getInverse(); });
@@ -150,7 +149,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
   });
   // increment index
   this.index_++;
-  // uset redo latch
+  // uset redo scope flag
   this.redoScope_ = false;
 
   // if undo/redo state changed, send event

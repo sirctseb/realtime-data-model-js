@@ -25,15 +25,9 @@ rdm.local.LocalModelString = function(initialValue) {
 goog.inherits(rdm.local.LocalModelString, rdm.local.LocalIndexReferenceContainer);
 
 
-// StreamController<LocalTextInsertedEvent> onTextInserted_
-//   = new StreamController<LocalTextInsertedEvent>.broadcast(sync: true);
-// StreamController<LocalTextDeletedEvent> onTextDeleted_
-//   = new StreamController<LocalTextDeletedEvent>.broadcast(sync: true);
-
 rdm.local.LocalModelString.prototype.append = function(text) {
-  // add event to stream
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, this.string_.length, text);
-  this.emitEventsAndChanged_( [insertEvent]);
+  this.emitEventsAndChanged_([insertEvent]);
 };
 
 
@@ -44,7 +38,7 @@ rdm.local.LocalModelString.prototype.getText = function() {
 
 rdm.local.LocalModelString.prototype.insertString = function(index, text) {
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, index, text);
-  this.emitEventsAndChanged_( [insertEvent]);
+  this.emitEventsAndChanged_([insertEvent]);
 };
 
 
@@ -53,34 +47,25 @@ rdm.local.LocalModelString.prototype.removeRange = function(startIndex, endIndex
   var removed = this.string_.slice(startIndex, endIndex);
   // add event to stream
   var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, startIndex, removed);
-  this.emitEventsAndChanged_( [deleteEvent]);
+  this.emitEventsAndChanged_([deleteEvent]);
 };
 
 
 rdm.local.LocalModelString.prototype.setText = function(text) {
+  // TODO do real string diff
   // trivial edit decomposition algorithm
-  // add event to stream
   var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, 0, this.string_);
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, 0, text);
   this.emitEventsAndChanged_([deleteEvent, insertEvent]);
 }
 
-// TODO
-// Stream<LocalTextInsertedEvent> get onTextInserted => onTextInserted_.stream;
-// Stream<LocalTextDeletedEvent> get onTextDeleted => onTextDeleted_.stream;
 
 rdm.local.LocalModelString.prototype.executeEvent_ = function(event) {
-  // handle insert and delete events
-  // TODO deal with type warnings
   if(event.type == rdm.local.LocalEventType.TEXT_DELETED) {
-    // update string
     this.string_ = this.string_.slice(0, event.index) + this.string_.slice(event.index + event.text.length);
-    // update references
     this.shiftReferencesOnDelete_(event.index, event.text.length);
   } else if(event.type == rdm.local.LocalEventType.TEXT_INSERTED) {
-    // update string
     this.string_ = this.string_.slice(0, event.index) + event.text + this.string_.slice(event.index);
-    // update references
     this.shiftReferencesOnInsert_(event.index, event.text.length);
   }
 };

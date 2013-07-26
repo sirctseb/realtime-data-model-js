@@ -25,15 +25,16 @@ rdm.local.LocalModelObject.idNum_ = 0;
 rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
 
 // TODO implement custom objects
-// Stream<rt.ValueChangedEvent> get onValueChanged => null; // TODO implement this getter
 
 // create an emit a LocalObjectChangedEvent from a list of events
 rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
+  // record whether we're not in the scope of one of these calls yet
   var terminal = !rdm.local.LocalModelObject.inEmitEventsAndChangedScope_;
+  // if not, set the static flag
   if(terminal) {
     rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = true;
   }
-  // construct change event before firing actual events
+  // construct change event
   var event = new rdm.local.LocalObjectChangedEvent(this, events, terminal);
   for(var i = 0; i < events.length; i++) {
     // execute events
