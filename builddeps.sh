@@ -10,4 +10,6 @@ python closure-library/closure/bin/build/closurebuilder.py \
 	--namespace="rdm" \
 	--output_mode=compiled \
 	--compiler_jar=compiler.jar \
+	--compiler_flags="--compilation_level=ADVANCED_OPTIMIZATIONS" \
 	> rdm.js
+#	--compiler_flags="--compilation_level=SIMPLE_OPTIMIZATIONS" \
