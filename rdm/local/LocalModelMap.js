@@ -34,12 +34,14 @@ goog.inherits(rdm.local.LocalModelMap, rdm.local.LocalModelObject);
 rdm.local.LocalModelMap.prototype.clear = function() {
   // remove each key and let it produce the event
   for(var key in this.map_) {
-    this.delete(key);
+    // not using dot at behest of closure compiler
+    this['delete'](key);
   }
 };
 
 
-rdm.local.LocalModelMap.prototype.delete = function(key) {
+// not using dot at behest of closure compiler
+rdm.local.LocalModelMap.prototype['delete'] = function(key) {
   // save value for return
   var ret = this.map_[key] || null;
   // create the event
@@ -86,7 +88,7 @@ rdm.local.LocalModelMap.prototype.set = function(key, value) {
 
 
 rdm.local.LocalModelMap.prototype.values = function() {
-  return this.map_.keys().map(function(key) { this.map_[key]; });
+  return this.map_.keys().map(function(key) { return this.map_[key]; });
 };
 
 
