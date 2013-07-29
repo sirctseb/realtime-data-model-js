@@ -14,6 +14,7 @@
 
 goog.provide('rdm.local.LocalIndexReferenceContainer');
 goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.LocalIndexReference');
 
 // Implements index reference management
 rdm.local.LocalIndexReferenceContainer = function() {

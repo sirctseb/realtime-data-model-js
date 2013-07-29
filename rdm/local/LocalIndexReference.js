@@ -14,6 +14,7 @@
 
 goog.provide('rdm.local.LocalIndexReference');
 goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.LocalReferenceShiftedEvent');
 
 // TODO(cjb) realtime api shows model as param to constructor but I don't see why we would need it
 rdm.local.LocalIndexReference = function(index, canBeDeleted, referencedObject) {
