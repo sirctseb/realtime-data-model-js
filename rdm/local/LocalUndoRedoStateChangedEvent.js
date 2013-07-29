@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalUndoRedoStateChangedEvent');
+goog.require('rdm.EventType');
 
 rdm.local.LocalUndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
   goog.events.Event.call(this, rdm.EventType.UNDO_REDO_STATE_CHANGED, target_);

@@ -14,6 +14,9 @@
 
 goog.provide('rdm.local.LocalModelString');
 goog.require('rdm.local.LocalIndexReferenceContainer');
+goog.require('rdm.local.LocalTextInsertedEvent');
+goog.require('rdm.local.LocalTextDeletedEvent');
+goog.require('rdm.EventType');
 
 rdm.local.LocalModelString = function(initialValue) {
   rdm.local.LocalIndexReferenceContainer.call(this);
@@ -25,23 +28,35 @@ rdm.local.LocalModelString = function(initialValue) {
 goog.inherits(rdm.local.LocalModelString, rdm.local.LocalIndexReferenceContainer);
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelString.prototype.append = function(text) {
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, this.string_.length, text);
   this.emitEventsAndChanged_([insertEvent]);
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelString.prototype.getText = function() {
   return this.string_;
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelString.prototype.insertString = function(index, text) {
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, index, text);
   this.emitEventsAndChanged_([insertEvent]);
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelString.prototype.removeRange = function(startIndex, endIndex) {
   // get removed text for event
   var removed = this.string_.slice(startIndex, endIndex);
@@ -51,6 +66,9 @@ rdm.local.LocalModelString.prototype.removeRange = function(startIndex, endIndex
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelString.prototype.setText = function(text) {
   // TODO do real string diff
   // trivial edit decomposition algorithm

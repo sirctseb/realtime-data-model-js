@@ -14,6 +14,8 @@
 
 goog.provide('rdm.local.LocalModelMap');
 goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.LocalValueChangedEvent');
+goog.require('rdm.EventType');
 
 rdm.local.LocalModelMap = function(initialValue) {
   rdm.local.LocalModelObject.call(this);
@@ -31,6 +33,9 @@ rdm.local.LocalModelMap = function(initialValue) {
 goog.inherits(rdm.local.LocalModelMap, rdm.local.LocalModelObject);
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.clear = function() {
   // remove each key and let it produce the event
   for(var key in this.map_) {
@@ -41,6 +46,9 @@ rdm.local.LocalModelMap.prototype.clear = function() {
 
 
 // not using dot at behest of closure compiler
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype['delete'] = function(key) {
   // save value for return
   var ret = this.map_[key] || null;
@@ -52,31 +60,49 @@ rdm.local.LocalModelMap.prototype['delete'] = function(key) {
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.get = function(key) {
   return this.map_[key] || null;
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.has = function(key) {
   return this.map_[key] != null;
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.isEmpty = function() {
   return this.map_.size == 0;
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.items = function() {
   return this.map_.keys().map(function(key) { return [key, this.map_[key]]; });
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.keys = function() {
   return this.map_.keys().slice(0);
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.set = function(key, value) {
   // save the current value for return
   var ret = this.map_[key];
@@ -87,6 +113,9 @@ rdm.local.LocalModelMap.prototype.set = function(key, value) {
 };
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelMap.prototype.values = function() {
   return this.map_.keys().map(function(key) { return this.map_[key]; });
 };

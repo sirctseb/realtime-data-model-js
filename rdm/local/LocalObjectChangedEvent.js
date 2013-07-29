@@ -14,6 +14,7 @@
 
 goog.provide('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.LocalEvent');
+goog.require('rdm.EventType');
 
 rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
   rdm.local.LocalEvent.call(this, rdm.EventType.OBJECT_CHANGED, target_);

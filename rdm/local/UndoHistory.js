@@ -13,6 +13,9 @@
 // limitations under the License.
 
 goog.provide('rdm.local.UndoHistory');
+goog.require('rdm.local.LocalObjectChangedEvent');
+goog.require('rdm.local.LocalUndoRedoStateChangedEvent');
+goog.require('rdm.EventType')
 
 /** [UndoHistory] manages the history of actions performed in the app */
 // TODO events grouped into a single object changed event are still grouped

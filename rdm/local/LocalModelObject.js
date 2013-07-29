@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModelObject');
+goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModelObject = function() {
@@ -28,6 +29,9 @@ rdm.local.LocalModelObject.idNum_ = 0;
 rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelObject.prototype.getId = function() {
   return this.id_;
 };

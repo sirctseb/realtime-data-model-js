@@ -14,6 +14,10 @@
 
 goog.provide('rdm.local.LocalModel');
 goog.require('rdm.local.UndoHistory');
+goog.require('rdm.local.LocalModelList');
+goog.require('rdm.local.LocalModelMap');
+goog.require('rdm.local.LocalModelString');
+goog.require('rdm.local.LocalModelObject');
 goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModel = function() {
@@ -41,42 +45,76 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
 
 // TODO need to implement compound operations. meaningful for undo/redo
 // TODO also, what is beginCreationCompoundOperation
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.beginCreationCompoundOperation = function() {};
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.endCompoundOperation = function() {};
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.getRoot = function() {
   return this.root_;
 };
 
 // TODO is this ever false?
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.isInitialized = function() {
   return isInitialized_;
 };
 
 // TODO need to implement compound operations. meaningful for undo/redo
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {}
 
 // TODO implement LocalModelObject and return here
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   return null;
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.createList = function(initialValue) {
   return new rdm.local.LocalModelList(initialValue);
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.createMap = function(initialValue) {
   return new rdm.local.LocalModelMap(initialValue);
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.createString = function(initialValue) {
   return new rdm.local.LocalModelString(initialValue);
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.undo = function() {
   if(!this.canUndo) return;
   // undo events
   this.undoHistory_.undo();
 }
+
+/**
+ * @expose
+ */
 rdm.local.LocalModel.prototype.redo = function() {
   if(!this.canRedo) return;
   // redo events

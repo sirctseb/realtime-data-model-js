@@ -21,11 +21,21 @@ rdm.local.LocalDocument = function(model) {
 };
 goog.inherits(rdm.local.LocalDocument, goog.events.EventTarget);
 
+/**
+ * @expose
+ */
 rdm.local.LocalDocument.prototype.getModel = function() {
   return this.model_;
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalDocument.prototype.close = function() {};
+
+/**
+ * @expose
+ */
 rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn) {
   try {
     successFn(JSON.stringify(this.model_.getRoot()));
@@ -36,6 +46,9 @@ rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn
 };
 
 // TODO should we return one collaborator with isMe?
+/**
+ * @expose
+ */
 rdm.local.LocalDocument.prototype.getCollaborators = function() {
   return [];
 }

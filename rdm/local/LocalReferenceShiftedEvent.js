@@ -14,6 +14,7 @@
 
 goog.provide('rdm.local.LocalReferenceShiftedEvent');
 goog.require('rdm.local.LocalEvent');
+goog.require('rdm.EventType');
 
 rdm.local.LocalReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
   rdm.local.LocalEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);

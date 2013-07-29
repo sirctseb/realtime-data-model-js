@@ -14,6 +14,12 @@
 
 goog.provide('rdm.local.LocalModelList');
 goog.require('rdm.local.LocalIndexReferenceContainer');
+goog.require('rdm.local.LocalValuesAddedEvent');
+goog.require('rdm.local.LocalValuesRemovedEvent');
+goog.require('rdm.local.LocalValuesSetEvent');
+goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.EventType');
+goog.require('goog.array');
 
 rdm.local.LocalModelList = function(initialValue) {
   rdm.local.LocalIndexReferenceContainer.call(this);
@@ -32,10 +38,16 @@ rdm.local.LocalModelList = function(initialValue) {
 goog.inherits(rdm.local.LocalModelList, rdm.local.LocalIndexReferenceContainer);
 
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.asArray = function() {
   return goog.array.clone(this.list_);
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.clear = function() {
   if(this.list_.length == 0) return;
   // add event to stream
@@ -44,12 +56,18 @@ rdm.local.LocalModelList.prototype.clear = function() {
   this.emitEventsAndChanged_([event]);
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.insert = function(index, value) {
   // add event to stream
   var event = new rdm.local.LocalValuesAddedEvent(this, index, [value]);
   this.emitEventsAndChanged_([event]);
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.insertAll = function(index, values) {
   // add event to stream
   // TODO clone values?
@@ -57,6 +75,9 @@ rdm.local.LocalModelList.prototype.insertAll = function(index, values) {
   this.emitEventsAndChanged_([event]);
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.lastIndexOf = function(value, opt_comparatorFn) {
   if(opt_comparatorFn) {
     for(var i = this.list_.length - 1; i >= 0; i--) {
@@ -70,10 +91,16 @@ rdm.local.LocalModelList.prototype.lastIndexOf = function(value, opt_comparatorF
   return -1;
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.get = function(index) {
   return this.list_[index];
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
   if(opt_comparatorRn) {
     for(var i = 0; i < this.list_.length; i++) {
@@ -87,6 +114,9 @@ rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
   return -1;
 };
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.set = function(index, value) {
   // TODO js errors?
   // if (index < 0 || index >= length) throw new RangeError.value(index);
@@ -94,6 +124,9 @@ rdm.local.LocalModelList.prototype.set = function(index, value) {
   this.emitEventsAndChanged_([event]);
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.push = function(value) {
   // TODO make sure this is the index provided when inserting at the end
   var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, [value]);
@@ -101,23 +134,35 @@ rdm.local.LocalModelList.prototype.push = function(value) {
   return this.list_.length;
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.pushAll = function(values) {
   // TODO make sure this is the index provided when inserting at the end
   var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, goog.array.clone(values));
   this.emitEventsAndChanged_([event]);
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.remove = function(index) {
   var event = new rdm.local.LocalValuesRemovedEvent(this, index, [this.list_[index]]);
   this.emitEventsAndChanged_([event]);
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.removeRange = function(startIndex, endIndex) {
   // add event to stream
   var event = new rdm.local.LocalValuesRemovedEvent(this, startIndex, this.list_.slice(startIndex, endIndex));
   this.emitEventsAndChanged_([event]);
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.removeValue = function(value) {
   // get index of value for event
   var index = this.list_.indexOf(value);
@@ -130,6 +175,9 @@ rdm.local.LocalModelList.prototype.removeValue = function(value) {
   return false;
 }
 
+/**
+ * @expose
+ */
 rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
   // add event to stream
   // TODO clone values?

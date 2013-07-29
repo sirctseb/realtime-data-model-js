@@ -14,6 +14,8 @@
 
 goog.provide('rdm.local.LocalTextDeletedEvent');
 goog.require('rdm.local.LocalUndoableEvent');
+// goog.require('rdm.local.LocalTextInsertedEvent');
+goog.require('rdm.EventType');
 
 rdm.local.LocalTextDeletedEvent = function(target_, index, text) {
   rdm.local.LocalUndoableEvent.call(this, rdm.EventType.TEXT_DELETED, target_);

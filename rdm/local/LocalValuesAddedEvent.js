@@ -14,6 +14,8 @@
 
 goog.provide('rdm.local.LocalValuesAddedEvent');
 goog.require('rdm.local.LocalUndoableEvent');
+// goog.require('rdm.local.LocalValuesRemovedEvent');
+goog.require('rdm.EventType');
 
 rdm.local.LocalValuesAddedEvent = function(target_, index, values) {
   rdm.local.LocalUndoableEvent.call(this, rdm.EventType.VALUES_ADDED, target_);

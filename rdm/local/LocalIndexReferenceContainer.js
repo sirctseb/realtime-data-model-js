@@ -22,6 +22,9 @@ rdm.local.LocalIndexReferenceContainer = function() {
 }
 goog.inherits(rdm.local.LocalIndexReferenceContainer, rdm.local.LocalModelObject);
 
+/**
+ * @expose
+ */
 rdm.local.LocalIndexReferenceContainer.prototype.registerReference = function(index, canBeDeleted) {
   // create the reference
   var ref = new rdm.local.LocalIndexReference(index, canBeDeleted, this);
