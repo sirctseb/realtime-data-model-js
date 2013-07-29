@@ -8,7 +8,7 @@ It is based on [Google Drive Realtime](https://developers.google.com/drive/realt
 ## Usage ##
 To use this library in your code :
 
-* Download a compiled release at (https://github.com/r/sirctseb/realtime-data-model-js/releases) and include rdm.js in your project.
+* Download a compiled release at https://github.com/r/sirctseb/realtime-data-model-js/releases and include rdm.js in your project.
 
 * Follow the steps described at [Create a Realtime Application](https://developers.google.com/drive/realtime/application) or begin using the library locally with:
 
