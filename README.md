@@ -8,23 +8,12 @@ It is based on [Google Drive Realtime](https://developers.google.com/drive/realt
 ## Usage ##
 To use this library in your code :
 
-* add a dependency in your `pubspec.yaml` :
-
-```yaml
-dependencies:
-  realtime_data_model: "0.0.0"
-```
-
-* add import in your `dart` code :
-
-```dart
-import 'package:realtime_data_model/realtime_data_model.dart';
-```
+* Download a compiled release at (https://github.com/r/sirctseb/realtime-data-model-js/releases) and include rdm.js in your project.
 
 * Follow the steps described at [Create a Realtime Application](https://developers.google.com/drive/realtime/application) or begin using the library locally with:
 
-```dart
-start(realtimeOptions, local: true)
+```javascript
+rdm.start(realtimeOptions, local: true);
 ```
 
 The library is currently unstable and does not support custom objects or databinding.
