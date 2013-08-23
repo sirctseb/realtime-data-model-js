@@ -22,12 +22,11 @@
   <script type="text/javascript">
   	window.onload = function() {
       QUnit.config.reorder = false;
-      rdm.start(realtimeOptions, true);
-      // console.log(rdm);
-      // console.log(rdm.local);
-      // var model = new rdm.local.LocalModel();
-  		// var realtimeLoader = new rtclient.RealtimeLoader(realtimeOptions);
-  		// realtimeLoader.start();
+      rdm.GoogleDocProvider.clientId = 'INSERT CLIENT ID HERE';
+      // var docProvider = new rdm.GoogleDocProvider({'title': 'New Doc Title'});
+      // var docProvider = new rdm.GoogleDocProvider({'fileId': 'EXISTING FILE ID'});
+      var docProvider = new rdm.LocalDocumentProvider();
+      docProvider.loadDocument(onFileLoaded, initializeModel);
   	};
   </script>
 </body>
