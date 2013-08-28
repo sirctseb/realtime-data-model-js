@@ -14,6 +14,7 @@
 
 goog.provide('rdm.PersistentDocProvider');
 goog.require('rdm.DocumentProvider');
+goog.require('rdm.BatchStrategy');
 
 /**
  * A class to provide non Google Drive documents with persistence
