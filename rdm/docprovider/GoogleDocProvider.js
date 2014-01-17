@@ -34,10 +34,12 @@ goog.inherits(rdm.GoogleDocProvider, rdm.DocumentProvider);
  */
 rdm.GoogleDocProvider.clientId = null;
 
+rdm.GoogleDocProvider.globallySetup_ = false;
+
 rdm.GoogleDocProvider.prototype.loadDocument = function(onLoaded, opt_initializerFn, opt_errorFn) {
   var this_ = this;
   // check global setup
-  this.globalSetup_(function(success) {
+  rdm.GoogleDocProvider.globalSetup_(function(success) {
     // TODO if !success?
     // TODO make better state for determining if we need to do a file insert
     if(this_.newTitle_ != null) {
@@ -66,25 +68,28 @@ rdm.GoogleDocProvider.prototype.doRealtimeLoad_ = function(onLoaded, opt_initial
 };
 
 /** @private */
-rdm.GoogleDocProvider.prototype.globalSetup_ = function(callback) {
-  var this_ = this;
+rdm.GoogleDocProvider.globalSetup_ = function(callback) {
+  if(rdm.GoogleDocProvider.globallySetup_) {
+    callback();
+    return;
+  }
   // authenticate
-  this.authenticate(function() {
+  rdm.GoogleDocProvider.authenticate(function() {
     // load drive api
-    this_.loadDrive_(function() {
+    rdm.GoogleDocProvider.loadDrive_(function() {
       // load realtime api
-      this_.loadRealtimeApi_(callback);
+      rdm.GoogleDocProvider.loadRealtimeApi_(callback);
     });
   });
 };
 
 /** @private */
-rdm.GoogleDocProvider.prototype.loadDrive_ = function(callback) {
+rdm.GoogleDocProvider.loadDrive_ = function(callback) {
   gapi.client.load('drive', 'v2', callback);
 };
 
 /** @private */
-rdm.GoogleDocProvider.prototype.loadRealtimeApi_ = function(callback) {
+rdm.GoogleDocProvider.loadRealtimeApi_ = function(callback) {
   gapi.load('drive-realtime', callback);
 };
 
@@ -92,12 +97,10 @@ rdm.GoogleDocProvider.prototype.loadRealtimeApi_ = function(callback) {
  * Authenticate to Google Drive
  * @export
  */
-rdm.GoogleDocProvider.prototype.authenticate = function(callback, immediate) {
+rdm.GoogleDocProvider.authenticate = function(callback, immediate) {
   if(rdm.GoogleDocProvider.clientId == null) {
     throw 'clientId not set';
   }
-
-  var this_ = this;
 
   gapi.load('auth:client', function() {
     if(gapi.auth.getToken() != null) {

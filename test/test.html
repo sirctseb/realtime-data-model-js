@@ -23,10 +23,17 @@
   	window.onload = function() {
       QUnit.config.reorder = false;
       rdm.GoogleDocProvider.clientId = 'INSERT CLIENT ID HERE';
-      // var docProvider = new rdm.GoogleDocProvider({'title': 'New Doc Title'});
-      // var docProvider = new rdm.GoogleDocProvider({'fileId': 'EXISTING FILE ID'});
-      var docProvider = new rdm.LocalDocumentProvider();
-      docProvider.loadDocument(onFileLoaded, initializeModel);
+      var docProvider = new rdm.GoogleDocProvider({'title': 'New Doc Title'});
+      rdm.GoogleDocProvider.globalSetup_(function() {
+
+        var book = function() {};
+        gapi.drive.realtime.custom.registerType(book, 'Book');
+        book.prototype.title = gapi.drive.realtime.custom.collaborativeField('title');
+
+        // var docProvider = new rdm.GoogleDocProvider({'fileId': 'EXISTING FILE ID'});
+        // var docProvider = new rdm.LocalDocumentProvider()
+        docProvider.loadDocument(onFileLoaded, initializeModel);
+      });
   	};
   </script>
 </body>

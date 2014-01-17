@@ -3,6 +3,7 @@ initializeModel = function(model) {
   model.getRoot().set('text', model.createString('Hello Realtime World!'));
   model.getRoot().set('list', model.createList());
   model.getRoot().set('map', model.createMap());
+  model.getRoot().set('book', model.create('Book'));
   console.log('initializeModel ending');
 };
 
@@ -358,6 +359,177 @@ onFileLoaded = function(doc) {
     doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootCapture, true);
     string.insertString(0, 'x');
     equal(order, 'rootCapturestringEventrootBubble');
+  });
+
+  module('Custom');
+  test('Book is custom object', function() {
+    equal(gapi.drive.realtime.custom.isCustomObject(doc.getModel().getRoot().get('book')), true);
+    equal(gapi.drive.realtime.custom.isCustomObject(doc.getModel().getRoot().get('text')), false);
+  });
+  test('Set title', function() {
+    equal(doc.getModel().getRoot().get('book').title, null);
+    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.OBJECT_CHANGED, function(e) {
+      console.log(e);
+    });
+    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.VALUE_CHANGED, function(e) {
+      console.log(e.property + ' changed from ' + e.oldValue + ' to ' + e.newValue);
+    });
+    doc.getModel().getRoot().get('book')['title'] = 'title';
+    equal(doc.getModel().getRoot().get('book').title, 'title');
+  });
+
+  module('Multiple entries');
+  test('Twice in one map', function() {
+    expect(2);
+    var str = doc.getModel().createString('dup');
+    doc.getModel().getRoot().get('map').set('duplicate1', str);
+    doc.getModel().getRoot().get('map').set('duplicate2', str);
+    equal(doc.getModel().getRoot().get('map').get('duplicate1'),
+          doc.getModel().getRoot().get('map').get('duplicate2'));
+    var ssObjChanged = function(e) {
+      equal(e.events[0].type, 'text_inserted');
+      doc.getModel().getRoot().get('map').removeEventListener(
+        rdm.EventType.OBJECT_CHANGED,
+        ssObjChanged);
+    };
+    doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssObjChanged);
+    doc.getModel().getRoot().get('map').get('duplicate1').append('whatever');
+  });
+  test('Once in two maps each', function() {
+    expect(4);
+    var str = doc.getModel().createString('dup');
+    doc.getModel().getRoot().get('map').set('dupmap1', doc.getModel().createMap());
+    doc.getModel().getRoot().get('map').set('dupmap2', doc.getModel().createMap());
+    doc.getModel().getRoot().get('map').get('dupmap1').set('str', str);
+    doc.getModel().getRoot().get('map').get('dupmap2').set('str', str);
+    equal(doc.getModel().getRoot().get('map').get('dupmap1').get('str'),
+          doc.getModel().getRoot().get('map').get('dupmap2').get('str'));
+    var ssObjChanged1 = function(e) {
+      console.log('dupmap1 handler');
+      equal(e.events[0].type, 'text_inserted');
+    };
+    doc.getModel().getRoot().get('map').get('dupmap1').addEventListener(
+      rdm.EventType.OBJECT_CHANGED, ssObjChanged1);
+    var ssObjChanged2 = function(e) {
+      console.log('dupmap2 handler');
+      equal(e.events[0].type, 'text_inserted');
+    };
+    doc.getModel().getRoot().get('map').get('dupmap2').addEventListener(
+      rdm.EventType.OBJECT_CHANGED, ssObjChanged2);
+    var ssRootChanged = function(e) {
+      console.log('root handler');
+      equal(e.events[0].type, 'text_inserted');
+    };
+    doc.getModel().getRoot().get('map').addEventListener(
+      rdm.EventType.OBJECT_CHANGED, ssRootChanged);
+    doc.getModel().getRoot().get('map').get('dupmap2').get('str').append('hello');
+    doc.getModel().getRoot().get('map').get('dupmap2').removeEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssObjChanged2);
+    doc.getModel().getRoot().get('map').get('dupmap1').removeEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssObjChanged1);
+    doc.getModel().getRoot().get('map').removeEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssRootChanged);
+  });
+  test('String in map and sub map', function() {
+    var str = doc.getModel().createString('dup');
+    var subsubmap = doc.getModel().createMap();
+    var submap = doc.getModel().createMap();
+    var topmap = doc.getModel().createMap();
+
+    doc.getModel().getRoot().get('map').set('mapwithsub', topmap);
+    doc.getModel().getRoot().get('map').get('mapwithsub').set('submap', submap);
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').set('subsubmap', subsubmap);
+
+    doc.getModel().getRoot().get('map').get('mapwithsub').set('str', str);
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').get('subsubmap').set('str', str);
+
+    var ssMapChanged = function(e) {
+      console.log('Top map change');
+      equal(e.events[0].type, 'text_inserted');
+    };
+    doc.getModel().getRoot().get('map').get('mapwithsub').addEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssMapChanged);
+    var ssSubMapChanged = function(e) {
+      console.log('Sub map change');
+      equal(e.events[0].type, 'text_inserted');
+    };
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').addEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssSubMapChanged);
+    var ssSubSubMapChanged = function(e) {
+      console.log('Sub sub map change');
+      equal(e.events[0].type, 'text_inserted');
+    };
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').get('subsubmap').addEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssSubSubMapChanged);
+    var ssStringChanged = function(e) {
+      console.log('String change');
+      equal(e.events[0].type, 'text_inserted');
+    };
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('str').addEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssStringChanged);
+    str.append('something');
+    doc.getModel().getRoot().get('map').get('mapwithsub').removeEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssMapChanged);
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').removeEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssSubMapChanged);
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').get('subsubmap').removeEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssSubSubMapChanged);
+    doc.getModel().getRoot().get('map').get('mapwithsub').get('str').removeEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      ssStringChanged);
+  });
+  test('loop length 2', function() {
+    var map1 = doc.getModel().createMap();
+    var map2 = doc.getModel().createMap();
+    doc.getModel().getRoot().get('map').set('loop', map1);
+    map1.set('map2', map2);
+    map2.set('map1', map1);
+    map1.set('map2b', map2);
+    var ssMap1 = function(e) {
+      console.log('map1 change');
+      equal(e.events[0].type, 'value_changed');
+    };
+    map1.addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap1);
+    var ssMap2 = function(e) {
+      console.log('map2 change');
+      equal(e.events[0].type, 'value_changed');
+    };
+    map2.addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap2);
+    var ssMap = function(e) {
+      console.log('map change');
+      equal(e.events[0].type, 'value_changed');
+    };
+    doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
+
+    map1.set('text', 'text value');
+
+    doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
+    map1.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap1);
+    map2.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap2);
+  });
+  module('Weird');
+  test('Map in self', function() {
+    doc.getModel().getRoot().set('self', doc.getModel().getRoot());
+    equal(doc.getModel().getRoot(), doc.getModel().getRoot().get('self'));
+    var rootChanged = function(e) {
+      console.log('root changed');
+      equal(e.events[0].type, 'value_changed');
+    };
+    doc.getModel().getRoot().addEventListener(
+      rdm.EventType.OBJECT_CHANGED,
+      rootChanged);
+    doc.getModel().getRoot().get('self').set('key', 'val');
+    doc.getModel().getRoot().get('self').removeEventListener(rdm.EventType.OBJECT_CHANGED, rootChanged);
   });
 };
 
