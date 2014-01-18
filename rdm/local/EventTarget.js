@@ -22,14 +22,14 @@
  * @see ../demos/eventtarget.html
  */
 
-goog.provide('rdm.local.LocalModelObject');
+goog.provide('rdm.local.EventTarget');
 
 // TODO check if we actually need anything
-// goog.require('goog.events');
-// goog.require('goog.events.Event');
+goog.require('goog.events');
+goog.require('goog.events.Event');
 // goog.require('goog.events.Listenable');
-// goog.require('goog.events.Listener');
-// goog.require('goog.object');
+goog.require('goog.events.Listener');
+goog.require('goog.object');
 
 
 
@@ -74,9 +74,7 @@ goog.provide('rdm.local.LocalModelObject');
  *
  * @constructor
  */
-goog.events.EventTarget = function() {
-
-  if (goog.events.Listenable.USE_LISTENABLE_INTERFACE) {
+rdm.local.EventTarget = function() {
     /**
      * Maps of event type to an array of listeners.
      *
@@ -84,32 +82,7 @@ goog.events.EventTarget = function() {
      * @private
      */
     this.eventTargetListeners_ = {};
-
-    /**
-     * Whether the EventTarget has been disposed. This is only true
-     * when disposeInternal of EventTarget is completed (whereas
-     * this.isDisposed() is true the moment obj.dispose() is called,
-     * even before calling its disposeInternal).
-     * @type {boolean}
-     * @private
-     */
-    this.reallyDisposed_ = false;
-
-    /**
-     * The object to use for event.target. Useful when mixing in an
-     * EventTarget to another object.
-     * @type {!Object}
-     * @private
-     */
-    this.actualEventTarget_ = this;
-  }
 };
-goog.inherits(goog.events.EventTarget, goog.Disposable);
-
-
-if (goog.events.Listenable.USE_LISTENABLE_INTERFACE) {
-  goog.events.Listenable.addImplementation(goog.events.EventTarget);
-}
 
 
 /**
@@ -118,35 +91,45 @@ if (goog.events.Listenable.USE_LISTENABLE_INTERFACE) {
  * @type {boolean}
  * @private
  */
-goog.events.EventTarget.prototype.customEvent_ = true;
+// TODO probably remove
+rdm.local.EventTarget.prototype.customEvent_ = true;
 
 
 /**
- * Parent event target, used during event bubbling.
- * @type {goog.events.EventTarget?}
+ * Parent event targets, used during event bubbling.
+ * @type {rdm.local.EventTarget?}
  * @private
  */
-goog.events.EventTarget.prototype.parentEventTarget_ = null;
+rdm.local.EventTarget.prototype.parentEventTargets_ = [];
 
 
 /**
- * Returns the parent of this event target to use for bubbling.
+ * Returns the parents of this event target to use for bubbling.
  *
- * @return {goog.events.EventTarget} The parent EventTarget or null if there
- * is no parent.
+ * @return {rdm.local.EventTarget} The parent EventTargets
  */
-goog.events.EventTarget.prototype.getParentEventTarget = function() {
-  return this.parentEventTarget_;
+rdm.local.EventTarget.prototype.getParentEventTargets = function() {
+  return this.parentEventTargets_;
 };
 
 
 /**
- * Sets the parent of this event target to use for bubbling.
+ * Adds a parent of this event target to use for bubbling.
  *
- * @param {goog.events.EventTarget?} parent Parent EventTarget (null if none).
+ * @param {rdm.local.EventTarget?} parent Parent EventTarget.
  */
-goog.events.EventTarget.prototype.setParentEventTarget = function(parent) {
-  this.parentEventTarget_ = parent;
+rdm.local.EventTarget.prototype.addParentEventTarget = function(parent) {
+  goog.array.remove(this.parentEventTargets_, parent);
+};
+
+
+/**
+ * Removes a parent of this event target.
+ *
+ * @param {rdm.local.EventTarget?} parent Parent EventTarget.
+ */
+rdm.local.EventTarget.prototype.removeParentEventTarget = function(parent) {
+  goog.array.insert(this.parentEventTargets_, parent);
 };
 
 
@@ -155,8 +138,6 @@ goog.events.EventTarget.prototype.setParentEventTarget = function(parent) {
  * added once per the type. Even if you add the same handler multiple times
  * using the same type then it will only be called once when the event is
  * dispatched.
- *
- * Supported for legacy but use goog.events.listen(src, type, handler) instead.
  *
  * @param {string} type The type of the event to listen for.
  * @param {Function|Object} handler The function to handle the event. The
@@ -168,9 +149,9 @@ goog.events.EventTarget.prototype.setParentEventTarget = function(parent) {
  * @param {Object=} opt_handlerScope Object in whose scope to call
  *     the listener.
  */
-goog.events.EventTarget.prototype.addEventListener = function(
+rdm.local.EventTarget.prototype.addEventListener = function(
     type, handler, opt_capture, opt_handlerScope) {
-  goog.events.listen(this, type, handler, opt_capture, opt_handlerScope);
+  this.listen(type, handler, opt_capture, opt_handlerScope);
 };
 
 
@@ -188,32 +169,29 @@ goog.events.EventTarget.prototype.addEventListener = function(
  * @param {Object=} opt_handlerScope Object in whose scope to call
  *     the listener.
  */
-goog.events.EventTarget.prototype.removeEventListener = function(
+rdm.local.EventTarget.prototype.removeEventListener = function(
     type, handler, opt_capture, opt_handlerScope) {
-  goog.events.unlisten(this, type, handler, opt_capture, opt_handlerScope);
+  this.unlisten(type, handler, opt_capture, opt_handlerScope);
 };
 
 
 /** @override */
-goog.events.EventTarget.prototype.dispatchEvent = function(e) {
-  if (goog.events.Listenable.USE_LISTENABLE_INTERFACE) {
-    if (this.reallyDisposed_) {
-      return true;
-    }
-
-    var ancestorsTree, ancestor = this.getParentEventTarget();
-    if (ancestor) {
-      ancestorsTree = [];
-      for (; ancestor; ancestor = ancestor.getParentEventTarget()) {
-        ancestorsTree.push(ancestor);
+rdm.local.EventTarget.prototype.dispatchEvent = function(e) {
+  var ancestorsTree, parents = this.getParentEventTargets();
+  if (parents.length > 0) {
+    ancestorsTree = parents.slice(0);
+    for (var i = 0; i < ancestorsTree.length; i++) {
+      var grandparents = ancestorsTree[i];
+      for (var j = 0; j < grandparents.length; j++) {
+        if (ancestorsTree.indexOf(grandparents[j]) == -1) {
+          ancestorsTree.push(grandparents[j]);
+        }
       }
     }
-
-    return goog.events.EventTarget.dispatchEventInternal_(
-        this.actualEventTarget_, e, ancestorsTree);
-  } else {
-    return goog.events.dispatchEvent(this, e);
   }
+
+  return rdm.local.EventTarget.dispatchEventInternal_(
+    this, e, ancestorsTree);
 };
 
 
@@ -230,24 +208,19 @@ goog.events.EventTarget.prototype.dispatchEvent = function(e) {
  * @override
  * @protected
  */
-goog.events.EventTarget.prototype.disposeInternal = function() {
+// TODO probably remove
+rdm.local.EventTarget.prototype.disposeInternal = function() {
   goog.events.EventTarget.superClass_.disposeInternal.call(this);
 
-  if (goog.events.Listenable.USE_LISTENABLE_INTERFACE) {
-    this.removeAllListeners();
-    this.reallyDisposed_ = true;
-  } else {
-    goog.events.removeAll(this);
-  }
+  this.removeAllListeners();
+  this.reallyDisposed_ = true;
 
-  this.parentEventTarget_ = null;
+  goog.array.clear(this.parentEventTargets_);
 };
 
 
-if (goog.events.Listenable.USE_LISTENABLE_INTERFACE) {
-
 /** @override */
-goog.events.EventTarget.prototype.listen = function(
+rdm.local.EventTarget.prototype.listen = function(
     type, listener, opt_useCapture, opt_listenerScope) {
   return this.listenInternal_(
       type, listener, false /* callOnce */, opt_useCapture, opt_listenerScope);
@@ -255,7 +228,7 @@ goog.events.EventTarget.prototype.listen = function(
 
 
 /** @override */
-goog.events.EventTarget.prototype.listenOnce = function(
+rdm.local.EventTarget.prototype.listenOnce = function(
     type, listener, opt_useCapture, opt_listenerScope) {
   return this.listenInternal_(
       type, listener, true /* callOnce */, opt_useCapture, opt_listenerScope);
@@ -282,16 +255,13 @@ goog.events.EventTarget.prototype.listenOnce = function(
  * @return {goog.events.ListenableKey} Unique key for the listener.
  * @private
  */
-goog.events.EventTarget.prototype.listenInternal_ = function(
+rdm.local.EventTarget.prototype.listenInternal_ = function(
     type, listener, callOnce, opt_useCapture, opt_listenerScope) {
-  goog.asserts.assert(
-      !this.reallyDisposed_, 'Can not listen on disposed object.');
-
   var listenerArray = this.eventTargetListeners_[type] ||
       (this.eventTargetListeners_[type] = []);
 
   var listenerObj;
-  var index = goog.events.EventTarget.findListenerIndex_(
+  var index = rdm.local.EventTarget.findListenerIndex_(
       listenerArray, listener, opt_useCapture, opt_listenerScope);
   if (index > -1) {
     listenerObj = listenerArray[index];
@@ -303,6 +273,7 @@ goog.events.EventTarget.prototype.listenInternal_ = function(
     return listenerObj;
   }
 
+  // TODO keep goog.events.Listener or just assume functions?
   listenerObj = new goog.events.Listener();
   listenerObj.init(
       listener, null, this, type, !!opt_useCapture, opt_listenerScope);
@@ -314,16 +285,17 @@ goog.events.EventTarget.prototype.listenInternal_ = function(
 
 
 /** @override */
-goog.events.EventTarget.prototype.unlisten = function(
+rdm.local.EventTarget.prototype.unlisten = function(
     type, listener, opt_useCapture, opt_listenerScope) {
   if (!(type in this.eventTargetListeners_)) {
     return false;
   }
 
   var listenerArray = this.eventTargetListeners_[type];
-  var index = goog.events.EventTarget.findListenerIndex_(
+  var index = rdm.local.EventTarget.findListenerIndex_(
       listenerArray, listener, opt_useCapture, opt_listenerScope);
   if (index > -1) {
+    // TODO keep goog.events.Listener or just assume function?
     var listenerObj = listenerArray[index];
     goog.events.cleanUp(listenerObj);
     listenerObj.removed = true;
@@ -334,7 +306,7 @@ goog.events.EventTarget.prototype.unlisten = function(
 
 
 /** @override */
-goog.events.EventTarget.prototype.unlistenByKey = function(key) {
+rdm.local.EventTarget.prototype.unlistenByKey = function(key) {
   var type = key.type;
   if (!(type in this.eventTargetListeners_)) {
     return false;
@@ -350,8 +322,9 @@ goog.events.EventTarget.prototype.unlistenByKey = function(key) {
 
 
 /** @override */
-goog.events.EventTarget.prototype.removeAllListeners = function(
+rdm.local.EventTarget.prototype.removeAllListeners = function(
     opt_type, opt_capture) {
+  // TODO keep goog.events.Listener?
   var count = 0;
   for (var type in this.eventTargetListeners_) {
     if (!opt_type || type == opt_type) {
@@ -369,12 +342,9 @@ goog.events.EventTarget.prototype.removeAllListeners = function(
 
 
 /** @override */
-goog.events.EventTarget.prototype.fireListeners = function(
+// TODO keep goog.events.Listener?
+rdm.local.EventTarget.prototype.fireListeners = function(
     type, capture, eventObject) {
-  goog.asserts.assert(
-      !this.reallyDisposed_,
-      'Can not fire listeners after dispose() completed.');
-
   if (!(type in this.eventTargetListeners_)) {
     return true;
   }
@@ -399,7 +369,7 @@ goog.events.EventTarget.prototype.fireListeners = function(
 
 
 /** @override */
-goog.events.EventTarget.prototype.getListeners = function(type, capture) {
+rdm.local.EventTarget.prototype.getListeners = function(type, capture) {
   var listenerArray = this.eventTargetListeners_[type];
   var rv = [];
   if (listenerArray) {
@@ -415,12 +385,12 @@ goog.events.EventTarget.prototype.getListeners = function(type, capture) {
 
 
 /** @override */
-goog.events.EventTarget.prototype.getListener = function(
+rdm.local.EventTarget.prototype.getListener = function(
     type, listener, capture, opt_listenerScope) {
   var listenerArray = this.eventTargetListeners_[type];
   var i = -1;
   if (listenerArray) {
-    i = goog.events.EventTarget.findListenerIndex_(
+    i = rdm.local.EventTarget.findListenerIndex_(
         listenerArray, listener, capture, opt_listenerScope);
   }
   return i > -1 ? listenerArray[i] : null;
@@ -428,7 +398,7 @@ goog.events.EventTarget.prototype.getListener = function(
 
 
 /** @override */
-goog.events.EventTarget.prototype.hasListener = function(
+rdm.local.EventTarget.prototype.hasListener = function(
     opt_type, opt_capture) {
   var hasType = goog.isDef(opt_type);
   var hasCapture = goog.isDef(opt_capture);
@@ -448,17 +418,6 @@ goog.events.EventTarget.prototype.hasListener = function(
 
 
 /**
- * Sets the target to be used for {@code event.target} when firing
- * event. Mainly used for testing. For example, see
- * {@code goog.testing.events.mixinListenable}.
- * @param {!Object} target The target.
- */
-goog.events.EventTarget.prototype.setTargetForTesting = function(target) {
-  this.actualEventTarget_ = target;
-};
-
-
-/**
  * Dispatches the given event on the ancestorsTree.
  *
  * TODO(user): Look for a way to reuse this logic in
@@ -473,7 +432,7 @@ goog.events.EventTarget.prototype.setTargetForTesting = function(target) {
  *     if any of the listeners returns false this will also return false.
  * @private
  */
-goog.events.EventTarget.dispatchEventInternal_ = function(
+rdm.local.EventTarget.dispatchEventInternal_ = function(
     target, e, opt_ancestorsTree) {
   var type = e.type || /** @type {string} */ (e);
 
@@ -532,7 +491,7 @@ goog.events.EventTarget.dispatchEventInternal_ = function(
  *     listenerArray.
  * @private
  */
-goog.events.EventTarget.findListenerIndex_ = function(
+rdm.local.EventTarget.findListenerIndex_ = function(
     listenerArray, listener, opt_useCapture, opt_listenerScope) {
   for (var i = 0; i < listenerArray.length; ++i) {
     var listenerObj = listenerArray[i];
@@ -544,5 +503,3 @@ goog.events.EventTarget.findListenerIndex_ = function(
   }
   return -1;
 };
-
-}  // if (goog.events.Listenable.USE_LISTENABLE_INTERFACE)
