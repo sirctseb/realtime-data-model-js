@@ -177,6 +177,17 @@ onFileLoaded = function(doc) {
     list.addEventListener(rdm.EventType.VALUES_SET, ss);
     list.set(0, 's2');
   });
+  test('propagation', function() {
+    expect(1);
+    var ss = function(event) {
+      equal(event.events[0].type == rdm.EventType.VALUES_ADDED, true);
+    };
+    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, ss);
+
+    list.push('value');
+
+    doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, ss);
+  });
 
   var map = doc.getModel().getRoot().get('map');
   module('CollaborativeMap', {
@@ -522,7 +533,6 @@ onFileLoaded = function(doc) {
     doc.getModel().getRoot().set('self', doc.getModel().getRoot());
     equal(doc.getModel().getRoot(), doc.getModel().getRoot().get('self'));
     var rootChanged = function(e) {
-      console.log('root changed');
       equal(e.events[0].type, 'value_changed');
     };
     doc.getModel().getRoot().addEventListener(
