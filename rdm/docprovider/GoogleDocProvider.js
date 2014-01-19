@@ -73,6 +73,7 @@ rdm.GoogleDocProvider.globalSetup_ = function(callback) {
     callback();
     return;
   }
+  rdm.GoogleDocProvider.globallySetup_ = true;
   // authenticate
   rdm.GoogleDocProvider.authenticate(function() {
     // load drive api
