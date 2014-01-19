@@ -18,8 +18,7 @@ goog.require('rdm.EventType');
 
 rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
   rdm.local.LocalEvent.call(this, rdm.EventType.OBJECT_CHANGED, target_);
-  // TODO I think this may be true for ObjectChanged and false for everything else?
-  this.bubbles = null; // TODO implement this getter
+  this.bubbles = true;
   this.events = events;
   this.isTerminal_ = isTerminal_ || false;
 };
