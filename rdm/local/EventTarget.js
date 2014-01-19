@@ -22,13 +22,17 @@
  * @see ../demos/eventtarget.html
  */
 
+// TODO document everything as rdm.local.LocalEvent because we use LocalEvent.bubbles
 goog.provide('rdm.local.EventTarget');
 
 // TODO check if we actually need anything
+goog.require('goog.array');
+goog.require('goog.asserts');
 goog.require('goog.events');
 goog.require('goog.events.Event');
 // goog.require('goog.events.Listenable');
-goog.require('goog.events.Listener');
+// goog.require('goog.events.Listener');
+goog.require('goog.events.ListenerMap');
 goog.require('goog.object');
 
 
@@ -75,14 +79,16 @@ goog.require('goog.object');
  * @constructor
  */
 rdm.local.EventTarget = function() {
+  goog.Disposable.call(this);
     /**
      * Maps of event type to an array of listeners.
      *
      * @type {Object.<string, !Array.<!goog.events.ListenableKey>>}
      * @private
      */
-    this.eventTargetListeners_ = {};
+    this.eventTargetListeners_ = new goog.events.ListenerMap(this);
 };
+goog.inherits(rdm.local.EventTarget, goog.Disposable);
 
 
 /**
@@ -210,10 +216,9 @@ rdm.local.EventTarget.prototype.dispatchEvent = function(e) {
  */
 // TODO probably remove
 rdm.local.EventTarget.prototype.disposeInternal = function() {
-  goog.events.EventTarget.superClass_.disposeInternal.call(this);
+  rdm.local.EventTarget.superClass_.disposeInternal.call(this);
 
   this.removeAllListeners();
-  this.reallyDisposed_ = true;
 
   goog.array.clear(this.parentEventTargets_);
 };
@@ -222,122 +227,46 @@ rdm.local.EventTarget.prototype.disposeInternal = function() {
 /** @override */
 rdm.local.EventTarget.prototype.listen = function(
     type, listener, opt_useCapture, opt_listenerScope) {
-  return this.listenInternal_(
-      type, listener, false /* callOnce */, opt_useCapture, opt_listenerScope);
+  this.assertInitialized_();
+  return this.eventTargetListeners_.add(
+    String(type), listener, false /* calllOnce */, opt_useCapture,
+    opt_listenerScope);
 };
 
 
 /** @override */
 rdm.local.EventTarget.prototype.listenOnce = function(
     type, listener, opt_useCapture, opt_listenerScope) {
-  return this.listenInternal_(
-      type, listener, true /* callOnce */, opt_useCapture, opt_listenerScope);
-};
-
-
-/**
- * Adds an event listener. A listener can only be added once to an
- * object and if it is added again the key for the listener is
- * returned.
- *
- * Note that a one-off listener will not change an existing listener,
- * if any. On the other hand a normal listener will change existing
- * one-off listener to become a normal listener.
- *
- * @param {string} type Event type to listen to.
- * @param {!Function} listener Callback method.
- * @param {boolean} callOnce Whether the listener is a one-off
- *     listener or otherwise.
- * @param {boolean=} opt_useCapture Whether to fire in capture phase
- *     (defaults to false).
- * @param {Object=} opt_listenerScope Object in whose scope to call the
- *     listener.
- * @return {goog.events.ListenableKey} Unique key for the listener.
- * @private
- */
-rdm.local.EventTarget.prototype.listenInternal_ = function(
-    type, listener, callOnce, opt_useCapture, opt_listenerScope) {
-  var listenerArray = this.eventTargetListeners_[type] ||
-      (this.eventTargetListeners_[type] = []);
-
-  var listenerObj;
-  var index = rdm.local.EventTarget.findListenerIndex_(
-      listenerArray, listener, opt_useCapture, opt_listenerScope);
-  if (index > -1) {
-    listenerObj = listenerArray[index];
-    if (!callOnce) {
-      // Ensure that, if there is an existing callOnce listener, it is no
-      // longer a callOnce listener.
-      listenerObj.callOnce = false;
-    }
-    return listenerObj;
-  }
-
-  // TODO keep goog.events.Listener or just assume functions?
-  listenerObj = new goog.events.Listener();
-  listenerObj.init(
-      listener, null, this, type, !!opt_useCapture, opt_listenerScope);
-  listenerObj.callOnce = callOnce;
-  listenerArray.push(listenerObj);
-
-  return listenerObj;
+  return this.eventTargetListeners_.add(
+    String(type), listener, true /* calllOnce */, opt_useCapture,
+    opt_listenerScope);
 };
 
 
 /** @override */
 rdm.local.EventTarget.prototype.unlisten = function(
     type, listener, opt_useCapture, opt_listenerScope) {
-  if (!(type in this.eventTargetListeners_)) {
-    return false;
-  }
-
-  var listenerArray = this.eventTargetListeners_[type];
-  var index = rdm.local.EventTarget.findListenerIndex_(
-      listenerArray, listener, opt_useCapture, opt_listenerScope);
-  if (index > -1) {
-    // TODO keep goog.events.Listener or just assume function?
-    var listenerObj = listenerArray[index];
-    goog.events.cleanUp(listenerObj);
-    listenerObj.removed = true;
-    return goog.array.removeAt(listenerArray, index);
-  }
-  return false;
+  return this.eventTargetListeners_.remove(
+    String(type), listener, opt_useCapture, opt_listenerScope);
 };
 
 
 /** @override */
 rdm.local.EventTarget.prototype.unlistenByKey = function(key) {
-  var type = key.type;
-  if (!(type in this.eventTargetListeners_)) {
-    return false;
-  }
-
-  var removed = goog.array.remove(this.eventTargetListeners_[type], key);
-  if (removed) {
-    goog.events.cleanUp(key);
-    key.removed = true;
-  }
-  return removed;
+  return this.eventTargetListeners_.removeByKey(key);
 };
 
 
 /** @override */
 rdm.local.EventTarget.prototype.removeAllListeners = function(
     opt_type, opt_capture) {
-  // TODO keep goog.events.Listener?
-  var count = 0;
-  for (var type in this.eventTargetListeners_) {
-    if (!opt_type || type == opt_type) {
-      var listenerArray = this.eventTargetListeners_[type];
-      for (var i = 0; i < listenerArray.length; i++) {
-        ++count;
-        goog.events.cleanUp(listenerArray[i]);
-        listenerArray[i].removed = true;
-      }
-      listenerArray.length = 0;
-    }
+  // TODO(user): Previously, removeAllListeners can be called on
+  // uninitialized EventTarget, so we preserve that behavior. We
+  // should remove this when usages that rely on that fact are purged.
+  if (!this.eventTargetListeners_) {
+    return 0;
   }
-  return count;
+  return this.eventTargetListeners_.removeAll(opt_type);
 };
 
 
@@ -345,22 +274,28 @@ rdm.local.EventTarget.prototype.removeAllListeners = function(
 // TODO keep goog.events.Listener?
 rdm.local.EventTarget.prototype.fireListeners = function(
     type, capture, eventObject) {
-  if (!(type in this.eventTargetListeners_)) {
+  // TODO(user): Original code avoids array creation when there
+  // is no listener, so we do the same. If this optimization turns
+  // out to be not required, we can replace this with
+  // getListeners(type, capture) instead, which is simpler.
+  var listenerArray = this.eventTargetListeners_.listeners[String(type)];
+  if (!listenerArray) {
     return true;
   }
+  listenerArray = goog.array.clone(listenerArray);
 
   var rv = true;
-  var listenerArray = goog.array.clone(this.eventTargetListeners_[type]);
   for (var i = 0; i < listenerArray.length; ++i) {
     var listener = listenerArray[i];
     // We might not have a listener if the listener was removed.
     if (listener && !listener.removed && listener.capture == capture) {
-      // TODO(user): This logic probably should be in the Listener
-      // object instead.
+      var listenerFn = listener.listener;
+      var listenerHandler = listener.handler || listener.src;
+
       if (listener.callOnce) {
         this.unlistenByKey(listener);
       }
-      rv = listener.handleEvent(eventObject) !== false && rv;
+      rv = listenerFn.call(listenerHandler, eventObject) !== false && rv;
     }
   }
 
@@ -370,50 +305,35 @@ rdm.local.EventTarget.prototype.fireListeners = function(
 
 /** @override */
 rdm.local.EventTarget.prototype.getListeners = function(type, capture) {
-  var listenerArray = this.eventTargetListeners_[type];
-  var rv = [];
-  if (listenerArray) {
-    for (var i = 0; i < listenerArray.length; ++i) {
-      var listenerObj = listenerArray[i];
-      if (listenerObj.capture == capture) {
-        rv.push(listenerObj);
-      }
-    }
-  }
-  return rv;
+  return this.eventTargetListeners_.getListeners(String(type), capture);
 };
 
 
 /** @override */
 rdm.local.EventTarget.prototype.getListener = function(
     type, listener, capture, opt_listenerScope) {
-  var listenerArray = this.eventTargetListeners_[type];
-  var i = -1;
-  if (listenerArray) {
-    i = rdm.local.EventTarget.findListenerIndex_(
-        listenerArray, listener, capture, opt_listenerScope);
-  }
-  return i > -1 ? listenerArray[i] : null;
+  return this.eventTargetListeners_.getListener(
+      String(type), listener, capture, opt_listenerScope);
 };
 
 
 /** @override */
 rdm.local.EventTarget.prototype.hasListener = function(
     opt_type, opt_capture) {
-  var hasType = goog.isDef(opt_type);
-  var hasCapture = goog.isDef(opt_capture);
+  var id = goog.isDef(opt_type) ? String(opt_type) : undefined;
+  return this.eventTargetListeners_.hasListener(id, opt_capture);
+};
 
-  return goog.object.some(
-      this.eventTargetListeners_, function(listenersArray, type) {
-        for (var i = 0; i < listenersArray.length; ++i) {
-          if ((!hasType || listenersArray[i].type == opt_type) &&
-              (!hasCapture || listenersArray[i].capture == opt_capture)) {
-            return true;
-          }
-        }
 
-        return false;
-      });
+/**
+ * Asserts that the event target instance is initialized properly.
+ * @private
+ */
+rdm.local.EventTarget.prototype.assertInitialized_ = function() {
+  goog.asserts.assert(
+      this.eventTargetListeners_,
+      'Event target is not initialized. Did you call the superclass ' +
+      '(goog.events.EventTarget) constructor?');
 };
 
 
@@ -451,11 +371,13 @@ rdm.local.EventTarget.dispatchEventInternal_ = function(
   var rv = true, currentTarget;
 
   // Executes all capture listeners on the ancestors, if any.
-  if (opt_ancestorsTree) {
-    for (var i = opt_ancestorsTree.length - 1; !e.propagationStopped_ && i >= 0;
-         i--) {
-      currentTarget = e.currentTarget = opt_ancestorsTree[i];
-      rv = currentTarget.fireListeners(type, true, e) && rv;
+  if (e.bubbles) {
+    if (opt_ancestorsTree) {
+      for (var i = opt_ancestorsTree.length - 1; !e.propagationStopped_ && i >= 0;
+       i--) {
+        currentTarget = e.currentTarget = opt_ancestorsTree[i];
+        rv = currentTarget.fireListeners(type, true, e) && rv;
+      }
     }
   }
 
@@ -469,37 +391,14 @@ rdm.local.EventTarget.dispatchEventInternal_ = function(
   }
 
   // Executes all bubble listeners on the ancestors, if any.
-  if (opt_ancestorsTree) {
-    for (i = 0; !e.propagationStopped_ && i < opt_ancestorsTree.length; i++) {
-      currentTarget = e.currentTarget = opt_ancestorsTree[i];
-      rv = currentTarget.fireListeners(type, false, e) && rv;
+  if (e.bubbles) {
+    if (opt_ancestorsTree) {
+      for (i = 0; !e.propagationStopped_ && i < opt_ancestorsTree.length; i++) {
+        currentTarget = e.currentTarget = opt_ancestorsTree[i];
+        rv = currentTarget.fireListeners(type, false, e) && rv;
+      }
     }
   }
 
   return rv;
-};
-
-
-/**
- * Finds the index of a matching goog.events.Listener in the given
- * listenerArray.
- * @param {!Array.<!goog.events.Listener>} listenerArray Array of listener.
- * @param {!Function} listener The listener function.
- * @param {boolean=} opt_useCapture The capture flag for the listener.
- * @param {Object=} opt_listenerScope The listener scope.
- * @return {number} The index of the matching listener within the
- *     listenerArray.
- * @private
- */
-rdm.local.EventTarget.findListenerIndex_ = function(
-    listenerArray, listener, opt_useCapture, opt_listenerScope) {
-  for (var i = 0; i < listenerArray.length; ++i) {
-    var listenerObj = listenerArray[i];
-    if (listenerObj.listener == listener &&
-        listenerObj.capture == !!opt_useCapture &&
-        listenerObj.handler == opt_listenerScope) {
-      return i;
-    }
-  }
-  return -1;
 };
