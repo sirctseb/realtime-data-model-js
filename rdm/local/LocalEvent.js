@@ -23,5 +23,6 @@ rdm.local.LocalEvent = function(type, target_) {
   this.sessionId = null;
   this.userId = null;
   this.target_ = target_;
+  this.bubbles = false;
 };
 goog.inherits(rdm.local.LocalEvent, goog.events.Event);
