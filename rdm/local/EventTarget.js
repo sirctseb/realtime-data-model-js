@@ -125,7 +125,7 @@ rdm.local.EventTarget.prototype.getParentEventTargets = function() {
  * @param {rdm.local.EventTarget?} parent Parent EventTarget.
  */
 rdm.local.EventTarget.prototype.addParentEventTarget = function(parent) {
-  goog.array.remove(this.parentEventTargets_, parent);
+  goog.array.insert(this.parentEventTargets_, parent);
 };
 
 
@@ -135,7 +135,7 @@ rdm.local.EventTarget.prototype.addParentEventTarget = function(parent) {
  * @param {rdm.local.EventTarget?} parent Parent EventTarget.
  */
 rdm.local.EventTarget.prototype.removeParentEventTarget = function(parent) {
-  goog.array.insert(this.parentEventTargets_, parent);
+  goog.array.remove(this.parentEventTargets_, parent);
 };
 
 
