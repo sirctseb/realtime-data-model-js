@@ -188,7 +188,7 @@ rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
 // check if value is a model object and set this as parent
 rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
   if(element instanceof rdm.local.LocalModelObject) {
-    element.setParentEventTarget(null);
+    element.addParentEventTarget(this);
   }
 }
 
@@ -197,21 +197,36 @@ rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
   // stop propagation if overwritten element is model object and it is no longer anywhere in the list
   // TODO this depends on this method being called _after_ the element is removed from this.list_
   if(element instanceof rdm.local.LocalModelObject && this.list_.indexOf(element) == -1) {
-    element.setParentEventTarget(null);
+    element.removeParentEventTarget(this);
   }
 }
 
 rdm.local.LocalModelList.prototype.executeEvent_ = function(event) {
   if(event.type == rdm.EventType.VALUES_SET) {
       Array.prototype.splice.apply(this.list_, [event.index, event.newValues.length].concat(event.newValues));
+      // update event parents
+      for(var i = 0; i < event.oldValues.length; i++) {
+        this.stopPropagatingChanges_(event.oldValues[i]);
+      }
+      for(var i = 0; i < event.newValues.length; i++) {
+        this.propagateChanges_(event.newValues[i]);
+      }
   } else if(event.type == rdm.EventType.VALUES_REMOVED) {
       // update list
       this.list_.splice(event.index, event.values.length);
+      // update event parents
+      for(var i = 0; i < event.values.length; i++) {
+        this.stopPropagatingChanges_(event.values[i]);
+      }
       // update references
       this.shiftReferencesOnDelete_(event.index, event.values.length);
   } else if(event.type == rdm.EventType.VALUES_ADDED) {
       // update list
       Array.prototype.splice.apply(this.list_, [event.index, 0].concat(event.values));
+      // update event parents
+      for(var i = 0; i < event.values.length; i++) {
+        this.propagateChanges_(event.values[i]);
+      }
       // update references
       this.shiftReferencesOnInsert_(event.index, event.values.length);
   }
