@@ -18,6 +18,8 @@ goog.require('rdm.local.LocalModelList');
 goog.require('rdm.local.LocalModelMap');
 goog.require('rdm.local.LocalModelString');
 goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.LocalCustomObject');
+goog.require('rdm.custom.CollaborativeField_');
 goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModel = function() {
@@ -42,6 +44,12 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
   }
   this.isInitialized_ = true;
 };
+
+/**
+ * Maps from names to types as registered by rdm.LocalDocumentProvider.registerType
+ * @private
+ */
+rdm.local.LocalModel.customTypes_ = {};
 
 // TODO need to implement compound operations. meaningful for undo/redo
 // TODO also, what is beginCreationCompoundOperation
@@ -79,7 +87,19 @@ rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {}
  * @expose
  */
 rdm.local.LocalModel.prototype.create = function(ref, var_args) {
-  return null;
+  if(goog.isString(ref)) ref = rdm.local.LocalModel.customTypes_[ref];
+  // TODO error if ref is now undefined
+  // create instance
+  var instance = new ref();
+  // call local model object constructor
+  rdm.local.LocalCustomObject.call(instance);
+  // replace collab fields by defining properties
+  for(var prop in instance) {
+    if(instance[prop] instanceof rdm.custom.CollaborativeField_) {
+      Object.defineProperty(instance, prop, instance[prop].b);
+    }
+  }
+  return instance;
 };
 
 /**
