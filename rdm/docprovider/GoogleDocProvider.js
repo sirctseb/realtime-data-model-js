@@ -175,3 +175,23 @@ rdm.GoogleDocProvider.prototype.exportDocument = function(onExported) {
   };
   xhr.send();
 };
+
+rdm.GoogleDocProvider.prototype.collaborativeField = function(name) {
+  return gapi.drive.realtime.collaborativeField(name);
+};
+
+rdm.DocumentProvider.prototype.isCustomObject = function(obj) {
+  return gapi.drive.realtime.isCustomObject(obj);
+};
+
+rdm.DocumentProvider.prototype.registerType = function(type, name) {
+  return gapi.drive.realtime.registerType(type, name);
+};
+
+rdm.DocumentProvider.prototype.setInitializer = function(type, initializerFn) {
+  return gapi.drive.realtime.setInitializer(type, initializerFn);
+};
+
+rdm.DocumentProvider.prototype.setOnLoaded = function(type, opt_onLoadedFn) {
+  return gapi.drive.realtime.setOnLoaded(type, opt_onLoadedFn);
+};
