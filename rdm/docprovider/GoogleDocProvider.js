@@ -176,22 +176,46 @@ rdm.GoogleDocProvider.prototype.exportDocument = function(onExported) {
   xhr.send();
 };
 
-rdm.GoogleDocProvider.prototype.collaborativeField = function(name) {
+/**
+ * Returns a reference that can be assigned to an object prototype
+ * field of a custom collaborative object in order to define custom
+ * collaborative properties. For example:
+ * MyClass.prototype.name = gapi.drive.realtime.custom.collaborativeField('name');
+ * The resulting field can be read and assigned to like a regular field, but the
+ * value will automatically be saved and sent to other collaborators.
+ * @interface
+ */
+rdm.GoogleDocProvider.collaborativeField = function(name) {
   return gapi.drive.realtime.collaborativeField(name);
 };
 
-rdm.DocumentProvider.prototype.isCustomObject = function(obj) {
+/**
+ * Returns true if obj is a custom collaborative object, otherwise false.
+ */
+rdm.GoogleDocProvider.isCustomObject = function(obj) {
   return gapi.drive.realtime.isCustomObject(obj);
 };
 
-rdm.DocumentProvider.prototype.registerType = function(type, name) {
+/**
+ * Registers a user-defined type as a collaborative type.
+ * This must be called before {rdm.DocumentProvider.loadDocument}.
+ */
+rdm.GoogleDocProvider.registerType = function(type, name) {
   return gapi.drive.realtime.registerType(type, name);
 };
 
-rdm.DocumentProvider.prototype.setInitializer = function(type, initializerFn) {
+/**
+ * Sets the initializer function for the given type.
+ * The type must have already been registered with a call to registerType.
+ */
+rdm.GoogleDocProvider.setInitializer = function(type, initializerFn) {
   return gapi.drive.realtime.setInitializer(type, initializerFn);
 };
 
-rdm.DocumentProvider.prototype.setOnLoaded = function(type, opt_onLoadedFn) {
+/**
+ * Sets the onLoaded function for the given type.
+ * The type must have already been registered with a call to registerType.
+ */
+rdm.GoogleDocProvider.setOnLoaded = function(type, opt_onLoadedFn) {
   return gapi.drive.realtime.setOnLoaded(type, opt_onLoadedFn);
 };
