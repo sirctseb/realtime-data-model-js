@@ -190,13 +190,6 @@ rdm.GoogleDocProvider.collaborativeField = function(name) {
 };
 
 /**
- * Returns true if obj is a custom collaborative object, otherwise false.
- */
-rdm.GoogleDocProvider.isCustomObject = function(obj) {
-  return gapi.drive.realtime.isCustomObject(obj);
-};
-
-/**
  * Registers a user-defined type as a collaborative type.
  * This must be called before {rdm.DocumentProvider.loadDocument}.
  */

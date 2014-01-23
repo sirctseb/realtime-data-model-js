@@ -51,6 +51,12 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
  */
 rdm.local.LocalModel.customTypes_ = {};
 
+/**
+ * Maps from object ids to the models that created the objects
+ * @private
+ */
+rdm.local.LocalModel.customObjectModels_ = {};
+
 // TODO need to implement compound operations. meaningful for undo/redo
 // TODO also, what is beginCreationCompoundOperation
 /**
@@ -93,6 +99,8 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   var instance = new ref();
   // call local model object constructor
   rdm.local.LocalCustomObject.call(instance);
+  // store id to model in map
+  rdm.local.LocalModel.customObjectModels_['' + rdm.custom.getId(instance)] = this;
   // replace collab fields by defining properties
   for(var prop in instance) {
     if(instance[prop] instanceof rdm.custom.CollaborativeField_) {
