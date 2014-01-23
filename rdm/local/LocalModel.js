@@ -47,7 +47,9 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
 };
 
 /**
- * Maps from names to types as registered by rdm.LocalDocumentProvider.registerType
+ * Maps from names to {type, initializerFn, onLoadedFn} as registered by
+ * rdm.LocalDocumentProvider.registerType, rdm.LocalDocumentProvider.setInitializer, and
+ * rdm.LocalDocumentProvider.setOnLoaded
  * @private
  */
 rdm.local.LocalModel.customTypes_ = {};
@@ -88,7 +90,7 @@ rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {}
  * @expose
  */
 rdm.local.LocalModel.prototype.create = function(ref, var_args) {
-  if(goog.isString(ref)) ref = rdm.local.LocalModel.customTypes_[ref];
+  if(goog.isString(ref)) ref = rdm.local.LocalModel.customTypes_[ref].type;
   // TODO error if ref is now undefined
   // create instance
   var instance = new ref();

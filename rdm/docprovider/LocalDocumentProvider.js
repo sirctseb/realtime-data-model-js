@@ -69,7 +69,7 @@ rdm.LocalDocumentProvider.isCustomObject_ = function(obj) {
  * This must be called before {rdm.DocumentProvider.loadDocument}.
  */
 rdm.LocalDocumentProvider.registerType = function(type, name) {
-  rdm.local.LocalModel.customTypes_[name] = type;
+  rdm.local.LocalModel.customTypes_[name] = {type: type};
   goog.inherits(type, rdm.local.LocalCustomObject);
 };
 
@@ -78,7 +78,11 @@ rdm.LocalDocumentProvider.registerType = function(type, name) {
  * The type must have already been registered with a call to registerType.
  */
 rdm.LocalDocumentProvider.setInitializer = function(type, initializerFn) {
-  // TODO
+  for(var name in rdm.local.LocalModel.customTypes_) {
+    if(rdm.local.LocalModel.customTypes_[name] === type) {
+      rdm.local.LocalModel.customTypes_[name].initializerFn = initializerFn;
+    }
+  }
 };
 
 /**
@@ -86,5 +90,9 @@ rdm.LocalDocumentProvider.setInitializer = function(type, initializerFn) {
  * The type must have already been registered with a call to registerType.
  */
 rdm.LocalDocumentProvider.setOnLoaded = function(type, opt_onLoadedFn) {
-  // TODO
+  for(var name in rdm.local.LocalModel.customTypes_) {
+    if(rdm.local.LocalModel.customTypes_[name] === type) {
+      rdm.local.LocalModel.customTypes_[name].onLoadedFn = opt_onLoadedFn;
+    }
+  }
 };
