@@ -88,14 +88,3 @@ rdm.LocalDocumentProvider.setInitializer = function(type, initializerFn) {
 rdm.LocalDocumentProvider.setOnLoaded = function(type, opt_onLoadedFn) {
   // TODO
 };
-
-rdm.LocalDocumentProvider.getId_ = function(obj) {
-  // TODO refactor a base class of LocalModelObject that doesn't have getId or id getter
-  // and subclass LocalCustomObject from that
-  // TODO then we will need to store ids on the model
-  return obj.getId();
-};
-
-rdm.LocalDocumentProvider.getModel_ = function(obj) {
-  return rdm.local.LocalModel.customObjectModels_['' + rdm.LocalDocumentProvider.getId_(obj)];
-};

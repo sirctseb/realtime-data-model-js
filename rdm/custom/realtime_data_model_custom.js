@@ -14,7 +14,7 @@
 
 goog.provide('rdm.custom');
 goog.require('rdm.GoogleDocProvider');
-goog.require('rdm.LocalDocumentProvider');
+goog.require('rdm.local.LocalCustomObject');
 
 rdm.custom = {
   // TODO write function to safely check gapi.drive.realtime.isCustomObject when
@@ -24,32 +24,54 @@ rdm.custom = {
    * Returns true if obj is a custom collaborative object, otherwise false.
    */
   isCustomObject: function(obj) {
-    return (gapi.drive.realtime.isCustomObject(obj) || rdm.LocalDocumentProvider.isCustomObject_(obj));
+    return (gapi.drive.realtime.custom.isCustomObject(obj) || rdm.custom.isLocalCustomObject_(obj));
+  },
+
+  isLocalCustomObject_: function(obj) {
+    return obj instanceof rdm.local.LocalCustomObject;
   },
 
   /**
    * Returns the id of the given custom object.
    */
   getId: function(obj) {
-    if(gapi.drive.realtime.isCustomObject(obj)) {
+    if(gapi.drive.realtime.custom.isCustomObject(obj)) {
       return gapi.drive.realtime.custom.getId(obj);
-    } else if(rdm.LocalDocumentProvider.isCustomObject_(obj)) {
-      return rdm.LocalDocumentProvider.getId_(obj);
+    } else if(rdm.custom.isLocalCustomObject_(obj)) {
+      return rdm.custom.getLocalId_(obj);
     } else {
       throw 'Object ' + obj + ' is not a custom object';
     }
   },
 
+  getLocalId_: function(obj) {
+    // TODO refactor a base class of LocalModelObject that doesn't have getId or id getter
+    // and subclass LocalCustomObject from that
+    // TODO then we will need to store ids on the model
+    return obj.getId();
+  },
+
+
+  /**
+   * Maps from object ids to the models that created the objects
+   * @private
+   */
+  customObjectModels_: {},
+
   /**
    * Returns the model for the given custom object.
    */
   getModel: function(obj) {
-    if(gapi.drive.realtime.isCustomObject(obj)) {
+    if(gapi.drive.realtime.custom.isCustomObject(obj)) {
       return gapi.drive.realtime.custom.getModel(obj);
-    } else if(rdm.LocalDocumentProvider.isCustomObject_(obj)) {
-      return rdm.LocalDocumentProvider.getModel_(obj);
+    } else if(rdm.custom.isLocalCustomObject_(obj)) {
+      return rdm.custom.getLocalModel_(obj);
     } else {
       throw 'Object ' + obj + ' is not a custom object';
     }
+  },
+
+  getLocalModel_: function(obj) {
+    return rdm.custom.customObjectModels_['' + rdm.custom.getLocalId_(obj)];
   }
 };

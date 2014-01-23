@@ -13,9 +13,9 @@
 // limitations under the License.
 
 goog.provide('rdm.custom.CollaborativeField_');
+goog.require('rdm.custom');
 goog.require('rdm.local.LocalValueChangedEvent');
 
-// var rdm.custom = {};
 rdm.custom.CollaborativeField_ = function(name) {
   // stores the actual value of the property
   var backingfield;
