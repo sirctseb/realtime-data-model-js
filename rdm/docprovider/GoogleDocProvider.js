@@ -186,7 +186,7 @@ rdm.GoogleDocProvider.prototype.exportDocument = function(onExported) {
  * @interface
  */
 rdm.GoogleDocProvider.collaborativeField = function(name) {
-  return gapi.drive.realtime.collaborativeField(name);
+  return gapi.drive.realtime.custom.collaborativeField(name);
 };
 
 /**
@@ -194,7 +194,7 @@ rdm.GoogleDocProvider.collaborativeField = function(name) {
  * This must be called before {rdm.DocumentProvider.loadDocument}.
  */
 rdm.GoogleDocProvider.registerType = function(type, name) {
-  return gapi.drive.realtime.registerType(type, name);
+  return gapi.drive.realtime.custom.registerType(type, name);
 };
 
 /**
@@ -202,7 +202,7 @@ rdm.GoogleDocProvider.registerType = function(type, name) {
  * The type must have already been registered with a call to registerType.
  */
 rdm.GoogleDocProvider.setInitializer = function(type, initializerFn) {
-  return gapi.drive.realtime.setInitializer(type, initializerFn);
+  return gapi.drive.realtime.custom.setInitializer(type, initializerFn);
 };
 
 /**
@@ -210,5 +210,5 @@ rdm.GoogleDocProvider.setInitializer = function(type, initializerFn) {
  * The type must have already been registered with a call to registerType.
  */
 rdm.GoogleDocProvider.setOnLoaded = function(type, opt_onLoadedFn) {
-  return gapi.drive.realtime.setOnLoaded(type, opt_onLoadedFn);
+  return gapi.drive.realtime.custom.setOnLoaded(type, opt_onLoadedFn);
 };
