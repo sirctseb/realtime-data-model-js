@@ -90,7 +90,12 @@ rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {}
  * @expose
  */
 rdm.local.LocalModel.prototype.create = function(ref, var_args) {
-  if(goog.isString(ref)) ref = rdm.local.LocalModel.customTypes_[ref].type;
+  var name = ref;
+  if(goog.isString(ref)) {
+    ref = rdm.local.LocalModel.customTypes_[ref].type;
+  } else {
+    name = rdm.local.LocalModel.customTypeName_(ref);
+  }
   // TODO error if ref is now undefined
   // create instance
   var instance = new ref();
@@ -104,7 +109,24 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
       Object.defineProperty(instance, prop, instance[prop].b);
     }
   }
+  // run initializer function
+  if(rdm.local.LocalModel.customTypes_[name].initializerFn) {
+    rdm.local.LocalModel.customTypes_[name].initializerFn.apply(instance, var_args);
+  }
   return instance;
+};
+
+/**
+ * Given a registered custom object type, find the registered name
+ * @private
+ */
+rdm.local.LocalModel.customTypeName_ = function(ref) {
+  for(var name in rdm.local.LocalModel.customTypes_) {
+    if(rdm.local.LocalModel.customTypes_[name].type === ref) {
+      return name;
+    }
+  }
+  throw ref + ' is not a registered custom object type';
 };
 
 /**

@@ -27,11 +27,23 @@
       rdm.GoogleDocProvider.globalSetup_(function() {
 
         var book = function() {};
-        gapi.drive.realtime.custom.registerType(book, 'Book');
-        book.prototype.title = gapi.drive.realtime.custom.collaborativeField('title');
 
-        // var docProvider = new rdm.GoogleDocProvider({'fileId': 'EXISTING FILE ID'});
-        // var docProvider = new rdm.LocalDocumentProvider()
+        // var docProvider = new rdm.GoogleDocProvider({'fileId': '0B0OUnldiyG0hVXJrUjJCRVBIUDQ'});
+        // rdm.GoogleDocProvider.registerType(book, 'Book');
+        // book.prototype.title = rdm.GoogleDocProvider.collaborativeField('title');
+        // rdm.GoogleDocProvider.setInitializer(book, function() {
+        //   this.title = 'Foundation';
+        // });
+
+        var docProvider = new rdm.LocalDocumentProvider()
+        book.prototype.title = rdm.LocalDocumentProvider.collaborativeField('title');
+        rdm.LocalDocumentProvider.registerType(book, 'Book');
+        rdm.LocalDocumentProvider.setInitializer(book, function() {
+          console.log('initializer callback');
+          this.title = 'Foundation';
+        });
+
+        // docProvider.exportDocument(function(content) {console.log(content)});
         docProvider.loadDocument(onFileLoaded, initializeModel);
       });
   	};

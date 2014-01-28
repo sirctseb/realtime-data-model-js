@@ -374,19 +374,35 @@ onFileLoaded = function(doc) {
 
   module('Custom');
   test('Book is custom object', function() {
-    equal(gapi.drive.realtime.custom.isCustomObject(doc.getModel().getRoot().get('book')), true);
-    equal(gapi.drive.realtime.custom.isCustomObject(doc.getModel().getRoot().get('text')), false);
+    equal(rdm.custom.isCustomObject(doc.getModel().getRoot().get('book')), true);
+    equal(rdm.custom.isCustomObject(doc.getModel().getRoot().get('text')), false);
+  });
+  test('Initializer fn', function() {
+    equal(doc.getModel().getRoot().get('book').title, 'Foundation');
   });
   test('Set title', function() {
-    equal(doc.getModel().getRoot().get('book').title, null);
-    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.OBJECT_CHANGED, function(e) {
-      console.log(e);
-    });
-    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.VALUE_CHANGED, function(e) {
-      console.log(e.property + ' changed from ' + e.oldValue + ' to ' + e.newValue);
-    });
+    expect(6);
+    equal(doc.getModel().getRoot().get('book').title, 'Foundation');
+    var oc_handler = function(e) {
+      equal(e.events[0].type, 'value_changed');
+    };
+    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.OBJECT_CHANGED, oc_handler);
+    var vc_handler = function(e) {
+      equal(e.property, 'title');
+      equal(e.oldValue, 'Foundation');
+      equal(e.newValue, 'title');
+    };
+    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.VALUE_CHANGED, vc_handler);
     doc.getModel().getRoot().get('book')['title'] = 'title';
     equal(doc.getModel().getRoot().get('book').title, 'title');
+    doc.getModel().getRoot().get('book').removeEventListener(rdm.EventType.OBJECT_CHANGED, oc_handler);
+    doc.getModel().getRoot().get('book').removeEventListener(rdm.EventType.VALUE_CHANGED, vc_handler);
+  });
+  test('custom.getModel', function() {
+    equal(doc.getModel(), rdm.custom.getModel(doc.getModel().getRoot().get('book')));
+  });
+  test('custom.getId', function() {
+    equal(goog.isString(rdm.custom.getId(doc.getModel().getRoot().get('book'))), true);
   });
 
   module('Multiple entries');
