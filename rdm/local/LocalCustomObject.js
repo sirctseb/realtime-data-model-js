@@ -43,3 +43,11 @@ rdm.local.LocalCustomObject.prototype.executeEvent_ = function(event) {
     }
   }
 };
+
+rdm.local.LocalCustomObject.prototype.getChildren_ = function() {
+  var values = [];
+  for(var prop in this.backingFields_) {
+    values.push(this.backingFields_[prop]);
+  }
+  return values;
+};
