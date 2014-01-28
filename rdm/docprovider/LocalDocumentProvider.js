@@ -79,8 +79,9 @@ rdm.LocalDocumentProvider.registerType = function(type, name) {
  */
 rdm.LocalDocumentProvider.setInitializer = function(type, initializerFn) {
   for(var name in rdm.local.LocalModel.customTypes_) {
-    if(rdm.local.LocalModel.customTypes_[name] === type) {
+    if(rdm.local.LocalModel.customTypes_[name].type === type) {
       rdm.local.LocalModel.customTypes_[name].initializerFn = initializerFn;
+      return;
     }
   }
 };
@@ -91,8 +92,9 @@ rdm.LocalDocumentProvider.setInitializer = function(type, initializerFn) {
  */
 rdm.LocalDocumentProvider.setOnLoaded = function(type, opt_onLoadedFn) {
   for(var name in rdm.local.LocalModel.customTypes_) {
-    if(rdm.local.LocalModel.customTypes_[name] === type) {
+    if(rdm.local.LocalModel.customTypes_[name].type === type) {
       rdm.local.LocalModel.customTypes_[name].onLoadedFn = opt_onLoadedFn;
+      return;
     }
   }
 };
