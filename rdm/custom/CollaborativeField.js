@@ -23,7 +23,7 @@ rdm.custom.CollaborativeField_ = function(name) {
     configurable: false,
     enumerable: true,
     get: function () {
-      return backingfield;
+      return this.backingFields_[name];
       // this.H();
       // var b=mx(this),c=b.b,e=oe(b,this);
       // if(null==e)
