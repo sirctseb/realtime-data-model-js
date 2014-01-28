@@ -28,7 +28,7 @@ rdm.local.LocalCustomObject = function() {
 };
 goog.inherits(rdm.local.LocalCustomObject, rdm.local.LocalModelObject);
 
-rdm.local.LocalModelObject.prototype.executeEvent_ = function(event) {
+rdm.local.LocalCustomObject.prototype.executeEvent_ = function(event) {
   if(event instanceof rdm.local.LocalValueChangedEvent) {
     // set backing value
     this.backingFields_[event.property] = event.newValue;
