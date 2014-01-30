@@ -29,7 +29,6 @@ rdm.custom = {
     rdm.local.LocalCustomObject.customTypes_[name] = {type: type, fields: {}};
     // put LocalCustomObject in prototype chain
     goog.inherits(type, rdm.local.LocalCustomObject);
-    var t = new type();
 
     // do realtime registration
     // TODO check for loaded api
