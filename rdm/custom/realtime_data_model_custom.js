@@ -26,7 +26,7 @@ rdm.custom = {
   registerType: function(type, name) {
     // do local registration
     // store type info
-    rdm.local.LocalModel.customTypes_[name] = {type: type, fields: {}};
+    rdm.local.LocalCustomObject.customTypes_[name] = {type: type, fields: {}};
     // put LocalCustomObject in prototype chain
     goog.inherits(type, rdm.local.LocalCustomObject);
     var t = new type();
@@ -47,7 +47,7 @@ rdm.custom = {
     type.prototype[name] = gapi.drive.realtime.custom.collaborativeField(name);
 
     // store field on local custom object info to be added when local model creates object
-    rdm.local.LocalModel.customTypes_[rdm.local.LocalModel.customTypeName_(type)].fields[name] = 
+    rdm.local.LocalCustomObject.customTypes_[rdm.local.LocalCustomObject.customTypeName_(type)].fields[name] = 
       rdm.custom.localCollaborativeField_(name);
   },
 
@@ -90,9 +90,9 @@ rdm.custom = {
     gapi.drive.realtime.custom.setInitializer(type, initializerFn);
 
     // store initializer in local custom object info
-    for(var name in rdm.local.LocalModel.customTypes_) {
-      if(rdm.local.LocalModel.customTypes_[name].type === type) {
-        rdm.local.LocalModel.customTypes_[name].initializerFn = initializerFn;
+    for(var name in rdm.local.LocalCustomObject.customTypes_) {
+      if(rdm.local.LocalCustomObject.customTypes_[name].type === type) {
+        rdm.local.LocalCustomObject.customTypes_[name].initializerFn = initializerFn;
         return;
       }
     }
@@ -107,9 +107,9 @@ rdm.custom = {
     gapi.drive.realtime.custom.setOnLoaded(type, opt_onLoadedFn);
 
     // store loaded function in local custom object info
-    for(var name in rdm.local.LocalModel.customTypes_) {
-      if(rdm.local.LocalModel.customTypes_[name].type === type) {
-        rdm.local.LocalModel.customTypes_[name].onLoadedFn = opt_onLoadedFn;
+    for(var name in rdm.local.LocalCustomObjectustomTypes_) {
+      if(rdm.local.LocalCustomObject.customTypes_[name].type === type) {
+        rdm.local.LocalCustomObject.customTypes_[name].onLoadedFn = opt_onLoadedFn;
         return;
       }
     }

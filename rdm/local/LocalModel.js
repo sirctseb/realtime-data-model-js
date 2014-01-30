@@ -45,14 +45,6 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
   this.isInitialized_ = true;
 };
 
-/**
- * Maps from names to {type, initializerFn, onLoadedFn, fields} as registered by
- * rdm.LocalDocumentProvider.registerType, rdm.LocalDocumentProvider.setInitializer, and
- * rdm.LocalDocumentProvider.setOnLoaded
- * @private
- */
-rdm.local.LocalModel.customTypes_ = {};
-
 // TODO need to implement compound operations. meaningful for undo/redo
 // TODO also, what is beginCreationCompoundOperation
 /**
@@ -91,9 +83,9 @@ rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {}
 rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   var name = ref;
   if(goog.isString(ref)) {
-    ref = rdm.local.LocalModel.customTypes_[ref].type;
+    ref = rdm.local.LocalCustomObject.customTypes_[ref].type;
   } else {
-    name = rdm.local.LocalModel.customTypeName_(ref);
+    name = rdm.local.LocalCustomObject.customTypeName_(ref);
   }
   // TODO error if ref is now undefined
   // create instance
@@ -105,27 +97,14 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   // store id to model in map
   rdm.custom.customObjectModels_['' + rdm.custom.getId(instance)] = this;
   // replace collab fields by defining properties
-  for(var field in rdm.local.LocalModel.customTypes_[name].fields) {
-    Object.defineProperty(instance, field, rdm.local.LocalModel.customTypes_[name].fields[field]);
+  for(var field in rdm.local.LocalCustomObject.customTypes_[name].fields) {
+    Object.defineProperty(instance, field, rdm.local.LocalCustomObject.customTypes_[name].fields[field]);
   }
   // run initializer function
-  if(rdm.local.LocalModel.customTypes_[name].initializerFn) {
-    rdm.local.LocalModel.customTypes_[name].initializerFn.apply(instance, var_args);
+  if(rdm.local.LocalCustomObject.customTypes_[name].initializerFn) {
+    rdm.local.LocalCustomObject.customTypes_[name].initializerFn.apply(instance, var_args);
   }
   return instance;
-};
-
-/**
- * Given a registered custom object type, find the registered name
- * @private
- */
-rdm.local.LocalModel.customTypeName_ = function(ref) {
-  for(var name in rdm.local.LocalModel.customTypes_) {
-    if(rdm.local.LocalModel.customTypes_[name].type === ref) {
-      return name;
-    }
-  }
-  throw ref + ' is not a registered custom object type';
 };
 
 /**

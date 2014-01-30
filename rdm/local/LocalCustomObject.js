@@ -30,6 +30,27 @@ goog.inherits(rdm.local.LocalCustomObject, rdm.local.LocalModelObject);
 
 rdm.local.LocalCustomObject.instances_ = [];
 
+/**
+ * Maps from names to {type, initializerFn, onLoadedFn, fields} as registered by
+ * rdm.LocalDocumentProvider.registerType, rdm.LocalDocumentProvider.setInitializer, and
+ * rdm.LocalDocumentProvider.setOnLoaded
+ * @private
+ */
+rdm.local.LocalCustomObject.customTypes_ = {};
+
+/**
+ * Given a registered custom object type, find the registered name
+ * @private
+ */
+rdm.local.LocalCustomObject.customTypeName_ = function(ref) {
+  for(var name in rdm.local.LocalCustomObject.customTypes_) {
+    if(rdm.local.LocalCustomObject.customTypes_[name].type === ref) {
+      return name;
+    }
+  }
+  throw ref + ' is not a registered custom object type';
+};
+
 rdm.local.LocalCustomObject.prototype.executeEvent_ = function(event) {
   if(event instanceof rdm.local.LocalValueChangedEvent) {
     // set backing value
