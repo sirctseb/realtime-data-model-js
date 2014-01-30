@@ -20,7 +20,6 @@ goog.require('rdm.local.LocalModelString');
 goog.require('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalCustomObject');
 goog.require('rdm.custom');
-goog.require('rdm.custom.CollaborativeField_');
 goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModel = function() {
@@ -47,7 +46,7 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
 };
 
 /**
- * Maps from names to {type, initializerFn, onLoadedFn} as registered by
+ * Maps from names to {type, initializerFn, onLoadedFn, fields} as registered by
  * rdm.LocalDocumentProvider.registerType, rdm.LocalDocumentProvider.setInitializer, and
  * rdm.LocalDocumentProvider.setOnLoaded
  * @private
@@ -99,15 +98,15 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   // TODO error if ref is now undefined
   // create instance
   var instance = new ref();
+  // store instance in global list
+  rdm.local.LocalCustomObject.instances_.push(instance);
   // call local model object constructor
   rdm.local.LocalCustomObject.call(instance);
   // store id to model in map
   rdm.custom.customObjectModels_['' + rdm.custom.getId(instance)] = this;
   // replace collab fields by defining properties
-  for(var prop in instance) {
-    if(instance[prop] instanceof rdm.custom.CollaborativeField_) {
-      Object.defineProperty(instance, prop, instance[prop].b);
-    }
+  for(var field in rdm.local.LocalModel.customTypes_[name].fields) {
+    Object.defineProperty(instance, field, rdm.local.LocalModel.customTypes_[name].fields[field]);
   }
   // run initializer function
   if(rdm.local.LocalModel.customTypes_[name].initializerFn) {

@@ -17,7 +17,6 @@ goog.require('rdm.DocumentProvider');
 goog.require('rdm.local.LocalCustomObject');
 goog.require('rdm.local.LocalModel');
 goog.require('rdm.local.LocalDocument');
-goog.require('rdm.custom.CollaborativeField_');
 
 /**
  * A class to create local documents with no persistence
