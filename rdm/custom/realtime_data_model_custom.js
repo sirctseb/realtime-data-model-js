@@ -24,12 +24,8 @@ rdm.custom = {
    * Registers a user-defined type as a collaborative type. This must be called before {@code rdm.DocumentProvider.loadDocument}.
    */
   registerType: function(type, name) {
-    // do local registration
-    // store type info
+    // store local type info
     rdm.local.LocalCustomObject.customTypes_[name] = {type: type, fields: {}};
-    // put LocalCustomObject in prototype chain
-    goog.inherits(type, rdm.local.LocalCustomObject);
-
     // do realtime registration
     // TODO check for loaded api
     gapi.drive.realtime.custom.registerType(type, name);

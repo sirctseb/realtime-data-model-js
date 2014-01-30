@@ -90,6 +90,8 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   // TODO error if ref is now undefined
   // create instance
   var instance = new ref();
+  // extend with local custom object
+  goog.object.extend(instance, rdm.local.LocalCustomObject.prototype);
   // store instance in global list
   rdm.local.LocalCustomObject.instances_.push(instance);
   // call local model object constructor
