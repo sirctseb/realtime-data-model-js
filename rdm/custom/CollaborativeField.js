@@ -18,7 +18,6 @@ goog.require('rdm.local.LocalValueChangedEvent');
 
 rdm.custom.CollaborativeField_ = function(name) {
   // stores the actual value of the property
-  var backingfield;
   this.b = {
     configurable: false,
     enumerable: true,
