@@ -36,9 +36,16 @@
         // });
 
         var docProvider = new rdm.LocalDocumentProvider()
-        rdm.LocalDocumentProvider.registerType(book, 'Book');
-        book.prototype.title = rdm.LocalDocumentProvider.collaborativeField('title');
-        rdm.LocalDocumentProvider.setInitializer(book, function() {
+        // rdm.LocalDocumentProvider.registerType(book, 'Book');
+        // console.log(book.prototype);
+        // book.prototype.title = rdm.LocalDocumentProvider.collaborativeField('title');
+        // rdm.LocalDocumentProvider.setInitializer(book, function() {
+        //   this.title = 'Foundation';
+        // });
+
+        rdm.custom.registerType(book, 'Book');
+        rdm.custom.collaborativeField(book, 'title');
+        rdm.custom.setInitializer(book, function() {
           this.title = 'Foundation';
         });
 

@@ -21,6 +21,101 @@ rdm.custom = {
   // gapi isn't loaded
 
   /**
+   * Registers a user-defined type as a collaborative type. This must be called before {@code rdm.DocumentProvider.loadDocument}.
+   */
+  registerType: function(type, name) {
+    // do local registration
+    // store type info
+    rdm.local.LocalModel.customTypes_[name] = {type: type, fields: {}};
+    // put LocalCustomObject in prototype chain
+    goog.inherits(type, rdm.local.LocalCustomObject);
+    var t = new type();
+
+    // do realtime registration
+    // TODO check for loaded api
+    gapi.drive.realtime.custom.registerType(type, name);
+  },
+
+  /**
+   * Adds a custom collaborative property to the type. For example:
+   * rdm.custom.collaborativeField(MyClass, 'name');
+   * Instances of MyClass created by rdm.Model.create will have a field that can be read and assigned to
+   * like a regular field, but the value will automatically be saved and sent to other collaborators.
+   */
+  collaborativeField: function(type, name) {
+    // add realtime collaborative field to type prototype
+    type.prototype[name] = gapi.drive.realtime.custom.collaborativeField(name);
+
+    // store field on local custom object info to be added when local model creates object
+    rdm.local.LocalModel.customTypes_[rdm.local.LocalModel.customTypeName_(type)].fields[name] = 
+      rdm.custom.localCollaborativeField_(name);
+  },
+
+  localCollaborativeField_: function(name) {
+    // stores the actual value of the property
+    return {
+      configurable: false,
+      enumerable: true,
+      get: function () {
+        return this.backingFields_[name];
+        // this.H();
+        // var b=mx(this),c=b.b,e=oe(b,this);
+        // if(null==e)
+        //   throw Error();
+        // return de(b,c.get(e,a))
+      },
+      set: function (b) {
+        // create event
+        var event = new rdm.local.LocalValueChangedEvent(this, name, b, this.backingFields_[name] || null);
+        // emit event
+        this.emitEventsAndChanged_([event]);
+
+        // this.H();
+        // var c=mx(this),e=c.b,f=oe(c,this);
+        // if(null==f)
+        //   throw Error();
+        // b=oe(c,b);
+        // e.put(f,a,b);
+      }
+    };
+  },
+
+
+  /**
+   * Sets the initializer function for the given type.
+   * The type must have already been registered with a call to registerType.
+   */
+  setInitializer: function(type, initializerFn) {
+    // set realtime initializer
+    gapi.drive.realtime.custom.setInitializer(type, initializerFn);
+
+    // store initializer in local custom object info
+    for(var name in rdm.local.LocalModel.customTypes_) {
+      if(rdm.local.LocalModel.customTypes_[name].type === type) {
+        rdm.local.LocalModel.customTypes_[name].initializerFn = initializerFn;
+        return;
+      }
+    }
+  },
+
+  /**
+   * Sets the onLoaded function for the given type.
+   * The type must have already been registered with a call to registerType.
+   */
+  setOnLoaded: function(type, opt_onLoadedFn) {
+    // set realtime loaded function
+    gapi.drive.realtime.custom.setOnLoaded(type, opt_onLoadedFn);
+
+    // store loaded function in local custom object info
+    for(var name in rdm.local.LocalModel.customTypes_) {
+      if(rdm.local.LocalModel.customTypes_[name].type === type) {
+        rdm.local.LocalModel.customTypes_[name].onLoadedFn = opt_onLoadedFn;
+        return;
+      }
+    }
+  },
+
+  /**
    * Returns true if obj is a custom collaborative object, otherwise false.
    */
   isCustomObject: function(obj) {
@@ -28,7 +123,8 @@ rdm.custom = {
   },
 
   isLocalCustomObject_: function(obj) {
-    return obj instanceof rdm.local.LocalCustomObject;
+    // return obj instanceof rdm.local.LocalCustomObject;
+    return goog.array.contains(rdm.local.LocalCustomObject.instances_, obj);
   },
 
   /**

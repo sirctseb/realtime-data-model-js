@@ -17,7 +17,6 @@ goog.require('rdm.DocumentProvider');
 goog.require('rdm.local.LocalCustomObject');
 goog.require('rdm.local.LocalModel');
 goog.require('rdm.local.LocalDocument');
-goog.require('rdm.custom.CollaborativeField_');
 
 /**
  * A class to create local documents with no persistence
@@ -41,60 +40,4 @@ rdm.LocalDocumentProvider.prototype.loadDocument = function(onLoaded, opt_initia
 
 rdm.LocalDocumentProvider.exportDocument = function(onExported) {
   onExported(this.document.getModel().toJSON());
-};
-
-/**
- * Returns a reference that can be assigned to an object prototype
- * field of a custom collaborative object in order to define custom
- * collaborative properties. For example:
- * MyClass.prototype.name = gapi.drive.realtime.custom.collaborativeField('name');
- * The resulting field can be read and assigned to like a regular field, but the
- * value will automatically be saved and sent to other collaborators.
- * @interface
- */
-rdm.LocalDocumentProvider.collaborativeField = function(name) {
-  return new rdm.custom.CollaborativeField_(name);
-};
-
-/**
- * Returns true if obj is a custom collaborative object, otherwise false.
- * @private
- */
-rdm.LocalDocumentProvider.isCustomObject_ = function(obj) {
-  return obj instanceof rdm.local.LocalCustomObject;
-};
-
-/**
- * Registers a user-defined type as a collaborative type.
- * This must be called before {rdm.DocumentProvider.loadDocument}.
- */
-rdm.LocalDocumentProvider.registerType = function(type, name) {
-  rdm.local.LocalModel.customTypes_[name] = {type: type};
-  goog.inherits(type, rdm.local.LocalCustomObject);
-};
-
-/**
- * Sets the initializer function for the given type.
- * The type must have already been registered with a call to registerType.
- */
-rdm.LocalDocumentProvider.setInitializer = function(type, initializerFn) {
-  for(var name in rdm.local.LocalModel.customTypes_) {
-    if(rdm.local.LocalModel.customTypes_[name].type === type) {
-      rdm.local.LocalModel.customTypes_[name].initializerFn = initializerFn;
-      return;
-    }
-  }
-};
-
-/**
- * Sets the onLoaded function for the given type.
- * The type must have already been registered with a call to registerType.
- */
-rdm.LocalDocumentProvider.setOnLoaded = function(type, opt_onLoadedFn) {
-  for(var name in rdm.local.LocalModel.customTypes_) {
-    if(rdm.local.LocalModel.customTypes_[name].type === type) {
-      rdm.local.LocalModel.customTypes_[name].onLoadedFn = opt_onLoadedFn;
-      return;
-    }
-  }
 };
