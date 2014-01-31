@@ -26,6 +26,6 @@ rdm.local.LocalValueChangedEvent = function(target_, property, newValue, oldValu
 goog.inherits(rdm.local.LocalValueChangedEvent, rdm.local.LocalUndoableEvent);
 
 rdm.local.LocalValueChangedEvent.prototype.getInverse = function() {
-  return new rdm.local.LocalValueChangedEvent(this.target_, this.property, this.newValue, this.oldValue);
+  return new rdm.local.LocalValueChangedEvent(this.target_, this.property, this.oldValue, this.newValue);
 };
 
