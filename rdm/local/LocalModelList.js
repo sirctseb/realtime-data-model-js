@@ -102,7 +102,7 @@ rdm.local.LocalModelList.prototype.get = function(index) {
  * @expose
  */
 rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
-  if(opt_comparatorRn) {
+  if(opt_comparatorFn) {
     for(var i = 0; i < this.list_.length; i++) {
       if(opt_comparatorFn(this.list_[i], value)) {
         return i;
