@@ -88,7 +88,7 @@ rdm.local.LocalModelMap.prototype.isEmpty = function() {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.items = function() {
-  return this.map_.keys().map(function(key) { return [key, this.map_[key]]; });
+  return Object.keys(this.map_).map(function(key) { return [key, this.map_[key]]; });
 };
 
 
@@ -96,7 +96,7 @@ rdm.local.LocalModelMap.prototype.items = function() {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.keys = function() {
-  return this.map_.keys().slice(0);
+  return Object.keys(this.map_).slice(0);
 };
 
 
@@ -117,7 +117,7 @@ rdm.local.LocalModelMap.prototype.set = function(key, value) {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.values = function() {
-  return this.map_.keys().map(function(key) { return this.map_[key]; });
+  return Object.keys(this.map_).map(function(key) { return this.map_[key]; });
 };
 
 
