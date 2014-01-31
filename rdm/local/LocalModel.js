@@ -18,6 +18,8 @@ goog.require('rdm.local.LocalModelList');
 goog.require('rdm.local.LocalModelMap');
 goog.require('rdm.local.LocalModelString');
 goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.LocalCustomObject');
+goog.require('rdm.custom');
 goog.require('goog.events.EventTarget');
 
 rdm.local.LocalModel = function() {
@@ -79,7 +81,32 @@ rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {}
  * @expose
  */
 rdm.local.LocalModel.prototype.create = function(ref, var_args) {
-  return null;
+  var name = ref;
+  if(goog.isString(ref)) {
+    ref = rdm.local.LocalCustomObject.customTypes_[ref].type;
+  } else {
+    name = rdm.local.LocalCustomObject.customTypeName_(ref);
+  }
+  // TODO error if ref is now undefined
+  // create instance
+  var instance = new ref();
+  // extend with local custom object
+  goog.object.extend(instance, rdm.local.LocalCustomObject.prototype);
+  // store instance in global list
+  rdm.local.LocalCustomObject.instances_.push(instance);
+  // call local model object constructor
+  rdm.local.LocalCustomObject.call(instance);
+  // store id to model in map
+  rdm.custom.customObjectModels_['' + rdm.custom.getId(instance)] = this;
+  // replace collab fields by defining properties
+  for(var field in rdm.local.LocalCustomObject.customTypes_[name].fields) {
+    Object.defineProperty(instance, field, rdm.local.LocalCustomObject.customTypes_[name].fields[field]);
+  }
+  // run initializer function
+  if(rdm.local.LocalCustomObject.customTypes_[name].initializerFn) {
+    rdm.local.LocalCustomObject.customTypes_[name].initializerFn.apply(instance, var_args);
+  }
+  return instance;
 };
 
 /**

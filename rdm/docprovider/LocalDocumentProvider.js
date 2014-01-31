@@ -14,6 +14,9 @@
 
 goog.provide('rdm.LocalDocumentProvider');
 goog.require('rdm.DocumentProvider');
+goog.require('rdm.local.LocalCustomObject');
+goog.require('rdm.local.LocalModel');
+goog.require('rdm.local.LocalDocument');
 
 /**
  * A class to create local documents with no persistence
@@ -35,6 +38,6 @@ rdm.LocalDocumentProvider.prototype.loadDocument = function(onLoaded, opt_initia
   onLoaded(this.document);
 };
 
-rdm.LocalDocumentProvider.prototype.exportDocument = function(onExported) {
+rdm.LocalDocumentProvider.exportDocument = function(onExported) {
   onExported(this.document.getModel().toJSON());
 };

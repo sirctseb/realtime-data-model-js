@@ -44,7 +44,72 @@ onFileLoaded = function(doc) {
     doc.getModel().undo();
   });
 
+  var map = doc.getModel().getRoot().get('map');
+  var list = doc.getModel().getRoot().get('list');
   var string = doc.getModel().getRoot().get('text');
+  module('Compound Operations');
+  test('Compound map additions', function() {
+    map.set('compound1', 'val1');
+    map.set('compound2', 'val2');
+    doc.getModel().undo();
+    notEqual(map.keys().indexOf('compound1'), -1);
+    equal(map.keys().indexOf('compound2'), -1);
+    doc.getModel().undo();
+    doc.getModel().beginCompoundOperation();
+    map.set('compound1', 'val1');
+    map.set('compound2', 'val2');
+    doc.getModel().endCompoundOperation();
+    equal(map.get('compound1'), 'val1');
+    equal(map.get('compound2'), 'val2');
+    doc.getModel().undo();
+    equal(map.keys().indexOf('compound1'), -1);
+    equal(map.keys().indexOf('compound2'), -1);
+  });
+  test('Compound events', function() {
+    expect(7);
+    map.clear();
+    var rootOC = function(e) {
+      equal(e.type, 'object_changed');
+    };
+    var mapVC = function(e) {
+      equal(e.type, 'value_changed');
+    };
+    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
+    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    doc.getModel().beginCompoundOperation();
+    map.set('compound1', 'val1');
+    map.set('compound2', 'val2');
+    doc.getModel().endCompoundOperation();
+    doc.getModel().undo();
+    doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
+    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+  });
+  test('Compound list, string, map', function() {
+    map.clear();
+    map.set('key1', 'val1');
+    list.clear();
+    list.push('val1');
+    string.set('');
+    doc.getModel().beginCompoundOperation();
+    map.remove('key1');
+    map.set('key2', 'val2');
+    list.remove(0);
+    list.push('val2');
+    string.setText('val1');
+    doc.getModel().endCompoundOperation();
+    equal(map.keys().indexOf('key1'), -1);
+    equal(map.get('key2'), 'val2');
+    equal(list.indexOf('val1'), -1);
+    equal(list.get(0), 'val2');
+    equal(string.getText(), 'val2');
+    doc.getModel().undo();
+    equal(map.keys().indexOf('key2'), -1);
+    equal(map.get('key1'), 'val1');
+    equal(list.indexOf('val2'), -1);
+    equal(list.get(0), 'val1');
+    equal(string.getText(), 'val1');
+  });
+
   module('CollaborativeString', {
     setup: function() {
       console.log('setting up string');
@@ -107,7 +172,6 @@ onFileLoaded = function(doc) {
     string.removeRange(4, 6);
   });
 
-  var list = doc.getModel().getRoot().get('list');
   module('CollaborativeList', {
     setup: function() {
       list.clear();
@@ -189,7 +253,6 @@ onFileLoaded = function(doc) {
     doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, ss);
   });
 
-  var map = doc.getModel().getRoot().get('map');
   module('CollaborativeMap', {
     setup: function() {
       map.clear();
@@ -374,19 +437,35 @@ onFileLoaded = function(doc) {
 
   module('Custom');
   test('Book is custom object', function() {
-    equal(gapi.drive.realtime.custom.isCustomObject(doc.getModel().getRoot().get('book')), true);
-    equal(gapi.drive.realtime.custom.isCustomObject(doc.getModel().getRoot().get('text')), false);
+    equal(rdm.custom.isCustomObject(doc.getModel().getRoot().get('book')), true);
+    equal(rdm.custom.isCustomObject(doc.getModel().getRoot().get('text')), false);
+  });
+  test('Initializer fn', function() {
+    equal(doc.getModel().getRoot().get('book').title, 'Foundation');
   });
   test('Set title', function() {
-    equal(doc.getModel().getRoot().get('book').title, null);
-    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.OBJECT_CHANGED, function(e) {
-      console.log(e);
-    });
-    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.VALUE_CHANGED, function(e) {
-      console.log(e.property + ' changed from ' + e.oldValue + ' to ' + e.newValue);
-    });
+    expect(6);
+    equal(doc.getModel().getRoot().get('book').title, 'Foundation');
+    var oc_handler = function(e) {
+      equal(e.events[0].type, 'value_changed');
+    };
+    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.OBJECT_CHANGED, oc_handler);
+    var vc_handler = function(e) {
+      equal(e.property, 'title');
+      equal(e.oldValue, 'Foundation');
+      equal(e.newValue, 'title');
+    };
+    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.VALUE_CHANGED, vc_handler);
     doc.getModel().getRoot().get('book')['title'] = 'title';
     equal(doc.getModel().getRoot().get('book').title, 'title');
+    doc.getModel().getRoot().get('book').removeEventListener(rdm.EventType.OBJECT_CHANGED, oc_handler);
+    doc.getModel().getRoot().get('book').removeEventListener(rdm.EventType.VALUE_CHANGED, vc_handler);
+  });
+  test('custom.getModel', function() {
+    equal(doc.getModel(), rdm.custom.getModel(doc.getModel().getRoot().get('book')));
+  });
+  test('custom.getId', function() {
+    equal(goog.isString(rdm.custom.getId(doc.getModel().getRoot().get('book'))), true);
   });
 
   module('Multiple entries');
