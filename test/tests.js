@@ -1,14 +1,14 @@
 initializeModel = function(model) {
-  console.log('initializeModel called');
   model.getRoot().set('text', model.createString('Hello Realtime World!'));
   model.getRoot().set('list', model.createList());
   model.getRoot().set('map', model.createMap());
   model.getRoot().set('book', model.create('Book'));
-  console.log('initializeModel ending');
 };
 
 onFileLoaded = function(doc) {
-  console.log('onFileLoaded called');
+  var map = doc.getModel().getRoot().get('map');
+  var list = doc.getModel().getRoot().get('list');
+  var string = doc.getModel().getRoot().get('text');
   module('Undo');
   test("start undo state", function() {
     equal(doc.getModel().canUndo, false);
@@ -43,10 +43,78 @@ onFileLoaded = function(doc) {
     equal(doc.getModel().getRoot().get('text').getText(), 'redid');
     doc.getModel().undo();
   });
+  test('undo event type', function() {
+    expect(2);
+    list.clear();
+    var listVR = function(e) {
+      equal(e.type, rdm.EventType.VALUES_REMOVED);
+    };
+    var listVA = function(e) {
+      equal(e.type, rdm.EventType.VALUES_ADDED);
+    };
+    list.addEventListener(rdm.EventType.VALUES_REMOVED, listVR);
+    list.addEventListener(rdm.EventType.VALUES_ADDED, listVA);
+    list.push('value');
+    doc.getModel().undo();
+    list.removeEventListener(rdm.EventType.VALUES_REMOVED, listVR);
+    list.removeEventListener(rdm.EventType.VALUES_ADDED, listVA);
+  });
+  test('event order during undo', function() {
+    map.clear();
+    list.clear();
+    var orderString = '';
+    var mapVC = function(e) {
+      orderString += 'mapVC' + e.property;
+    };
+    var listVR = function(e) {
+      orderString += 'listVR' + e.values[0];
+    };
+    doc.getModel().beginCompoundOperation();
+    map.set('key1', 'value1');
+    list.push('value');
+    map.set('key2', 'value2');
+    doc.getModel().endCompoundOperation();
+    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    list.addEventListener(rdm.EventType.VALUES_REMOVED, listVR);
+    doc.getModel().undo();
+    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    list.removeEventListener(rdm.EventType.VALUES_REMOVED, listVR);
+    equal(orderString, 'mapVCkey2listVRvaluemapVCkey1');
+  });
+  test('event order with event handler', function() {
+    map.clear();
+    list.clear();
+    list.push(1);
+    var first = true;
+    var orderString = '';
+    var mapVC = function(e) {
+      orderString += 'mapVC';
+      if(first) {
+        list.set(0,2);
+        equal(list.get(0), 2);
+        first = false;
+      }
+    };
+    var listVS = function(e) {
+      orderString += 'listVS' + e.newValues[0];
+    };
+    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    list.addEventListener(rdm.EventType.VALUES_SET, listVS);
+    map.set('key', 'val');
+    equal(list.get(0), 2);
+    equal(orderString, 'mapVClistVS2');
+    orderString = '';
+    doc.getModel().undo();
+    equal(list.get(0), 1);
+    equal(orderString, 'listVS1mapVC');
+    orderString = '';
+    doc.getModel().redo();
+    equal(list.get(0), 2);
+    equal(orderString, 'mapVClistVS2');
+    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
+  });
 
-  var map = doc.getModel().getRoot().get('map');
-  var list = doc.getModel().getRoot().get('list');
-  var string = doc.getModel().getRoot().get('text');
   module('Compound Operations');
   test('Compound map additions', function() {
     map.set('compound1', 'val1');
@@ -66,7 +134,7 @@ onFileLoaded = function(doc) {
     equal(map.keys().indexOf('compound2'), -1);
   });
   test('Compound events', function() {
-    expect(7);
+    expect(10);
     map.clear();
     var rootOC = function(e) {
       equal(e.type, 'object_changed');
@@ -74,28 +142,34 @@ onFileLoaded = function(doc) {
     var mapVC = function(e) {
       equal(e.type, 'value_changed');
     };
+    var mapOC = function(e) {
+      equal(e.type, 'object_changed');
+    };
     doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
     map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    map.addEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
     doc.getModel().beginCompoundOperation();
     map.set('compound1', 'val1');
     map.set('compound2', 'val2');
     doc.getModel().endCompoundOperation();
     doc.getModel().undo();
+    // doc.getModel().redo();
     doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    map.removeEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
   });
   test('Compound list, string, map', function() {
     map.clear();
     map.set('key1', 'val1');
     list.clear();
     list.push('val1');
-    string.set('');
+    string.setText('val1');
     doc.getModel().beginCompoundOperation();
-    map.remove('key1');
+    map.delete('key1');
     map.set('key2', 'val2');
     list.remove(0);
     list.push('val2');
-    string.setText('val1');
+    string.setText('val2');
     doc.getModel().endCompoundOperation();
     equal(map.keys().indexOf('key1'), -1);
     equal(map.get('key2'), 'val2');
@@ -109,27 +183,48 @@ onFileLoaded = function(doc) {
     equal(list.get(0), 'val1');
     equal(string.getText(), 'val1');
   });
+  test('List, map events', function() {
+    expect(4);
+    map.clear();
+    list.clear();
+    doc.getModel().beginCompoundOperation();
+    map.set('key1', 'val1');
+    map.set('key2', 'val2');
+    list.push('val1');
+    doc.getModel().endCompoundOperation();
+    var rootOC = function(e) {
+      equal(e.type, 'object_changed');
+    };
+    var listOC = function(e) {
+      equal(e.type, 'object_changed');
+    };
+    var mapOC = function(e) {
+      equal(e.type, 'object_changed');
+    };
+    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
+    map.addEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
+    list.addEventListener(rdm.EventType.OBJECT_CHANGED, listOC);
+    doc.getModel().undo();
+    doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
+    map.removeEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
+    list.removeEventListener(rdm.EventType.OBJECT_CHANGED, listOC);
+  });
 
   module('CollaborativeString', {
     setup: function() {
-      console.log('setting up string');
       string.setText('unittest');
     }});
   test('get length', function() {
-    console.log('get length');
     equal(string.length, 8);
   });
   test('append(String text)', function() {
-    console.log('append string test');
     string.append(' append');
     equal(string.getText(), 'unittest append');
   });
   test('get text', function() {
-    console.log('get text');
     equal(string.getText(), 'unittest');
   });
   test('insertString(int index, String text)', function() {
-    console.log('insert string');
     string.insertString(4, ' append ');
     equal(string.getText(), 'unit append test');
   });
@@ -267,6 +362,11 @@ onFileLoaded = function(doc) {
     map.set('nullkey', null);
     strictEqual(map.get('nullkey'), null);
     equal(map.has('nullkey'), false);
+    equal(map.keys().indexOf('nullkey'), -1);
+    map.set('nullkey', 'value');
+    doc.getModel().undo();
+    equal(map.has('nullkey'), false);
+    equal(map.keys().indexOf('nullkey'), -1);
   });
   test('size with null', function() {
     equal(map.size, 1);
@@ -495,19 +595,16 @@ onFileLoaded = function(doc) {
     equal(doc.getModel().getRoot().get('map').get('dupmap1').get('str'),
           doc.getModel().getRoot().get('map').get('dupmap2').get('str'));
     var ssObjChanged1 = function(e) {
-      console.log('dupmap1 handler');
       equal(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('dupmap1').addEventListener(
       rdm.EventType.OBJECT_CHANGED, ssObjChanged1);
     var ssObjChanged2 = function(e) {
-      console.log('dupmap2 handler');
       equal(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('dupmap2').addEventListener(
       rdm.EventType.OBJECT_CHANGED, ssObjChanged2);
     var ssRootChanged = function(e) {
-      console.log('root handler');
       equal(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').addEventListener(
@@ -537,28 +634,24 @@ onFileLoaded = function(doc) {
     doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').get('subsubmap').set('str', str);
 
     var ssMapChanged = function(e) {
-      console.log('Top map change');
       equal(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').addEventListener(
       rdm.EventType.OBJECT_CHANGED,
       ssMapChanged);
     var ssSubMapChanged = function(e) {
-      console.log('Sub map change');
       equal(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').addEventListener(
       rdm.EventType.OBJECT_CHANGED,
       ssSubMapChanged);
     var ssSubSubMapChanged = function(e) {
-      console.log('Sub sub map change');
       equal(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').get('subsubmap').addEventListener(
       rdm.EventType.OBJECT_CHANGED,
       ssSubSubMapChanged);
     var ssStringChanged = function(e) {
-      console.log('String change');
       equal(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').get('str').addEventListener(
@@ -586,17 +679,14 @@ onFileLoaded = function(doc) {
     map2.set('map1', map1);
     map1.set('map2b', map2);
     var ssMap1 = function(e) {
-      console.log('map1 change');
       equal(e.events[0].type, 'value_changed');
     };
     map1.addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap1);
     var ssMap2 = function(e) {
-      console.log('map2 change');
       equal(e.events[0].type, 'value_changed');
     };
     map2.addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap2);
     var ssMap = function(e) {
-      console.log('map change');
       equal(e.events[0].type, 'value_changed');
     };
     doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
@@ -620,39 +710,4 @@ onFileLoaded = function(doc) {
     doc.getModel().getRoot().get('self').set('key', 'val');
     doc.getModel().getRoot().get('self').removeEventListener(rdm.EventType.OBJECT_CHANGED, rootChanged);
   });
-};
-
-/**
- * Options for the Realtime loader.
- */
-realtimeOptions = {
-   /**
-  * Client ID from the APIs Console.
-  */
-  'clientId': '1066816720974',
-
-   /**
-  * The ID of the button to click to authorize. Must be a DOM element ID.
-  */
-   'authButtonElementId': 'authorizeButton',
-
-   /**
-  * Function to be called when a Realtime model is first created.
-  */
-   'initializeModel': initializeModel,
-
-   /**
-  * Autocreate files right after auth automatically.
-  */
-   'autoCreate': true,
-
-   /**
-  * Autocreate files right after auth automatically.
-  */
-   'defaultTitle': "New Realtime Quickstart File",
-
-   /**
-  * Function to be called every time a Realtime file is loaded.
-  */
-   'onFileLoaded': onFileLoaded
 };
