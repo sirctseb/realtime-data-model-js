@@ -32,7 +32,7 @@ rdm.local.LocalModel = function() {
     "canUndo": { get: function() { return this.undoHistory_.canUndo; } },
     "canRedo": { get: function() { return this.undoHistory_.canRedo; } }
   });
-  this.root_ = new rdm.local.LocalModelMap();
+  this.root_ = this.createMap();
   this.isInitialized_ = false;
 };
 goog.inherits(rdm.local.LocalModel, goog.events.EventTarget);
