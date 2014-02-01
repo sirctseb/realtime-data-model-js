@@ -54,7 +54,9 @@ rdm.local.LocalModel.prototype.beginCreationCompoundOperation = function() {};
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.endCompoundOperation = function() {};
+rdm.local.LocalModel.prototype.endCompoundOperation = function() {
+  this.undoHistory_.endExplicitCO();
+};
 /**
  * @expose
  */
@@ -74,7 +76,9 @@ rdm.local.LocalModel.prototype.isInitialized = function() {
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {}
+rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {
+  this.undoHistory_.beginExplicitCO();
+};
 
 // TODO implement LocalModelObject and return here
 /**
