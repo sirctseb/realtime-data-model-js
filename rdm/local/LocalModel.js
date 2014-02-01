@@ -95,7 +95,7 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   // store instance in global list
   rdm.local.LocalCustomObject.instances_.push(instance);
   // call local model object constructor
-  rdm.local.LocalCustomObject.call(instance);
+  rdm.local.LocalCustomObject.call(instance, this);
   // store id to model in map
   rdm.custom.customObjectModels_['' + rdm.custom.getId(instance)] = this;
   // replace collab fields by defining properties
@@ -113,21 +113,21 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
  * @expose
  */
 rdm.local.LocalModel.prototype.createList = function(initialValue) {
-  return new rdm.local.LocalModelList(initialValue);
+  return new rdm.local.LocalModelList(this, initialValue);
 };
 
 /**
  * @expose
  */
 rdm.local.LocalModel.prototype.createMap = function(initialValue) {
-  return new rdm.local.LocalModelMap(initialValue);
+  return new rdm.local.LocalModelMap(this, initialValue);
 };
 
 /**
  * @expose
  */
 rdm.local.LocalModel.prototype.createString = function(initialValue) {
-  return new rdm.local.LocalModelString(initialValue);
+  return new rdm.local.LocalModelString(this, initialValue);
 }
 
 /**

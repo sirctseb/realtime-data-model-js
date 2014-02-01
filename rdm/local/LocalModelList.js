@@ -21,8 +21,8 @@ goog.require('rdm.local.LocalModelObject');
 goog.require('rdm.EventType');
 goog.require('goog.array');
 
-rdm.local.LocalModelList = function(initialValue) {
-  rdm.local.LocalIndexReferenceContainer.call(this);
+rdm.local.LocalModelList = function(model, initialValue) {
+  rdm.local.LocalIndexReferenceContainer.call(this, model);
   this.list_ = initialValue || [];
   this.list_.map(function(element) { propogateChanges_(element); });
   // TODO add tests for length property

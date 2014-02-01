@@ -17,8 +17,8 @@ goog.require('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalValueChangedEvent');
 goog.require('rdm.EventType');
 
-rdm.local.LocalModelMap = function(initialValue) {
-  rdm.local.LocalModelObject.call(this);
+rdm.local.LocalModelMap = function(model, initialValue) {
+  rdm.local.LocalModelObject.call(this, model);
   this.map_ = initialValue || {};
   for(var key in this.map_) {
     if(this.map_[key] instanceof rdm.local.LocalModelObject) {

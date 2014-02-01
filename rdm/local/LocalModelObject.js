@@ -16,9 +16,10 @@ goog.provide('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.EventTarget');
 
-rdm.local.LocalModelObject = function() {
+rdm.local.LocalModelObject = function(model) {
   rdm.local.EventTarget.call(this);
   this.id_ = rdm.local.LocalModelObject.idNum_.toString();
+  this.model_ = model;
   rdm.local.LocalModelObject.idNum_++;
   Object.defineProperties(this, {
     'id': { get: function() { return this.id_; }}

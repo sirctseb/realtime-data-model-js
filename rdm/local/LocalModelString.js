@@ -18,8 +18,8 @@ goog.require('rdm.local.LocalTextInsertedEvent');
 goog.require('rdm.local.LocalTextDeletedEvent');
 goog.require('rdm.EventType');
 
-rdm.local.LocalModelString = function(initialValue) {
-  rdm.local.LocalIndexReferenceContainer.call(this);
+rdm.local.LocalModelString = function(model, initialValue) {
+  rdm.local.LocalIndexReferenceContainer.call(this, model);
   this.string_ = initialValue || "";
   Object.defineProperty(this, "length", {
     get: function() { return this.string_.length; }
