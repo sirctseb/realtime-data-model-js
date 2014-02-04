@@ -410,6 +410,70 @@ onFileLoaded = function(doc) {
   //   map.set('key1', 'val1');
   //   map.set('key2', 'val2');
   // });
+  test('undo in compound list operation', function() {
+    var oldValue;
+    var newValue;
+    list.clear();
+    list.push(null);
+    var listVS = function(e) {
+      // console.log('old: ' + e.oldValue + ', new: ' + e.newValue);
+      equal(e.oldValues[0], oldValue);
+      equal(e.newValues[0], newValue);
+      // special case updates for paired undo / redo events
+      if(oldValue === 'val2' && newValue === 'val4') {
+        oldValue = 'val4'; newValue = 'val3';
+      } else if(oldValue === 'val3' && newValue === 'val4') {
+        oldValue = 'val4'; newValue = 'val2';
+      }
+    };
+    list.addEventListener(rdm.EventType.VALUES_SET, listVS);
+    oldValue = null; newValue = 'val0';
+    list.set(0, 'val0');
+    oldValue = 'val0'; newValue = 'val1';
+    list.set(0, 'val1');
+    oldValue = 'val1'; newValue = 'val2';
+    list.set(0, 'val2');
+    oldValue = 'val2'; newValue = 'val3';
+    list.set(0, 'val3');
+    doc.getModel().beginCompoundOperation();
+    oldValue = 'val3'; newValue = 'val4';
+    console.log('set to val4 in compound');
+    list.set(0, 'val4');
+    equal(list.get(0), 'val4');
+    oldValue = 'val4'; newValue = 'val2';
+    console.log('undo in compound');
+    doc.getModel().undo();
+    equal(list.get(0), 'val2');
+    equal(doc.getModel().canRedo, false);
+    doc.getModel().endCompoundOperation();
+    equal(list.get(0), 'val2');
+    equal(doc.getModel().canRedo, false);
+    oldValue = 'val2'; newValue = 'val4';
+    console.log('undo');
+    doc.getModel().undo();
+    equal(list.get(0), 'val3');
+    equal(doc.getModel().canRedo, true);
+    oldValue = 'val3'; newValue = 'val4';
+    console.log('redo');
+    doc.getModel().redo();
+    equal(list.get(0), 'val2');
+    equal(doc.getModel().canRedo, false);
+    console.log('undo');
+    oldValue = 'val2'; newValue = 'val4';
+    doc.getModel().undo();
+    equal(list.get(0), 'val3');
+    oldValue = 'val3'; newValue = 'val1';
+    console.log('undo');
+    doc.getModel().undo();
+    equal(list.get(0), 'val1');
+    oldValue = 'val1'; newValue = 'val0';
+    doc.getModel().undo();
+    equal(list.get(0), 'val0');
+    oldValue = 'val0'; newValue = null;
+    doc.getModel().undo();
+    equal(list.get(0), null);
+    list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
+  });
 
   module('CollaborativeString', {
     setup: function() {
@@ -548,6 +612,17 @@ onFileLoaded = function(doc) {
 
     doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, ss);
   });
+  test('same value', function() {
+    expect(4);
+    var listVS = function(e) {
+      equal(e.type, rdm.EventType.VALUES_SET);
+      equal(e.newValues[0], 1);
+    };
+    list.addEventListener(rdm.EventType.VALUES_SET, listVS);
+    list.set(0, 1);
+    list.set(0, 1);
+    list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
+  });
 
   module('CollaborativeMap', {
     setup: function() {
@@ -640,16 +715,29 @@ onFileLoaded = function(doc) {
     map.set('key1',null);
     equal(map.size, 0);
   });
+  test('set return value', function() {
+    map.clear();
+    map.set('key', 'val');
+    var oldVal = map.set('key', 'val2');
+    equal(oldVal, 'val');
+  });
+  test('delete return value', function() {
+    map.set('key', 'val');
+    var oldVal = map.delete('key');
+    equal(oldVal, 'val');
+  });
   test('same value', function() {
-    expect(0);
+    expect(3);
     map.clear();
     map.set('key1', 'val1');
+    map.set('key1', 'val2');
     var mapVC = function(e) {
-      equal(e.newValue, 'val1');
-      equal(e.oldValue, 'val1');
+      equal(e.newValue, 'val3');
+      equal(e.oldValue, 'val2');
     };
     map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    map.set('key1', 'val1');
+    var val = map.set('key1', 'val3');
+    equal(val, 'val2');
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
   });
 
