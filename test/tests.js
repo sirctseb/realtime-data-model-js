@@ -485,6 +485,27 @@ onFileLoaded = function(doc) {
     doc.getModel().endCompoundOperation();
     equal(string.getText(), 'aa0345126789');
   });
+  test('nested compound operations', function() {
+    map.clear();
+    map.set('key', 0);
+    list.clear();
+    list.push(0);
+    string.setText('0');
+    doc.getModel().beginCompoundOperation();
+    map.set('key', 1);
+    doc.getModel().beginCompoundOperation();
+    list.set(0, 1);
+    doc.getModel().endCompoundOperation();
+    string.setText('1');
+    doc.getModel().endCompoundOperation();
+    equal(map.get('key'), 1);
+    equal(list.get(0), 1);
+    equal(string.getText(), '1');
+    doc.getModel().undo();
+    equal(map.get('key'), 0);
+    equal(list.get(0), 0);
+    equal(string.getText(), '0');
+  });
 
   module('CollaborativeString', {
     setup: function() {
@@ -750,6 +771,17 @@ onFileLoaded = function(doc) {
     var val = map.set('key1', 'val3');
     equal(val, 'val2');
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+  });
+  test('undo to absent', function() {
+    map.clear();
+    equal(map.has('key1'), false);
+    equal(map.keys().indexOf('key1'), -1);
+    map.set('key1', 'val1');
+    equal(map.has('key1'), true);
+    notEqual(map.keys().indexOf('key1'), -1);
+    doc.getModel().undo();
+    equal(map.has('key1'), false);
+    equal(map.keys().indexOf('key1'), -1);
   });
 
   module('RealtimeIndexReference');
