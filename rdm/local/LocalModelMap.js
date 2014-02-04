@@ -64,7 +64,7 @@ rdm.local.LocalModelMap.prototype['delete'] = function(key) {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.get = function(key) {
-  return this.map_[key] || null;
+  return this.map_[key] === undefined ? null : this.map_[key];
 };
 
 
@@ -72,7 +72,7 @@ rdm.local.LocalModelMap.prototype.get = function(key) {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.has = function(key) {
-  return this.map_[key] != null;
+  return this.map_[key] !== undefined;
 };
 
 
@@ -80,7 +80,7 @@ rdm.local.LocalModelMap.prototype.has = function(key) {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.isEmpty = function() {
-  return this.map_.size == 0;
+  return this.map_.size === 0;
 };
 
 
@@ -111,7 +111,7 @@ rdm.local.LocalModelMap.prototype.set = function(key, value) {
   // save the current value for return
   var ret = this.map_[key];
   // send the event
-  var event = new rdm.local.LocalValueChangedEvent(this, key, value, this.map_[key]);
+  var event = new rdm.local.LocalValueChangedEvent(this, key, value, this.map_[key] === undefined ? null : this.map_[key]);
   this.emitEventsAndChanged_([event]);
   return ret;
 };
@@ -128,7 +128,7 @@ rdm.local.LocalModelMap.prototype.values = function() {
 rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
   if(event.type == rdm.EventType.VALUE_CHANGED) {
     this.map_[event.property] = event.newValue;
-    if(this.map_[event.property] == null) {
+    if(this.map_[event.property] === null) {
       delete this.map_[event.property];
     }
     // stop propagating changes if we're writing over a model object
