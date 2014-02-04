@@ -21,91 +21,94 @@ goog.require('rdm.EventType')
 rdm.local.UndoHistory = function(model) {
   this.model = model;
   this.history_ = [];
-  this.index_ = -1;
+  /**
+   * The current index into the undo history.
+   * The changes specified by this.history_[0] through this.history_[this.index_ - 1] have been applied
+   * and are stored as inverses of the original change. The changes specified by
+   * this.history_[this.index_] throught this.history_[this.history_.length - 1] have been undone and
+   * are stored as the original changed.
+   * @private
+   */
+  this.index_ = 0;
+  /**
+   * The list of changes that constitute the currently developing compound operation. When the compound operation
+   * is ended, this list will be added to the history at the current index.
+   * @private
+   */
+  this.currentCO_ = null;
+  /**
+   * The stack of compound operation scopes. An entry is added each time beginCompoundOperation is called, and removed
+   * each time endCompoundOperation is called.
+   */
+  this.COScopes_ = [];
   var this_ = this;
   Object.defineProperties(this, {
     "canUndo": {
-      get: function() { return this_.index_ > -1; }
+      get: function() { return this_.index_ > 0; }
     },
     "canRedo": {
       get: function() {
-        var ret = this_.index_ < this_.history_.length - 1;
+        var ret = this_.index_ < this_.history_.length;
         return ret;
       }
     }
   });
 };
 
-rdm.local.UndoHistory.prototype.pushCompoundOperation = function() {
-  // TODO update undo/redo state and fire event
-  this.index_++;
-  this.history_.splice(this.index_, this.history_.length, []);
+rdm.local.UndoHistory.prototype.beginCompoundOperation = function(scope) {
+  if(this.COScopes_.length == 0) {
+    // create storage for operations in the CO
+    this.currentCO_ = [];
+  }
+  this.COScopes_.push(scope);
+};
+// Complete the compound operation and add to the undo history
+rdm.local.UndoHistory.prototype.endCompoundOperation = function() {
+  var scope = this.COScopes_.pop();
+  if(this.COScopes_.length == 0) {
+    // invert the operations and reverse the order
+    var inverseCO = this.currentCO_.map(function(op) {
+      return op.getInverse();
+    }).reverse();
+    // clear current CO
+    this.currentCO_ = null;
+    if(scope === rdm.local.UndoHistory.Scope.UNDO) {
+      // if we started from an undo, replace history at previous index with current CO and update index
+      this.history_[this.index_] = inverseCO;
+    } else if(scope === rdm.local.UndoHistory.Scope.REDO) {
+      // if we started from a redo, replace history at current index with current CO and update index
+      this.history_[this.index_] = inverseCO;
+    } else if(scope !== rdm.local.UndoHistory.Scope.INIT) {
+      // add to the history
+      this.history_.splice(this.index_, this.history_.length, inverseCO);
+      // update index
+      this.index_++;
+    }
+  }
 };
 
 rdm.local.UndoHistory.Scope = {
   NONE: 0,
-  CO: 1,
   EXPLICIT_CO: 2,
   UNDO: 3,
   REDO: 4,
   INIT: 5
 };
 rdm.local.UndoHistory.prototype.scope = rdm.local.UndoHistory.Scope.NONE;
-/**
- * Returns true if scope is at least rdm.local.UndoHistory.Scope.OC
- */
-rdm.local.UndoHistory.prototype.inCO = function() {
-  return this.scope_ >= rdm.local.UndoHistory.Scope.CO;
-};
-/**
- * If not already in an explicit compound operation or higher, raise scope to CO
- */
-rdm.local.UndoHistory.prototype.beginCO = function() {
-  if(this.scope_ < rdm.local.UndoHistory.Scope.CO) {
-    this.scope_ = rdm.local.UndoHistory.Scope.CO;
-    this.pushCompoundOperation();
-  }
-};
-/**
- * If not in an explicit compound operation or higher, reduce the scope to NONE
- */
-rdm.local.UndoHistory.prototype.endCO = function() {
-  if(this.scope_ < rdm.local.UndoHistory.Scope.EXPLICIT_CO) {
-    this.scope_ = rdm.local.UndoHistory.Scope.NONE;
-  }
-};
-/**
- * Start explicit compound operation
- */
-rdm.local.UndoHistory.prototype.beginExplicitCO = function() {
-  // TODO error check current scope for explicitco, undo, redo. test what should happen if already in co
-  // TODO probably if in co, we should set to explicitco but shouldn't start a new co
-  this.scope_ = rdm.local.UndoHistory.Scope.EXPLICIT_CO;
-  this.pushCompoundOperation();
-};
-rdm.local.UndoHistory.prototype.endExplicitCO = function() {
-  // TODO error check current scope state
-  this.scope_ = rdm.local.UndoHistory.Scope.NONE;
-};
 
-// Add a list of events to the current undo index
+// Add a list of events to the current compound operation
 rdm.local.UndoHistory.prototype.addUndoEvents_ = function(events, terminateSet) {
-  if(this.scope_ !== rdm.local.UndoHistory.Scope.INIT) {
-    var prepend = this.scope_ === rdm.local.UndoHistory.Scope.UNDO || this.scope_ === rdm.local.UndoHistory.Scope.REDO;
-    if(prepend) {
-      Array.prototype.splice.apply(this.history_[this.index_], [0,0].concat(events));
-    } else {
-      Array.prototype.push.apply(this.history_[this.index_], events);
-    }
+  if(this.COScopes_.length === 0 || this.COScopes_[0] !== rdm.local.UndoHistory.Scope.INIT) {
+    Array.prototype.push.apply(this.currentCO_, events);
   }
 };
 
 
 rdm.local.UndoHistory.prototype.initializeModel = function(initialize) {
   // call initialization callback with scope set to INIT
-  this.scope_ = rdm.local.UndoHistory.Scope.INIT;
+  this.beginCompoundOperation(rdm.local.UndoHistory.Scope.INIT);
   initialize(this.model);
-  this.scope_ = rdm.local.UndoHistory.Scope.NONE;
+  this.endCompoundOperation();
 };
 
 rdm.local.UndoHistory.prototype.undo = function() {
@@ -113,27 +116,23 @@ rdm.local.UndoHistory.prototype.undo = function() {
   var canUndo_ = this.canUndo;
   var canRedo_ = this.canRedo;
 
-  // set undo scope flag
-  // TODO if we're not in NONE?
-  this.scope_ = rdm.local.UndoHistory.Scope.UNDO;
-  // save current events
-  // TODO should have to reverse order
-  var inverses = this.history_[this.index_].map(function(e) { return e.getInverse(); }).reverse();
-  // put empty list in place
-  this.history_[this.index_] = [];
+  // start compound operation
+  this.beginCompoundOperation(rdm.local.UndoHistory.Scope.UNDO);
+
+  // decrement index
+  this.index_--;
   // do changes and events
-  inverses.map(function(e) { console.log('executing event for undo:'); console.log(e); e.executeAndEmit_(); });
+  this.history_[this.index_].map(function(e) { e.executeAndEmit_(); });
   // group by target
-  var bucketed = goog.array.bucket(inverses, function(el, index) { return el.target_.id; })
+  var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
     var event = new rdm.local.LocalObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
-  };
-  // decrement index
-  this.index_--;
+  }
+
   // unset undo scope flag
-  this.scope_ = rdm.local.UndoHistory.Scope.NONE;
+  this.endCompoundOperation();
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
@@ -147,27 +146,23 @@ rdm.local.UndoHistory.prototype.redo = function() {
   var canUndo_ = this.canUndo;
   var canRedo_ = this.canRedo;
 
-  // set redo scope flag
-  // TODO if scope is not NONE?
-  this.scope_ = rdm.local.UndoHistory.Scope.REDO;
-  // increment index
-  this.index_++;
-  // save current events
-  // TODO should have to reverse order
-  var inverses = this.history_[this.index_].map(function(e) { return e.getInverse(); });
-  // put empty list in place
-  this.history_[this.index_] = [];
+  // start compound operation
+  this.beginCompoundOperation(rdm.local.UndoHistory.Scope.REDO);
+
   // redo events
-  inverses.map(function(e) { e.executeAndEmit_(); });
+  this.history_[this.index_].map(function(e) { e.executeAndEmit_(); });
   // group by target
-  var bucketed = goog.array.bucket(inverses, function(el, index) { return el.target_.id; })
+  var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
     var event = new rdm.local.LocalObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
-  };
-  // uset redo scope flag
-  this.scope_ = rdm.local.UndoHistory.Scope.NONE;
+  }
+
+  this.endCompoundOperation();
+
+  // increment index
+  this.index_++;
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {

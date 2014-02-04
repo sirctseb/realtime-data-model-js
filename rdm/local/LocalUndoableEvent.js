@@ -22,5 +22,8 @@ goog.inherits(rdm.local.LocalUndoableEvent, rdm.local.LocalEvent);
 
 
 rdm.local.LocalUndoableEvent.prototype.executeAndEmit_ = function() {
+  this.updateState_();
   this.target_.executeAndEmitEvent_(this);
 };
+
+rdm.local.LocalUndoableEvent.prototype.updateState_ = function() {};

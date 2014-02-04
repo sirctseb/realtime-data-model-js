@@ -39,12 +39,7 @@ rdm.local.LocalModelObject.prototype.getId = function() {
 
 // create an emit a LocalObjectChangedEvent from a list of events
 rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
-  // record whether we're not in the scope of one of these calls yet
-  var inCO = this.model_.undoHistory_.inCO();
-  // if not, set the static flag
-  if(!inCO) {
-    this.model_.undoHistory_.beginCO();
-  }
+  this.model_.beginCompoundOperation();
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_(events);
   // construct change event
@@ -57,19 +52,13 @@ rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
   }
   // fire change event on normal stream
   this.dispatchEvent(event);
-  if(!inCO) {
-    this.model_.undoHistory_.endCO();
-  }
+  this.model_.endCompoundOperation();
 };
 
 
 rdm.local.LocalModelObject.prototype.executeAndEmitEvent_ = function(event) {
-  // record whether we're not in the scope of one of these calls yet
-  var inCO = this.model_.undoHistory_.inCO();
-  // if not, set the static flag
-  if(!inCO) {
-    this.model_.undoHistory_.beginCO();
-  }
+  this.model_.beginCompoundOperation();
+
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_([event]);
 
@@ -78,9 +67,7 @@ rdm.local.LocalModelObject.prototype.executeAndEmitEvent_ = function(event) {
   // emit event
   this.dispatchEvent(event);
 
-  if(!inCO) {
-    this.model_.undoHistory_.endCO();
-  }
+  this.model_.endCompoundOperation();
 };
 
 

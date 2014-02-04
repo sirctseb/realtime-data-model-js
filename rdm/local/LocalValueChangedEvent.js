@@ -29,3 +29,6 @@ rdm.local.LocalValueChangedEvent.prototype.getInverse = function() {
   return new rdm.local.LocalValueChangedEvent(this.target_, this.property, this.oldValue, this.newValue);
 };
 
+rdm.local.LocalValueChangedEvent.prototype.updateState_ = function() {
+	this.oldValue = this.target_.get(this.property);
+};
