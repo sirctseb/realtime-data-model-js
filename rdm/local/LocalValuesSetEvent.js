@@ -28,3 +28,7 @@ goog.inherits(rdm.local.LocalValuesSetEvent, rdm.local.LocalUndoableEvent);
 rdm.local.LocalValuesSetEvent.prototype.getInverse = function() {
   return new rdm.local.LocalValuesSetEvent(this.target_, this.index, this.oldValues, this.newValues);
 };
+
+rdm.local.LocalValuesSetEvent.prototype.updateState_ = function() {
+  this.oldValues = this.target_.asArray().slice(this.index, this.index + this.newValues.length);
+};
