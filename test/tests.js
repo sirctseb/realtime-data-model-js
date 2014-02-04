@@ -256,25 +256,31 @@ onFileLoaded = function(doc) {
     var newValue;
     var mapVC = function(e) {
       console.log('old: ' + e.oldValue + ', new: ' + e.newValue);
-      // equal(e.oldValue, oldValue);
-      // equal(e.newValue, newValue);
+      equal(e.oldValue, oldValue);
+      equal(e.newValue, newValue);
+      // special case updates for paired undo / redo events
+      if(oldValue === 'val2' && newValue === 'val4') {
+        oldValue = 'val4'; newValue = 'val3';
+      } else if(oldValue === 'val3' && newValue === 'val4') {
+        oldValue = 'val4'; newValue = 'val2';
+      }
     };
     map.clear();
     map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    // oldValue = null; newValue = 'val0';
+    oldValue = null; newValue = 'val0';
     map.set('key1', 'val0');
-    // oldValue = 'val0'; newValue = 'val1';
+    oldValue = 'val0'; newValue = 'val1';
     map.set('key1', 'val1');
-    // oldValue = 'val1'; newValue = 'val2';
+    oldValue = 'val1'; newValue = 'val2';
     map.set('key1', 'val2');
-    // oldValue = 'val2'; newValue = 'val3';
+    oldValue = 'val2'; newValue = 'val3';
     map.set('key1', 'val3');
     doc.getModel().beginCompoundOperation();
-    // oldValue = 'val3'; newValue = 'val4';
+    oldValue = 'val3'; newValue = 'val4';
     console.log('set to val4 in compound');
     map.set('key1', 'val4');
     equal(map.get('key1'), 'val4');
-    // oldValue = 'val4'; newValue = 'val2';
+    oldValue = 'val4'; newValue = 'val2';
     console.log('undo in compound');
     doc.getModel().undo();
     equal(map.get('key1'), 'val2');
@@ -282,24 +288,28 @@ onFileLoaded = function(doc) {
     doc.getModel().endCompoundOperation();
     equal(map.get('key1'), 'val2');
     equal(doc.getModel().canRedo, false);
-    // oldValue = 'val2'; newValue = 'val3';
+    oldValue = 'val2'; newValue = 'val4';
     console.log('undo');
     doc.getModel().undo();
     equal(map.get('key1'), 'val3');
     equal(doc.getModel().canRedo, true);
-    // oldValue = 'val3'; newValue = 'val2';
+    oldValue = 'val3'; newValue = 'val4';
     console.log('redo');
     doc.getModel().redo();
     equal(map.get('key1'), 'val2');
     equal(doc.getModel().canRedo, false);
     console.log('undo');
+    oldValue = 'val2'; newValue = 'val4';
     doc.getModel().undo();
     equal(map.get('key1'), 'val3');
+    oldValue = 'val3'; newValue = 'val1';
     console.log('undo');
     doc.getModel().undo();
     equal(map.get('key1'), 'val1');
+    oldValue = 'val1'; newValue = 'val0';
     doc.getModel().undo();
     equal(map.get('key1'), 'val0');
+    oldValue = 'val0'; newValue = null;
     doc.getModel().undo();
     equal(map.get('key1'), null);
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
