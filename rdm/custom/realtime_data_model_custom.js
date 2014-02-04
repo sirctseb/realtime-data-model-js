@@ -17,8 +17,6 @@ goog.require('rdm.GoogleDocProvider');
 goog.require('rdm.local.LocalCustomObject');
 
 rdm.custom = {
-  // TODO write function to safely check gapi.drive.realtime.isCustomObject when
-  // gapi isn't loaded
 
   /**
    * Registers a user-defined type as a collaborative type. This must be called before {@code rdm.DocumentProvider.loadDocument}.
@@ -27,8 +25,9 @@ rdm.custom = {
     // store local type info
     rdm.local.LocalCustomObject.customTypes_[name] = {type: type, fields: {}};
     // do realtime registration
-    // TODO check for loaded api
-    gapi.drive.realtime.custom.registerType(type, name);
+    if(rdm.GoogleDocProvider.globallySetup_) {
+      gapi.drive.realtime.custom.registerType(type, name);
+    }
   },
 
   /**
@@ -38,8 +37,10 @@ rdm.custom = {
    * like a regular field, but the value will automatically be saved and sent to other collaborators.
    */
   collaborativeField: function(type, name) {
-    // add realtime collaborative field to type prototype
-    type.prototype[name] = gapi.drive.realtime.custom.collaborativeField(name);
+    if(rdm.GoogleDocProvider.globallySetup_) {
+      // add realtime collaborative field to type prototype
+      type.prototype[name] = gapi.drive.realtime.custom.collaborativeField(name);
+    }
 
     // store field on local custom object info to be added when local model creates object
     rdm.local.LocalCustomObject.customTypes_[rdm.local.LocalCustomObject.customTypeName_(type)].fields[name] = 
@@ -82,7 +83,9 @@ rdm.custom = {
    */
   setInitializer: function(type, initializerFn) {
     // set realtime initializer
-    gapi.drive.realtime.custom.setInitializer(type, initializerFn);
+    if(rdm.GoogleDocProvider.globallySetup_) {
+      gapi.drive.realtime.custom.setInitializer(type, initializerFn);
+    }
 
     // store initializer in local custom object info
     for(var name in rdm.local.LocalCustomObject.customTypes_) {
@@ -99,7 +102,9 @@ rdm.custom = {
    */
   setOnLoaded: function(type, opt_onLoadedFn) {
     // set realtime loaded function
-    gapi.drive.realtime.custom.setOnLoaded(type, opt_onLoadedFn);
+    if(rdm.GoogleDocProvider.globallySetup_) {
+      gapi.drive.realtime.custom.setOnLoaded(type, opt_onLoadedFn);
+    }
 
     // store loaded function in local custom object info
     for(var name in rdm.local.LocalCustomObjectustomTypes_) {
@@ -114,7 +119,9 @@ rdm.custom = {
    * Returns true if obj is a custom collaborative object, otherwise false.
    */
   isCustomObject: function(obj) {
-    return (gapi.drive.realtime.custom.isCustomObject(obj) || rdm.custom.isLocalCustomObject_(obj));
+    return (rdm.custom.isLocalCustomObject_(obj) ||
+      (rdm.GoogleDocProvider.globallySetup_ &&
+      gapi.drive.realtime.custom.isCustomObject(obj)));
   },
 
   isLocalCustomObject_: function(obj) {
@@ -126,10 +133,11 @@ rdm.custom = {
    * Returns the id of the given custom object.
    */
   getId: function(obj) {
-    if(gapi.drive.realtime.custom.isCustomObject(obj)) {
-      return gapi.drive.realtime.custom.getId(obj);
-    } else if(rdm.custom.isLocalCustomObject_(obj)) {
+    if(rdm.custom.isLocalCustomObject_(obj)) {
       return rdm.custom.getLocalId_(obj);
+    } else if(rdm.GoogleDocProvider.globallySetup_ &&
+      gapi.drive.realtime.custom.isCustomObject(obj)) {
+      return gapid.rive.realtime.custom.getId(obj);
     } else {
       throw 'Object ' + obj + ' is not a custom object';
     }
@@ -153,10 +161,11 @@ rdm.custom = {
    * Returns the model for the given custom object.
    */
   getModel: function(obj) {
-    if(gapi.drive.realtime.custom.isCustomObject(obj)) {
-      return gapi.drive.realtime.custom.getModel(obj);
-    } else if(rdm.custom.isLocalCustomObject_(obj)) {
+    if(rdm.custom.isLocalCustomObject_(obj)) {
       return rdm.custom.getLocalModel_(obj);
+    } else if(rdm.GoogleDocProvider.globallySetup_ &&
+      gapi.drive.realtime.custom.isCustomObject(obj)) {
+      return gapid.rive.realtime.custom.getModel(obj);
     } else {
       throw 'Object ' + obj + ' is not a custom object';
     }
