@@ -474,6 +474,17 @@ onFileLoaded = function(doc) {
     equal(list.get(0), null);
     list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
   });
+  test('undo in compound string operation', function() {
+    string.setText('0123456789');
+    // delete '345'
+    string.removeRange(3,6);
+    doc.getModel().beginCompoundOperation();
+    string.insertString(0,'aa');
+    equal(string.getText(), 'aa0126789');
+    doc.getModel().undo();
+    doc.getModel().endCompoundOperation();
+    equal(string.getText(), 'aa0345126789');
+  });
 
   module('CollaborativeString', {
     setup: function() {
