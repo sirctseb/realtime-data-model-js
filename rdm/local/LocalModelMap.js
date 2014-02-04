@@ -104,6 +104,10 @@ rdm.local.LocalModelMap.prototype.keys = function() {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.set = function(key, value) {
+  // TODO check what is returned by rt when they fix
+  // http://stackoverflow.com/questions/21563791/why-doesnt-collaborativemap-set-return-the-old-map-value
+  // don't do anything if current value is already new value
+  if(this.map_[key] === value) return value;
   // save the current value for return
   var ret = this.map_[key];
   // send the event
