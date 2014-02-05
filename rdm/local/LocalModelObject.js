@@ -35,8 +35,6 @@ rdm.local.LocalModelObject.prototype.getId = function() {
   return this.id_;
 };
 
-// TODO implement custom objects
-
 // create an emit a LocalObjectChangedEvent from a list of events
 rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
   this.model_.beginCompoundOperation();
@@ -71,6 +69,4 @@ rdm.local.LocalModelObject.prototype.executeAndEmitEvent_ = function(event) {
 };
 
 
-rdm.local.LocalModelObject.prototype.executeEvent_ = function(event) {
-  // TODO implement custom objects
-};
+rdm.local.LocalModelObject.prototype.executeEvent_ = function(event) {};

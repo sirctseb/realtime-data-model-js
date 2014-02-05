@@ -25,13 +25,9 @@
 // TODO document everything as rdm.local.LocalEvent because we use LocalEvent.bubbles
 goog.provide('rdm.local.EventTarget');
 
-// TODO check if we actually need anything
 goog.require('goog.array');
 goog.require('goog.asserts');
-goog.require('goog.events');
 goog.require('goog.events.Event');
-// goog.require('goog.events.Listenable');
-// goog.require('goog.events.Listener');
 goog.require('goog.events.ListenerMap');
 goog.require('goog.object');
 
@@ -97,7 +93,6 @@ goog.inherits(rdm.local.EventTarget, goog.Disposable);
  * @type {boolean}
  * @private
  */
-// TODO probably remove
 rdm.local.EventTarget.prototype.customEvent_ = true;
 
 
@@ -214,7 +209,6 @@ rdm.local.EventTarget.prototype.dispatchEvent = function(e) {
  * @override
  * @protected
  */
-// TODO probably remove
 rdm.local.EventTarget.prototype.disposeInternal = function() {
   rdm.local.EventTarget.superClass_.disposeInternal.call(this);
 
@@ -271,7 +265,6 @@ rdm.local.EventTarget.prototype.removeAllListeners = function(
 
 
 /** @override */
-// TODO keep goog.events.Listener?
 rdm.local.EventTarget.prototype.fireListeners = function(
     type, capture, eventObject) {
   // TODO(user): Original code avoids array creation when there

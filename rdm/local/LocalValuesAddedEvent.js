@@ -19,7 +19,7 @@ goog.require('rdm.EventType');
 
 rdm.local.LocalValuesAddedEvent = function(target_, index, values) {
   rdm.local.LocalUndoableEvent.call(this, rdm.EventType.VALUES_ADDED, target_);
-  this.bubbles = null; // TODO implement this getter
+  this.bubbles = false;
   this.index = index;
   this.values = values;
 };

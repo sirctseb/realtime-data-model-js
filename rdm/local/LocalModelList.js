@@ -25,7 +25,6 @@ rdm.local.LocalModelList = function(model, initialValue) {
   rdm.local.LocalIndexReferenceContainer.call(this, model);
   this.list_ = initialValue || [];
   this.list_.map(function(element) { propogateChanges_(element); });
-  // TODO add tests for length property
   Object.defineProperty(this, 'length', {
     get: function() { return this.list_.length; },
     set: function(l) {
@@ -52,7 +51,6 @@ rdm.local.LocalModelList.prototype.clear = function() {
   if(this.list_.length == 0) return;
   // add event to stream
   var event = new rdm.local.LocalValuesRemovedEvent(this, 0, goog.array.clone(this.list_));
-  // TODO take old stream controller parameter out of these calls
   this.emitEventsAndChanged_([event]);
 };
 
@@ -70,7 +68,6 @@ rdm.local.LocalModelList.prototype.insert = function(index, value) {
  */
 rdm.local.LocalModelList.prototype.insertAll = function(index, values) {
   // add event to stream
-  // TODO clone values?
   var event = new rdm.local.LocalValuesAddedEvent(this, index, values);
   this.emitEventsAndChanged_([event]);
 };
@@ -118,8 +115,10 @@ rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
  * @expose
  */
 rdm.local.LocalModelList.prototype.set = function(index, value) {
-  // TODO js errors?
-  // if (index < 0 || index >= length) throw new RangeError.value(index);
+  if(index < 0 || index >= length) {
+    // TODO rt throws an object with a string of this form in property 'n'
+    throw 'Index: ' + index + ', Size: ' + this.length;
+  }
   var event = new rdm.local.LocalValuesSetEvent(this, index, [value], [this.list_[index]]);
   this.emitEventsAndChanged_([event]);
 }
@@ -128,7 +127,6 @@ rdm.local.LocalModelList.prototype.set = function(index, value) {
  * @expose
  */
 rdm.local.LocalModelList.prototype.push = function(value) {
-  // TODO make sure this is the index provided when inserting at the end
   var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, [value]);
   this.emitEventsAndChanged_([event]);
   return this.list_.length;
@@ -138,7 +136,6 @@ rdm.local.LocalModelList.prototype.push = function(value) {
  * @expose
  */
 rdm.local.LocalModelList.prototype.pushAll = function(values) {
-  // TODO make sure this is the index provided when inserting at the end
   var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, goog.array.clone(values));
   this.emitEventsAndChanged_([event]);
 }
@@ -180,7 +177,6 @@ rdm.local.LocalModelList.prototype.removeValue = function(value) {
  */
 rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
   // add event to stream
-  // TODO clone values?
   var event = new rdm.local.LocalValuesSetEvent(this, index, values, this.list_.slice(index, index + values.length));
   this.emitEventsAndChanged_([event]);
 }
@@ -195,7 +191,6 @@ rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
 // check if value is a model object and remove self as parent
 rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
   // stop propagation if overwritten element is model object and it is no longer anywhere in the list
-  // TODO this depends on this method being called _after_ the element is removed from this.list_
   if(element instanceof rdm.local.LocalModelObject && this.list_.indexOf(element) == -1) {
     element.removeParentEventTarget(this);
   }

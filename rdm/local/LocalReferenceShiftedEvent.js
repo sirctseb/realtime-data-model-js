@@ -18,7 +18,7 @@ goog.require('rdm.EventType');
 
 rdm.local.LocalReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
   rdm.local.LocalEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
-  this.bubbles = null; // TODO implement this getter
+  this.bubbles = false;
   this.newIndex = newIndex;
   this.oldIndex = oldIndex;
 };

@@ -56,7 +56,6 @@ rdm.local.LocalCustomObject.prototype.executeEvent_ = function(event) {
     // set backing value
     this.backingFields_[event.property] = event.newValue;
     // update parents
-    // TODO implement this in custom object subclass
     var children = this.getChildren_();
     if(event.oldValue instanceof rdm.local.LocalModelObject && !goog.contains(children, event.oldValue)) {
       event.oldValue.removeParentEventTarget(this);

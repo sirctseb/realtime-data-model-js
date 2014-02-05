@@ -40,8 +40,6 @@ rdm.GoogleDocProvider.prototype.loadDocument = function(onLoaded, opt_initialize
   var this_ = this;
   // check global setup
   rdm.GoogleDocProvider.globalSetup_(function(success) {
-    // TODO if !success?
-    // TODO make better state for determining if we need to do a file insert
     if(this_.newTitle_ != null) {
       // insert file
       gapi.client.drive.files.insert({
@@ -123,7 +121,6 @@ rdm.GoogleDocProvider.authenticate = function(callback, immediate) {
         if(authResult && !authResult.error) {
           callback();
         } else {
-          // TODO what to do on error?
           throw authResult;
         }
       });
@@ -148,7 +145,6 @@ rdm.GoogleDocProvider.authenticate = function(callback, immediate) {
             if(authResult && !authResult.error) {
               callback();
             } else {
-              // TODO what to do on error?
               throw authResult;
             }
           });

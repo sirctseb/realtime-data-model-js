@@ -132,7 +132,6 @@ rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
       delete this.map_[event.property];
     }
     // stop propagating changes if we're writing over a model object
-    // TODO so a collaborative object can't be in two other collaborative objects?
     if(event.oldValue instanceof rdm.local.LocalModelObject) {
       if(!goog.object.contains(this.map_, event.oldValue)) {
         event.oldValue.removeParentEventTarget(this);

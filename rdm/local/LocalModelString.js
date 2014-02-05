@@ -70,7 +70,6 @@ rdm.local.LocalModelString.prototype.removeRange = function(startIndex, endIndex
  * @expose
  */
 rdm.local.LocalModelString.prototype.setText = function(text) {
-  // TODO do real string diff
   // trivial edit decomposition algorithm
   var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, 0, this.string_);
   var insertEvent = new rdm.local.LocalTextInsertedEvent(this, 0, text);

@@ -18,7 +18,7 @@ goog.require('rdm.EventType');
 
 rdm.local.LocalValuesSetEvent = function(target_, index, newValues, oldValues) {
   rdm.local.LocalUndoableEvent.call(this, rdm.EventType.VALUES_SET, target_);
-  this.bubbles = null; // TODO implement this getter
+  this.bubbles = false;
   this.index = index;
   this.newValues = newValues;
   this.oldValues = oldValues;

@@ -572,6 +572,14 @@ onFileLoaded = function(doc) {
   test('get length', function() {
     equal(list.length, 1);
   });
+  test('set length', function() {
+    list.push('s2');
+    equal(list.length, 2);
+    list.length = 1;
+    equal(list.length, 1);
+    throws(function() {list.length = 3;});
+    equal(list.length, 1);
+  });
   test('operator [](int index)', function() {
     equal(list.get(0), 's1');
     // TODO how to test failures in QUnit?
@@ -654,6 +662,9 @@ onFileLoaded = function(doc) {
     list.set(0, 1);
     list.set(0, 1);
     list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
+  });
+  test('set out of range', function() {
+    list.set(-1, 1);
   });
 
   module('CollaborativeMap', {
@@ -911,9 +922,9 @@ onFileLoaded = function(doc) {
   test('custom.getId', function() {
     equal(goog.isString(rdm.custom.getId(doc.getModel().getRoot().get('book'))), true);
   });
-  test(customObject.getId, function() {
-    equal(goog.isString(doc.getModel().getRoot().get('book').getId()), true);
-    equal(goog.isString(doc.getModel().getRoot().get('book').id), true);
+  test('customObject.getId', function() {
+    equal(doc.getModel().getRoot().get('book').getId, undefined);
+    equal(doc.getModel().getRoot().get('book').id, undefined);
   });
 
   module('Multiple entries');

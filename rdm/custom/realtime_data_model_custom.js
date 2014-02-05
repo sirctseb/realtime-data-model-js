@@ -144,9 +144,6 @@ rdm.custom = {
   },
 
   getLocalId_: function(obj) {
-    // TODO refactor a base class of LocalModelObject that doesn't have getId or id getter
-    // and subclass LocalCustomObject from that
-    // TODO then we will need to store ids on the model
     return obj.getId();
   },
 

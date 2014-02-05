@@ -25,7 +25,6 @@ goog.require('goog.events.EventTarget');
 rdm.local.LocalModel = function() {
   goog.events.EventTarget.call(this);
 
-  // TODO is this ever true?
   this.isReadyOnly = false;
   // pass canUndo and canRedo through to undo history object
   Object.defineProperties(this, {
@@ -45,8 +44,6 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
   this.isInitialized_ = true;
 };
 
-// TODO need to implement compound operations. meaningful for undo/redo
-// TODO also, what is beginCreationCompoundOperation
 /**
  * @expose
  */
@@ -64,7 +61,6 @@ rdm.local.LocalModel.prototype.getRoot = function() {
   return this.root_;
 };
 
-// TODO is this ever false?
 /**
  * @expose
  */
@@ -72,7 +68,6 @@ rdm.local.LocalModel.prototype.isInitialized = function() {
   return isInitialized_;
 };
 
-// TODO need to implement compound operations. meaningful for undo/redo
 /**
  * @expose
  */
@@ -80,7 +75,6 @@ rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {
   this.undoHistory_.beginCompoundOperation(rdm.local.UndoHistory.Scope.EXPLICIT_CO);
 };
 
-// TODO implement LocalModelObject and return here
 /**
  * @expose
  */
@@ -91,7 +85,6 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
   } else {
     name = rdm.local.LocalCustomObject.customTypeName_(ref);
   }
-  // TODO error if ref is now undefined
   // create instance
   var instance = new ref();
   // extend with local custom object

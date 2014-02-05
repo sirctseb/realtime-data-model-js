@@ -40,12 +40,10 @@ rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn
   try {
     successFn(JSON.stringify(this.model_.getRoot()));
   } catch(e) {
-    // TODO is anything passed to the failure function? the exception?
     failureFn(e);
   }
 };
 
-// TODO should we return one collaborator with isMe?
 /**
  * @expose
  */

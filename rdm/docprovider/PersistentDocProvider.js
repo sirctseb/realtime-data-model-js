@@ -54,7 +54,6 @@ rdm.PersistentDocProvider.prototype.loadDocument = function(onLoaded, opt_initia
     } else {
       // otherwise, initialize with json data
       model = new rdm.local.LocalModel();
-      // TODO implement json initialization for model
       model.initializeFromJSON_(JSON.parse(retrievedDoc));
     }
     // listen for changes on model
@@ -81,7 +80,6 @@ rdm.PersistentDocProvider.prototype.onDocumentChange_ = function(event) {
   this.isPending = true;
   // if pending has changed, send change event
   if(lastIsPending != this.isPending) {
-    // TODO implement on local document
     this.document.changeSaveState(this.isPending, this.isSaving);
   }
 };
@@ -96,7 +94,6 @@ rdm.PersistentDocProvider.prototype.saveDocument_ = function(save) {
   var this_ = this;
   this.saveDocument(function(saved) {
     if(!saved) {
-      // TODO save error?
     } else {
       var lastIsSaving = this_.isSaving;
       this_.isSaving = false;
@@ -108,7 +105,6 @@ rdm.PersistentDocProvider.prototype.saveDocument_ = function(save) {
 };
 
 rdm.PersistentDocProvider.prototype.exportDocument = function(callback) {
-  // TODO implement toJSON for local model
   callback(JSON.stringify(this.document.getModel().toJSON()));
 };
 
