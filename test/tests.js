@@ -911,6 +911,10 @@ onFileLoaded = function(doc) {
   test('custom.getId', function() {
     equal(goog.isString(rdm.custom.getId(doc.getModel().getRoot().get('book'))), true);
   });
+  test(customObject.getId, function() {
+    equal(goog.isString(doc.getModel().getRoot().get('book').getId()), true);
+    equal(goog.isString(doc.getModel().getRoot().get('book').id), true);
+  });
 
   module('Multiple entries');
   test('Twice in one map', function() {
