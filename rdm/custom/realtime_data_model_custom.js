@@ -137,7 +137,7 @@ rdm.custom = {
       return rdm.custom.getLocalId_(obj);
     } else if(rdm.GoogleDocProvider.globallySetup_ &&
       gapi.drive.realtime.custom.isCustomObject(obj)) {
-      return gapid.rive.realtime.custom.getId(obj);
+      return gapi.drive.realtime.custom.getId(obj);
     } else {
       throw 'Object ' + obj + ' is not a custom object';
     }
@@ -165,7 +165,7 @@ rdm.custom = {
       return rdm.custom.getLocalModel_(obj);
     } else if(rdm.GoogleDocProvider.globallySetup_ &&
       gapi.drive.realtime.custom.isCustomObject(obj)) {
-      return gapid.rive.realtime.custom.getModel(obj);
+      return gapi.drive.realtime.custom.getModel(obj);
     } else {
       throw 'Object ' + obj + ' is not a custom object';
     }
