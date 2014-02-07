@@ -70,12 +70,74 @@ rdm.local.LocalModelString.prototype.removeRange = function(startIndex, endIndex
  * @expose
  */
 rdm.local.LocalModelString.prototype.setText = function(text) {
-  // trivial edit decomposition algorithm
-  var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, 0, this.string_);
-  var insertEvent = new rdm.local.LocalTextInsertedEvent(this, 0, text);
-  this.emitEventsAndChanged_([deleteEvent, insertEvent]);
-}
+  // calculate diffs
+  var diffs = rdm.local.LocalModelString.stringDiff(this.string_, text);
+  var this_ = this;
+  var events = diffs.map(function(diff) {
+    return diff.type === 'add' ?
+      new rdm.local.LocalTextInsertedEvent(this_, diff.index, diff.text) :
+      new rdm.local.LocalTextDeletedEvent(this_, diff.index, diff.text);
+  });
+  this.emitEventsAndChanged_(events);
+};
 
+rdm.local.LocalModelString.stringDiff = function(string1, string2) {
+  var C = new Array(string1.length+1);
+  for(var i = 0; i <= string1.length; i++) {
+    C[i] = new Array(string2.length+1);
+    C[i][0] = 0;
+  }
+  for(var i = 0; i <= string2.length; i++) {
+    C[0][i] = 0;
+  }
+  for(var i = 1; i <= string1.length; i++) {
+    for(var j = 1; j <= string2.length; j++) {
+      if(string1[i-1] === string2[j-1]) {
+        var c = C[i-1][j-1] + 1;
+        C[i][j] = c;
+      } else {
+        C[i][j] = Math.max(C[i][j-1], C[i-1][j]);
+      }
+    }
+  }
+  var diff = rdm.local.LocalModelString.printDiff(C, string1, string2, string1.length, string2.length);
+  // adjust indices
+  var offset;
+  if(diff.length > 0) {
+    offset = diff[0].text.length * (diff[0].type === 'add' ? 1 : -1);
+  }
+  for(var i = 1; i < diff.length; i++) {
+    if(diff[i].type == 'delete') {
+      diff[i].index += offset;
+    }
+    offset += diff[i].text.length * (diff[i].type === 'add' ? 1 : -1);
+  }
+  console.log(C);
+  return diff;
+};
+rdm.local.LocalModelString.printDiff = function(C, string1, string2, i, j, diff) {
+  diff = diff || [];
+  if(i > 0 && j > 0 && string1[i-1] === string2[j-1]) {
+    diff = rdm.local.LocalModelString.printDiff(C, string1, string2, i-1, j-1, diff);
+  } else if(i > 0 && (j === 0 || C[i][j-1] <= C[i-1][j])) {
+    diff = rdm.local.LocalModelString.printDiff(C, string1, string2, i-1, j, diff);
+    if(diff.length > 0 && diff[diff.length - 1].type === 'delete' && diff[diff.length - 1].toIndex === i-2) {
+      diff[diff.length - 1].text = diff[diff.length - 1].text + string1[i-1];
+      diff[diff.length - 1].toIndex = i-1;
+    } else {
+      diff.push({type: 'delete', text: string1[i-1], index: i-1, toIndex: i-1});
+    }
+  } else if(j > 0 && (i === 0 || C[i][j-1] > C[i-1][j])) {
+    diff = rdm.local.LocalModelString.printDiff(C, string1, string2, i, j-1, diff);
+    if(diff.length > 0 && diff[diff.length - 1].type === 'add' && diff[diff.length - 1].toIndex === j-2) {
+      diff[diff.length - 1].text = diff[diff.length - 1].text + string2[j-1];
+      diff[diff.length - 1].toIndex = j-1;
+    } else {
+      diff.push({type: 'add', text: string2[j-1], index: j-1, toIndex: j-1});
+    }
+  }
+  return diff;
+};
 
 rdm.local.LocalModelString.prototype.executeEvent_ = function(event) {
   if(event.type == rdm.EventType.TEXT_DELETED) {

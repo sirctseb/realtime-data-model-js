@@ -563,6 +563,22 @@ onFileLoaded = function(doc) {
     string.addEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
     string.removeRange(4, 6);
   });
+  test('string diff', function() {
+    var events = [];
+    var sOC = function(e) {
+      e.events.map(function(event) {
+        events.push({type: event.type, text: event.text, index: event.index});
+      });
+    };
+    string.setText('Hello Realtime World!');
+    string.addEventListener(rdm.EventType.OBJECT_CHANGED, sOC);
+    string.setText('elo');
+    string.setText('redid');
+    string.removeEventListener(rdm.EventType.OBJECT_CHANGED, sOC);
+    var json = '[{"type":"text_deleted","text":"Hello R","index":0},{"type":"text_inserted","text":"r","index":0},{"type":"text_deleted","text":"alt","index":2},{"type":"text_inserted","text":"d","index":2},{"type":"text_deleted","text":"me World!","index":4},{"type":"text_inserted","text":"d","index":4}]';
+    // var local= '[{"type":"text_deleted","text":"Hello R","index":0},{"type":"text_inserted","text":"r","index":0},{"type":"text_deleted","text":"alt","index":2},{"type":"text_inserted","text":"d","index":2},{"type":"text_deleted","text":"me Worl","index":4},{"type":"text_deleted","text":"!","index":5}]';
+    deepEqual(events, JSON.parse(json));
+  });
 
   module('CollaborativeList', {
     setup: function() {
