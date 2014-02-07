@@ -119,7 +119,7 @@ rdm.local.LocalModelString.printDiff = function(C, string1, string2, i, j, diff)
   diff = diff || [];
   if(i > 0 && j > 0 && string1[i-1] === string2[j-1]) {
     diff = rdm.local.LocalModelString.printDiff(C, string1, string2, i-1, j-1, diff);
-  } else if(i > 0 && (j === 0 || C[i][j-1] <= C[i-1][j])) {
+  } else if(i > 0 && (j === 0 || C[i][j-1] < C[i-1][j])) {
     diff = rdm.local.LocalModelString.printDiff(C, string1, string2, i-1, j, diff);
     if(diff.length > 0 && diff[diff.length - 1].type === 'delete' && diff[diff.length - 1].toIndex === i-2) {
       diff[diff.length - 1].text = diff[diff.length - 1].text + string1[i-1];
@@ -127,7 +127,7 @@ rdm.local.LocalModelString.printDiff = function(C, string1, string2, i, j, diff)
     } else {
       diff.push({type: 'delete', text: string1[i-1], index: i-1, toIndex: i-1});
     }
-  } else if(j > 0 && (i === 0 || C[i][j-1] > C[i-1][j])) {
+  } else if(j > 0 && (i === 0 || C[i][j-1] >= C[i-1][j])) {
     diff = rdm.local.LocalModelString.printDiff(C, string1, string2, i, j-1, diff);
     if(diff.length > 0 && diff[diff.length - 1].type === 'add' && diff[diff.length - 1].toIndex === j-2) {
       diff[diff.length - 1].text = diff[diff.length - 1].text + string2[j-1];
