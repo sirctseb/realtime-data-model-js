@@ -30,6 +30,8 @@ rdm.local.LocalModelList = function(model, initialValue) {
     set: function(l) {
       if(l < this.list_.length) {
         this.removeRange(l, this.list_.length);
+      } else {
+        throw new Error('Cannot set the list length to be greater than the current value.');
       }
     }
   });
