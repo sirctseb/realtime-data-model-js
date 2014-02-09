@@ -591,7 +591,9 @@ onFileLoaded = function(doc) {
     equal(list.length, 2);
     list.length = 1;
     equal(list.length, 1);
-    throws(function() {list.length = 3;});
+    throws(function() {list.length = 3;},
+      /Cannot set the list length to be greater than the current value./
+      );
     equal(list.length, 1);
   });
   test('operator [](int index)', function() {
@@ -678,7 +680,9 @@ onFileLoaded = function(doc) {
     list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
   });
   test('set out of range', function() {
-    list.set(-1, 1);
+    throws(function() {
+      list.set(-1, 1);
+    });
   });
 
   module('CollaborativeMap', {
