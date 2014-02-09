@@ -16,9 +16,10 @@ goog.provide('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.EventTarget');
 
-rdm.local.LocalModelObject = function() {
+rdm.local.LocalModelObject = function(model) {
   rdm.local.EventTarget.call(this);
   this.id_ = rdm.local.LocalModelObject.idNum_.toString();
+  this.model_ = model;
   rdm.local.LocalModelObject.idNum_++;
   Object.defineProperties(this, {
     'id': { get: function() { return this.id_; }}
@@ -26,8 +27,6 @@ rdm.local.LocalModelObject = function() {
 };
 goog.inherits(rdm.local.LocalModelObject, rdm.local.EventTarget);
 rdm.local.LocalModelObject.idNum_ = 0;
-rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
-
 
 /**
  * @expose
@@ -40,14 +39,11 @@ rdm.local.LocalModelObject.prototype.getId = function() {
 
 // create an emit a LocalObjectChangedEvent from a list of events
 rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
-  // record whether we're not in the scope of one of these calls yet
-  var terminal = !rdm.local.LocalModelObject.inEmitEventsAndChangedScope_;
-  // if not, set the static flag
-  if(terminal) {
-    rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = true;
-  }
+  this.model_.beginCompoundOperation();
+  // add events to undo history
+  this.model_.undoHistory_.addUndoEvents_(events);
   // construct change event
-  var event = new rdm.local.LocalObjectChangedEvent(this, events, terminal);
+  var event = new rdm.local.LocalObjectChangedEvent(this, events);
   for(var i = 0; i < events.length; i++) {
     // execute events
     this.executeEvent_(events[i]);
@@ -56,17 +52,22 @@ rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
   }
   // fire change event on normal stream
   this.dispatchEvent(event);
-  if(terminal) {
-    rdm.local.LocalModelObject.inEmitEventsAndChangedScope_ = false;
-  }
+  this.model_.endCompoundOperation();
 };
 
 
 rdm.local.LocalModelObject.prototype.executeAndEmitEvent_ = function(event) {
+  this.model_.beginCompoundOperation();
+
+  // add events to undo history
+  this.model_.undoHistory_.addUndoEvents_([event]);
+
   // make change
   this.executeEvent_(event);
   // emit event
   this.dispatchEvent(event);
+
+  this.model_.endCompoundOperation();
 };
 
 

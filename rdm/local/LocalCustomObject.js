@@ -17,8 +17,8 @@ goog.require('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.LocalValueChangedEvent');
 
-rdm.local.LocalCustomObject = function() {
-	rdm.local.LocalModelObject.call(this);
+rdm.local.LocalCustomObject = function(model) {
+	rdm.local.LocalModelObject.call(this, model);
 
   /**
    * Stores the actual values of the custom object fields

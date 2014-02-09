@@ -17,8 +17,8 @@ goog.require('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalValueChangedEvent');
 goog.require('rdm.EventType');
 
-rdm.local.LocalModelMap = function(initialValue) {
-  rdm.local.LocalModelObject.call(this);
+rdm.local.LocalModelMap = function(model, initialValue) {
+  rdm.local.LocalModelObject.call(this, model);
   this.map_ = initialValue || {};
   for(var key in this.map_) {
     if(this.map_[key] instanceof rdm.local.LocalModelObject) {
@@ -88,7 +88,7 @@ rdm.local.LocalModelMap.prototype.isEmpty = function() {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.items = function() {
-  return this.map_.keys().map(function(key) { return [key, this.map_[key]]; });
+  return Object.keys(this.map_).map(function(key) { return [key, this.map_[key]]; });
 };
 
 
@@ -96,7 +96,7 @@ rdm.local.LocalModelMap.prototype.items = function() {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.keys = function() {
-  return this.map_.keys().slice(0);
+  return Object.keys(this.map_).slice(0);
 };
 
 
@@ -104,6 +104,10 @@ rdm.local.LocalModelMap.prototype.keys = function() {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.set = function(key, value) {
+  // TODO check what is returned by rt when they fix
+  // http://stackoverflow.com/questions/21563791/why-doesnt-collaborativemap-set-return-the-old-map-value
+  // don't do anything if current value is already new value
+  if(this.map_[key] === value) return value;
   // save the current value for return
   var ret = this.map_[key];
   // send the event
@@ -117,7 +121,7 @@ rdm.local.LocalModelMap.prototype.set = function(key, value) {
  * @expose
  */
 rdm.local.LocalModelMap.prototype.values = function() {
-  return this.map_.keys().map(function(key) { return this.map_[key]; });
+  return Object.keys(this.map_).map(function(key) { return this.map_[key]; });
 };
 
 
