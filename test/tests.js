@@ -682,6 +682,7 @@ onFileLoaded = function(doc) {
   test('set out of range', function() {
     throws(function() {
       list.set(-1, 1);
+      // TODO rt throws error with {n: 'Index: -1, Size: 1'}
     });
   });
 
