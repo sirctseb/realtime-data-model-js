@@ -17,14 +17,13 @@ goog.provide('rdm.local.Collaborator');
 /**
  * A collaborator on the document.
  */
-rdm.local.Collaborator = function(userId, sessionId, displayName, color, isMe, isAnonymous, photoUrl) {
+rdm.local.Collaborator = function() {
 	// TODO can we document fields in the constructor?
-	this.userId = userId;
-	this.color = color;
-	this.displayName = displayName;
-	this.isAnonymous = isAnonymous;
-	this.isMe = isMe;
-	this.photoUrl = photoUrl;
-	this.sessionId = sessionId;
-	this.userId = userId;
+	this.color = 'blue';
+	this.displayName = 'Me';
+	this.isAnonymous = false;
+	this.isMe = true;
+	this.photoUrl = null;
+	this.sessionId = null;
+	this.userId = null;
 };
