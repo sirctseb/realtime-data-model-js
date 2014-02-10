@@ -112,7 +112,6 @@ rdm.local.LocalModelString.stringDiff = function(string1, string2) {
     }
     offset += diff[i].text.length * (diff[i].type === 'add' ? 1 : -1);
   }
-  console.log(C);
   return diff;
 };
 rdm.local.LocalModelString.printDiff = function(C, string1, string2, i, j, diff) {
