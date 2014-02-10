@@ -1088,4 +1088,12 @@ onFileLoaded = function(doc) {
     doc.getModel().getRoot().get('self').set('key', 'val');
     doc.getModel().getRoot().get('self').removeEventListener(rdm.EventType.OBJECT_CHANGED, rootChanged);
   });
+
+  module('Collaborators');
+  test('is me', function() {
+    var collaborators = doc.getCollaborators();
+    equal(collaborators.length, 1);
+    equal(collaborators[0].isMe, true);
+    equal(collaborators[0].isAnonymous, false);
+  });
 };
