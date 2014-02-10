@@ -14,6 +14,7 @@
 
 goog.provide('rdm.local.LocalDocument');
 goog.require('goog.events.EventTarget');
+goog.require('rdm.local.Collaborator');
 
 rdm.local.LocalDocument = function(model) {
   goog.events.EventTarget.call(this);
@@ -48,7 +49,7 @@ rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn
  * @expose
  */
 rdm.local.LocalDocument.prototype.getCollaborators = function() {
-  return [];
+  return [new rdm.local.Collaborator()];
 }
 
 // TODO support implementing a document supplier class to retrieve documents and give them back in json
