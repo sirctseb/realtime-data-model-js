@@ -39,7 +39,7 @@ rdm.GoogleDocProvider.globallySetup_ = false;
 rdm.GoogleDocProvider.prototype.loadDocument = function(onLoaded, opt_initializerFn, opt_errorFn) {
   var this_ = this;
   // check global setup
-  rdm.GoogleDocProvider.globalSetup_(function(success) {
+  rdm.GoogleDocProvider.LoadApi(function(success) {
     if(this_.newTitle_ != null) {
       // insert file
       gapi.client.drive.files.insert({
@@ -65,8 +65,7 @@ rdm.GoogleDocProvider.prototype.doRealtimeLoad_ = function(onLoaded, opt_initial
   gapi.drive.realtime.load(this.fileId, onLoaded, opt_initializerFn, opt_errorFn);
 };
 
-/** @private */
-rdm.GoogleDocProvider.globalSetup_ = function(callback) {
+rdm.GoogleDocProvider.LoadApi = function(callback) {
   if(rdm.GoogleDocProvider.globallySetup_) {
     callback();
     return;

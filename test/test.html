@@ -24,8 +24,7 @@
       QUnit.config.reorder = false;
       rdm.GoogleDocProvider.clientId = 'INSERT CLIENT ID HERE';
       var docProvider = new rdm.GoogleDocProvider({'title': 'New Doc Title'});
-      rdm.GoogleDocProvider.globalSetup_(function() {
-
+      rdm.GoogleDocProvider.LoadApi(function() {
         var book = function() {};
 
         // var docProvider = new rdm.GoogleDocProvider({'fileId': '0B0OUnldiyG0hVXJrUjJCRVBIUDQ'});
