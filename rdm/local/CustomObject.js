@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalCustomObject');
+goog.provide('rdm.local.CustomObject');
 goog.require('rdm.local.LocalModelObjectBase');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.LocalValueChangedEvent');
 
-rdm.local.LocalCustomObject = function(model) {
+rdm.local.CustomObject = function(model) {
 	rdm.local.LocalModelObjectBase.call(this, model);
 
   /**
@@ -26,9 +26,9 @@ rdm.local.LocalCustomObject = function(model) {
    */
 	this.backingFields_ = {};
 };
-goog.inherits(rdm.local.LocalCustomObject, rdm.local.LocalModelObjectBase);
+goog.inherits(rdm.local.CustomObject, rdm.local.LocalModelObjectBase);
 
-rdm.local.LocalCustomObject.instances_ = [];
+rdm.local.CustomObject.instances_ = [];
 
 /**
  * Maps from names to {type, initializerFn, onLoadedFn, fields} as registered by
@@ -36,22 +36,22 @@ rdm.local.LocalCustomObject.instances_ = [];
  * rdm.LocalDocumentProvider.setOnLoaded
  * @private
  */
-rdm.local.LocalCustomObject.customTypes_ = {};
+rdm.local.CustomObject.customTypes_ = {};
 
 /**
  * Given a registered custom object type, find the registered name
  * @private
  */
-rdm.local.LocalCustomObject.customTypeName_ = function(ref) {
-  for(var name in rdm.local.LocalCustomObject.customTypes_) {
-    if(rdm.local.LocalCustomObject.customTypes_[name].type === ref) {
+rdm.local.CustomObject.customTypeName_ = function(ref) {
+  for(var name in rdm.local.CustomObject.customTypes_) {
+    if(rdm.local.CustomObject.customTypes_[name].type === ref) {
       return name;
     }
   }
   throw ref + ' is not a registered custom object type';
 };
 
-rdm.local.LocalCustomObject.prototype.executeEvent_ = function(event) {
+rdm.local.CustomObject.prototype.executeEvent_ = function(event) {
   if(event instanceof rdm.local.LocalValueChangedEvent) {
     // set backing value
     this.backingFields_[event.property] = event.newValue;
@@ -66,7 +66,7 @@ rdm.local.LocalCustomObject.prototype.executeEvent_ = function(event) {
   }
 };
 
-rdm.local.LocalCustomObject.prototype.getChildren_ = function() {
+rdm.local.CustomObject.prototype.getChildren_ = function() {
   var values = [];
   for(var prop in this.backingFields_) {
     values.push(this.backingFields_[prop]);
