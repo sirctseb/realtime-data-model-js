@@ -12,31 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalModelObject');
+goog.provide('rdm.local.LocalModelObjectBase');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.EventTarget');
 
-rdm.local.LocalModelObject = function(model) {
+rdm.local.LocalModelObjectBase = function(model) {
   rdm.local.EventTarget.call(this);
-  this.id_ = rdm.local.LocalModelObject.idNum_.toString();
+  this.id_ = rdm.local.LocalModelObjectBase.idNum_.toString();
   this.model_ = model;
-  rdm.local.LocalModelObject.idNum_++;
-  Object.defineProperties(this, {
-    'id': { get: function() { return this.id_; }}
-  });
+  rdm.local.LocalModelObjectBase.idNum_++;
 };
-goog.inherits(rdm.local.LocalModelObject, rdm.local.EventTarget);
-rdm.local.LocalModelObject.idNum_ = 0;
-
-/**
- * @expose
- */
-rdm.local.LocalModelObject.prototype.getId = function() {
-  return this.id_;
-};
+goog.inherits(rdm.local.LocalModelObjectBase, rdm.local.EventTarget);
+rdm.local.LocalModelObjectBase.idNum_ = 0;
 
 // create an emit a LocalObjectChangedEvent from a list of events
-rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
+rdm.local.LocalModelObjectBase.prototype.emitEventsAndChanged_ = function(events) {
   this.model_.beginCompoundOperation();
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_(events);
@@ -54,7 +44,7 @@ rdm.local.LocalModelObject.prototype.emitEventsAndChanged_ = function(events) {
 };
 
 
-rdm.local.LocalModelObject.prototype.executeAndEmitEvent_ = function(event) {
+rdm.local.LocalModelObjectBase.prototype.executeAndEmitEvent_ = function(event) {
   this.model_.beginCompoundOperation();
 
   // add events to undo history
@@ -69,4 +59,4 @@ rdm.local.LocalModelObject.prototype.executeAndEmitEvent_ = function(event) {
 };
 
 
-rdm.local.LocalModelObject.prototype.executeEvent_ = function(event) {};
+rdm.local.LocalModelObjectBase.prototype.executeEvent_ = function(event) {};
