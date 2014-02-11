@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalDocumentSaveStateChangedEvent');
+goog.provide('rdm.local.DocumentSaveStateChangedEvent');
 goog.require('goog.events.Event');
 
-rdm.local.LocalDocumentSaveStateChangedEvent = function(document, isSaving, isPending) {
+rdm.local.DocumentSaveStateChangedEvent = function(document, isSaving, isPending) {
 	goog.events.Event.call(this, rdm.EventType.DOCUMENT_SAVE_STATE_CHANGED, document);
 	this.isSaving = isSaving;
 	this.isPending = isPending;

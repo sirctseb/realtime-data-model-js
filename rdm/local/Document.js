@@ -12,32 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalDocument');
+goog.provide('rdm.local.Document');
 goog.require('goog.events.EventTarget');
 goog.require('rdm.local.Collaborator');
 
-rdm.local.LocalDocument = function(model) {
+rdm.local.Document = function(model) {
   goog.events.EventTarget.call(this);
   this.model_ = model;
 };
-goog.inherits(rdm.local.LocalDocument, goog.events.EventTarget);
+goog.inherits(rdm.local.Document, goog.events.EventTarget);
 
 /**
  * @expose
  */
-rdm.local.LocalDocument.prototype.getModel = function() {
+rdm.local.Document.prototype.getModel = function() {
   return this.model_;
 };
 
 /**
  * @expose
  */
-rdm.local.LocalDocument.prototype.close = function() {};
+rdm.local.Document.prototype.close = function() {};
 
 /**
  * @expose
  */
-rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn) {
+rdm.local.Document.prototype.exportDocument = function(successFn, failureFn) {
   try {
     successFn(JSON.stringify(this.model_.getRoot()));
   } catch(e) {
@@ -48,7 +48,7 @@ rdm.local.LocalDocument.prototype.exportDocument = function(successFn, failureFn
 /**
  * @expose
  */
-rdm.local.LocalDocument.prototype.getCollaborators = function() {
+rdm.local.Document.prototype.getCollaborators = function() {
   return [new rdm.local.Collaborator()];
 }
 
