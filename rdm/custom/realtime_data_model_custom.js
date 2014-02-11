@@ -144,7 +144,7 @@ rdm.custom = {
   },
 
   getLocalId_: function(obj) {
-    return obj.getId();
+    return obj.id_;
   },
 
 
