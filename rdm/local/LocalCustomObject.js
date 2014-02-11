@@ -13,12 +13,12 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalCustomObject');
-goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.LocalModelObjectBase');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.LocalValueChangedEvent');
 
 rdm.local.LocalCustomObject = function(model) {
-	rdm.local.LocalModelObject.call(this, model);
+	rdm.local.LocalModelObjectBase.call(this, model);
 
   /**
    * Stores the actual values of the custom object fields
@@ -26,7 +26,7 @@ rdm.local.LocalCustomObject = function(model) {
    */
 	this.backingFields_ = {};
 };
-goog.inherits(rdm.local.LocalCustomObject, rdm.local.LocalModelObject);
+goog.inherits(rdm.local.LocalCustomObject, rdm.local.LocalModelObjectBase);
 
 rdm.local.LocalCustomObject.instances_ = [];
 
