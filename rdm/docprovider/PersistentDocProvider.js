@@ -80,7 +80,7 @@ rdm.PersistentDocProvider.prototype.onDocumentChange_ = function(event) {
   this.isPending = true;
   // if pending has changed, send change event
   if(lastIsPending != this.isPending) {
-    this.document.changeSaveState(this.isPending, this.isSaving);
+    this.document.dispatchEvent(new rdm.local.LocalDocumentSaveStateChangedEvent(this.isPending, this.isSaving));
   }
 };
 
@@ -90,7 +90,7 @@ rdm.PersistentDocProvider.prototype.saveDocument_ = function(save) {
   this.isPending = false;
   this.isSaving = true;
   // send state changed event
-  this.document.changeSaveState(this.isPending, this.isSaving);
+  this.document.dispatchEvent(new rdm.local.LocalDocumentSaveStateChangedEvent(this.isPending, this.isSaving));
   var this_ = this;
   this.saveDocument(function(saved) {
     if(!saved) {
@@ -98,7 +98,7 @@ rdm.PersistentDocProvider.prototype.saveDocument_ = function(save) {
       var lastIsSaving = this_.isSaving;
       this_.isSaving = false;
       if(lastIsSaving != this_.isSaving) {
-        this_.document.changeSaveState(this.isPending, this.isSaving);
+        this_.document.dispatchEvent(new rdm.local.LocalDocumentSaveStateChangedEvent(this.isPending, this.isSaving));
       }
     }
   });
