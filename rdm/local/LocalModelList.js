@@ -13,7 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModelList');
-goog.require('rdm.local.LocalIndexReferenceContainer');
+goog.require('rdm.local.IndexReferenceContainer');
 goog.require('rdm.local.LocalValuesAddedEvent');
 goog.require('rdm.local.LocalValuesRemovedEvent');
 goog.require('rdm.local.LocalValuesSetEvent');
@@ -22,7 +22,7 @@ goog.require('rdm.EventType');
 goog.require('goog.array');
 
 rdm.local.LocalModelList = function(model, initialValue) {
-  rdm.local.LocalIndexReferenceContainer.call(this, model);
+  rdm.local.IndexReferenceContainer.call(this, model);
   this.list_ = initialValue || [];
   this.list_.map(function(element) { propogateChanges_(element); });
   Object.defineProperty(this, 'length', {
@@ -36,7 +36,7 @@ rdm.local.LocalModelList = function(model, initialValue) {
     }
   });
 };
-goog.inherits(rdm.local.LocalModelList, rdm.local.LocalIndexReferenceContainer);
+goog.inherits(rdm.local.LocalModelList, rdm.local.IndexReferenceContainer);
 
 
 /**

@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalIndexReferenceContainer');
+goog.provide('rdm.local.IndexReferenceContainer');
 goog.require('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalIndexReference');
 
 // Implements index reference management
-rdm.local.LocalIndexReferenceContainer = function(model) {
+rdm.local.IndexReferenceContainer = function(model) {
   rdm.local.LocalModelObject.call(this, model);
   this.indexReferences_ = [];
 }
-goog.inherits(rdm.local.LocalIndexReferenceContainer, rdm.local.LocalModelObject);
+goog.inherits(rdm.local.IndexReferenceContainer, rdm.local.LocalModelObject);
 
 /**
  * @expose
  */
-rdm.local.LocalIndexReferenceContainer.prototype.registerReference = function(index, canBeDeleted) {
+rdm.local.IndexReferenceContainer.prototype.registerReference = function(index, canBeDeleted) {
   // create the reference
   var ref = new rdm.local.LocalIndexReference(index, canBeDeleted, this);
   // add to list of references
@@ -35,7 +35,7 @@ rdm.local.LocalIndexReferenceContainer.prototype.registerReference = function(in
 };
 
 
-rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnDelete_ = function(index, length) {
+rdm.local.IndexReferenceContainer.prototype.shiftReferencesOnDelete_ = function(index, length) {
   // check for reference shifts
   this.indexReferences_.map(function(ref) {
     // if index is to the right of deletion, shift by deleted length
@@ -54,7 +54,7 @@ rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnDelete_ = func
 };
 
 
-rdm.local.LocalIndexReferenceContainer.prototype.shiftReferencesOnInsert_ = function(index, length) {
+rdm.local.IndexReferenceContainer.prototype.shiftReferencesOnInsert_ = function(index, length) {
   // check for reference shifts
   this.indexReferences_.map(function(ref) {
     // if index is to the right on insert index, increase reference
