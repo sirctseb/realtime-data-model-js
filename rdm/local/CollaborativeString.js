@@ -14,8 +14,8 @@
 
 goog.provide('rdm.local.CollaborativeString');
 goog.require('rdm.local.IndexReferenceContainer');
-goog.require('rdm.local.LocalTextInsertedEvent');
-goog.require('rdm.local.LocalTextDeletedEvent');
+goog.require('rdm.local.TextInsertedEvent');
+goog.require('rdm.local.TextDeletedEvent');
 goog.require('rdm.EventType');
 
 rdm.local.CollaborativeString = function(model, initialValue) {
@@ -32,7 +32,7 @@ goog.inherits(rdm.local.CollaborativeString, rdm.local.IndexReferenceContainer);
  * @expose
  */
 rdm.local.CollaborativeString.prototype.append = function(text) {
-  var insertEvent = new rdm.local.LocalTextInsertedEvent(this, this.string_.length, text);
+  var insertEvent = new rdm.local.TextInsertedEvent(this, this.string_.length, text);
   this.emitEventsAndChanged_([insertEvent]);
 };
 
@@ -49,7 +49,7 @@ rdm.local.CollaborativeString.prototype.getText = function() {
  * @expose
  */
 rdm.local.CollaborativeString.prototype.insertString = function(index, text) {
-  var insertEvent = new rdm.local.LocalTextInsertedEvent(this, index, text);
+  var insertEvent = new rdm.local.TextInsertedEvent(this, index, text);
   this.emitEventsAndChanged_([insertEvent]);
 };
 
@@ -61,7 +61,7 @@ rdm.local.CollaborativeString.prototype.removeRange = function(startIndex, endIn
   // get removed text for event
   var removed = this.string_.slice(startIndex, endIndex);
   // add event to stream
-  var deleteEvent = new rdm.local.LocalTextDeletedEvent(this, startIndex, removed);
+  var deleteEvent = new rdm.local.TextDeletedEvent(this, startIndex, removed);
   this.emitEventsAndChanged_([deleteEvent]);
 };
 
@@ -75,8 +75,8 @@ rdm.local.CollaborativeString.prototype.setText = function(text) {
   var this_ = this;
   var events = diffs.map(function(diff) {
     return diff.type === 'add' ?
-      new rdm.local.LocalTextInsertedEvent(this_, diff.index, diff.text) :
-      new rdm.local.LocalTextDeletedEvent(this_, diff.index, diff.text);
+      new rdm.local.TextInsertedEvent(this_, diff.index, diff.text) :
+      new rdm.local.TextDeletedEvent(this_, diff.index, diff.text);
   });
   this.emitEventsAndChanged_(events);
 };

@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalValuesSetEvent');
-goog.require('rdm.local.LocalUndoableEvent');
+goog.provide('rdm.local.ValuesSetEvent');
+goog.require('rdm.local.UndoableEvent');
 goog.require('rdm.EventType');
 
-rdm.local.LocalValuesSetEvent = function(target_, index, newValues, oldValues) {
-  rdm.local.LocalUndoableEvent.call(this, rdm.EventType.VALUES_SET, target_);
+rdm.local.ValuesSetEvent = function(target_, index, newValues, oldValues) {
+  rdm.local.UndoableEvent.call(this, rdm.EventType.VALUES_SET, target_);
   this.bubbles = false;
   this.index = index;
   this.newValues = newValues;
   this.oldValues = oldValues;
 };
-goog.inherits(rdm.local.LocalValuesSetEvent, rdm.local.LocalUndoableEvent);
+goog.inherits(rdm.local.ValuesSetEvent, rdm.local.UndoableEvent);
 
-rdm.local.LocalValuesSetEvent.prototype.getInverse = function() {
-  return new rdm.local.LocalValuesSetEvent(this.target_, this.index, this.oldValues, this.newValues);
+rdm.local.ValuesSetEvent.prototype.getInverse = function() {
+  return new rdm.local.ValuesSetEvent(this.target_, this.index, this.oldValues, this.newValues);
 };
 
-rdm.local.LocalValuesSetEvent.prototype.updateState_ = function() {
+rdm.local.ValuesSetEvent.prototype.updateState_ = function() {
   this.oldValues = this.target_.asArray().slice(this.index, this.index + this.newValues.length);
 };

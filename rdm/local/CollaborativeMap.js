@@ -14,7 +14,7 @@
 
 goog.provide('rdm.local.CollaborativeMap');
 goog.require('rdm.local.CollaborativeObject');
-goog.require('rdm.local.LocalValueChangedEvent');
+goog.require('rdm.local.ValueChangedEvent');
 goog.require('rdm.EventType');
 
 rdm.local.CollaborativeMap = function(model, initialValue) {
@@ -53,7 +53,7 @@ rdm.local.CollaborativeMap.prototype['delete'] = function(key) {
   // save value for return
   var ret = this.map_[key] || null;
   // create the event
-  var event = new rdm.local.LocalValueChangedEvent(this, key, null, this.map_[key]);
+  var event = new rdm.local.ValueChangedEvent(this, key, null, this.map_[key]);
   // send the event
   this.emitEventsAndChanged_([event]);
   return ret;
@@ -111,7 +111,7 @@ rdm.local.CollaborativeMap.prototype.set = function(key, value) {
   // save the current value for return
   var ret = this.map_[key];
   // send the event
-  var event = new rdm.local.LocalValueChangedEvent(this, key, value, this.map_[key] === undefined ? null : this.map_[key]);
+  var event = new rdm.local.ValueChangedEvent(this, key, value, this.map_[key] === undefined ? null : this.map_[key]);
   this.emitEventsAndChanged_([event]);
   return ret;
 };

@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalTextDeletedEvent');
-goog.require('rdm.local.LocalUndoableEvent');
-// goog.require('rdm.local.LocalTextInsertedEvent');
+goog.provide('rdm.local.TextInsertedEvent');
+goog.require('rdm.local.UndoableEvent');
+// goog.require('rdm.local.TextDeletedEvent');
 goog.require('rdm.EventType');
 
-rdm.local.LocalTextDeletedEvent = function(target_, index, text) {
-  rdm.local.LocalUndoableEvent.call(this, rdm.EventType.TEXT_DELETED, target_);
+rdm.local.TextInsertedEvent = function(target_, index, text) {
+  rdm.local.UndoableEvent.call(this, rdm.EventType.TEXT_INSERTED, target_);
+  this.bubbles = false;
   this.index = index;
   this.text = text;
-  this.bubbles = null;
 };
-goog.inherits(rdm.local.LocalTextDeletedEvent, rdm.local.LocalUndoableEvent);
+goog.inherits(rdm.local.TextInsertedEvent, rdm.local.UndoableEvent);
 
-rdm.local.LocalTextDeletedEvent.prototype.getInverse = function() {
-  return new rdm.local.LocalTextInsertedEvent(this.target_, this.index, this.text);
+rdm.local.TextInsertedEvent.prototype.getInverse = function() {
+  return new rdm.local.TextDeletedEvent(this.target_, this.index, this.text);
 };

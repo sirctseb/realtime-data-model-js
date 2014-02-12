@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalUndoRedoStateChangedEvent');
+goog.provide('rdm.local.UndoRedoStateChangedEvent');
 goog.require('rdm.EventType');
 
-rdm.local.LocalUndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
+rdm.local.UndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
   goog.events.Event.call(this, rdm.EventType.UNDO_REDO_STATE_CHANGED, target_);
   this.canUndo = canUndo;
   this.canRedo = canRedo;
 };
-goog.inherits(rdm.local.LocalUndoRedoStateChangedEvent, goog.events.Event);
+goog.inherits(rdm.local.UndoRedoStateChangedEvent, goog.events.Event);

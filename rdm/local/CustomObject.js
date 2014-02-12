@@ -15,7 +15,7 @@
 goog.provide('rdm.local.CustomObject');
 goog.require('rdm.local.CollaborativeObjectBase');
 goog.require('rdm.local.ObjectChangedEvent');
-goog.require('rdm.local.LocalValueChangedEvent');
+goog.require('rdm.local.ValueChangedEvent');
 
 rdm.local.CustomObject = function(model) {
 	rdm.local.CollaborativeObjectBase.call(this, model);
@@ -52,7 +52,7 @@ rdm.local.CustomObject.customTypeName_ = function(ref) {
 };
 
 rdm.local.CustomObject.prototype.executeEvent_ = function(event) {
-  if(event instanceof rdm.local.LocalValueChangedEvent) {
+  if(event instanceof rdm.local.ValueChangedEvent) {
     // set backing value
     this.backingFields_[event.property] = event.newValue;
     // update parents

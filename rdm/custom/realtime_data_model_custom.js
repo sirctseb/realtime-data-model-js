@@ -62,7 +62,7 @@ rdm.custom = {
       },
       set: function (b) {
         // create event
-        var event = new rdm.local.LocalValueChangedEvent(this, name, b, this.backingFields_[name] || null);
+        var event = new rdm.local.ValueChangedEvent(this, name, b, this.backingFields_[name] || null);
         // emit event
         this.emitEventsAndChanged_([event]);
 

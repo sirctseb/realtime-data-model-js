@@ -14,7 +14,7 @@
 
 goog.provide('rdm.local.UndoHistory');
 goog.require('rdm.local.ObjectChangedEvent');
-goog.require('rdm.local.LocalUndoRedoStateChangedEvent');
+goog.require('rdm.local.UndoRedoStateChangedEvent');
 goog.require('rdm.EventType')
 
 /** [UndoHistory] manages the history of actions performed in the app */
@@ -136,7 +136,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-    this.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent(this.canRedo, this.canUndo));
+    this.model.dispatchEvent(new rdm.local.UndoRedoStateChangedEvent(this.canRedo, this.canUndo));
   }
 };
 
@@ -166,7 +166,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-    this.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent(this.model, this.canUndo, this.canRedo));
+    this.model.dispatchEvent(new rdm.local.UndoRedoStateChangedEvent(this.model, this.canUndo, this.canRedo));
   }
 };
 
