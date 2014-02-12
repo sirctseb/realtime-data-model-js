@@ -14,7 +14,7 @@
 
 goog.provide('rdm.local.CustomObject');
 goog.require('rdm.local.CollaborativeObjectBase');
-goog.require('rdm.local.LocalObjectChangedEvent');
+goog.require('rdm.local.ObjectChangedEvent');
 goog.require('rdm.local.LocalValueChangedEvent');
 
 rdm.local.CustomObject = function(model) {

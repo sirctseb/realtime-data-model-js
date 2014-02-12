@@ -13,7 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.CollaborativeObjectBase');
-goog.require('rdm.local.LocalObjectChangedEvent');
+goog.require('rdm.local.ObjectChangedEvent');
 goog.require('rdm.local.EventTarget');
 
 rdm.local.CollaborativeObjectBase = function(model) {
@@ -31,7 +31,7 @@ rdm.local.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(eve
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_(events);
   // construct change event
-  var event = new rdm.local.LocalObjectChangedEvent(this, events);
+  var event = new rdm.local.ObjectChangedEvent(this, events);
   for(var i = 0; i < events.length; i++) {
     // execute events
     this.executeEvent_(events[i]);

@@ -23,7 +23,7 @@ goog.require('rdm.local.CollaborativeList');
 goog.require('rdm.local.CollaborativeMap');
 goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.local.CollaborativeString');
-goog.require('rdm.local.LocalObjectChangedEvent');
+goog.require('rdm.local.ObjectChangedEvent');
 goog.require('rdm.local.LocalReferenceShiftedEvent');
 goog.require('rdm.local.LocalTextDeletedEvent');
 goog.require('rdm.local.LocalTextInsertedEvent');

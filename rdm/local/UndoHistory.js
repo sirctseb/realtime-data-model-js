@@ -13,7 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.local.UndoHistory');
-goog.require('rdm.local.LocalObjectChangedEvent');
+goog.require('rdm.local.ObjectChangedEvent');
 goog.require('rdm.local.LocalUndoRedoStateChangedEvent');
 goog.require('rdm.EventType')
 
@@ -127,7 +127,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
-    var event = new rdm.local.LocalObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
+    var event = new rdm.local.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
   }
 
@@ -155,7 +155,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
-    var event = new rdm.local.LocalObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
+    var event = new rdm.local.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
   }
 
