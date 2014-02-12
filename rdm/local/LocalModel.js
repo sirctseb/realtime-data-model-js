@@ -15,7 +15,7 @@
 goog.provide('rdm.local.LocalModel');
 goog.require('rdm.local.UndoHistory');
 goog.require('rdm.local.CollaborativeList');
-goog.require('rdm.local.LocalModelMap');
+goog.require('rdm.local.CollaborativeMap');
 goog.require('rdm.local.LocalModelString');
 goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.local.CustomObject');
@@ -117,7 +117,7 @@ rdm.local.LocalModel.prototype.createList = function(initialValue) {
  * @expose
  */
 rdm.local.LocalModel.prototype.createMap = function(initialValue) {
-  return new rdm.local.LocalModelMap(this, initialValue);
+  return new rdm.local.CollaborativeMap(this, initialValue);
 };
 
 /**
