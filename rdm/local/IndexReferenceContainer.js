@@ -14,7 +14,7 @@
 
 goog.provide('rdm.local.IndexReferenceContainer');
 goog.require('rdm.local.LocalModelObject');
-goog.require('rdm.local.LocalIndexReference');
+goog.require('rdm.local.IndexReference');
 
 // Implements index reference management
 rdm.local.IndexReferenceContainer = function(model) {
@@ -28,7 +28,7 @@ goog.inherits(rdm.local.IndexReferenceContainer, rdm.local.LocalModelObject);
  */
 rdm.local.IndexReferenceContainer.prototype.registerReference = function(index, canBeDeleted) {
   // create the reference
-  var ref = new rdm.local.LocalIndexReference(index, canBeDeleted, this);
+  var ref = new rdm.local.IndexReference(index, canBeDeleted, this);
   // add to list of references
   this.indexReferences_.push(ref);
   return ref;

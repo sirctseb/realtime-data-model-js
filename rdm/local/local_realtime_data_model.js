@@ -16,7 +16,7 @@ goog.provide('rdm.local');
 
 goog.require('rdm.local.Document');
 goog.require('rdm.local.Event');
-goog.require('rdm.local.LocalIndexReference');
+goog.require('rdm.local.IndexReference');
 goog.require('rdm.local.IndexReferenceContainer');
 goog.require('rdm.local.LocalModel');
 goog.require('rdm.local.LocalModelList');

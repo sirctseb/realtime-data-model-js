@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalIndexReference');
+goog.provide('rdm.local.IndexReference');
 goog.require('rdm.local.LocalModelObject');
 goog.require('rdm.local.LocalReferenceShiftedEvent');
 
-rdm.local.LocalIndexReference = function(index, canBeDeleted, referencedObject) {
+rdm.local.IndexReference = function(index, canBeDeleted, referencedObject) {
   rdm.local.LocalModelObject.call(this);
   this.index = index;
   this.canBeDeleted = canBeDeleted;
   this.referencedObject = referencedObject;
 };
-goog.inherits(rdm.local.LocalIndexReference, rdm.local.LocalModelObject);
+goog.inherits(rdm.local.IndexReference, rdm.local.LocalModelObject);
 
-rdm.local.LocalIndexReference.prototype.shift_ = function(newIndex) {
+rdm.local.IndexReference.prototype.shift_ = function(newIndex) {
   var oldIndex = this.index;
   this.index = newIndex;
   this.dispatchEvent(new rdm.local.LocalReferenceShiftedEvent(this, this.index, oldIndex));
