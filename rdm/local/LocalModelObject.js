@@ -17,7 +17,7 @@ goog.require('rdm.local.LocalModelObjectBase');
 
 
 rdm.local.LocalModelObject = function(model) {
-  rdm.local.LocalModelObject.call(this, model);
+  rdm.local.LocalModelObjectBase.call(this, model);
   Object.defineProperties(this, {
     'id': { get: function() { return this.id_; }}
   });
