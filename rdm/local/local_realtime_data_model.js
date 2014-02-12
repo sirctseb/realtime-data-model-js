@@ -18,7 +18,7 @@ goog.require('rdm.local.Document');
 goog.require('rdm.local.Event');
 goog.require('rdm.local.IndexReference');
 goog.require('rdm.local.IndexReferenceContainer');
-goog.require('rdm.local.LocalModel');
+goog.require('rdm.local.Model');
 goog.require('rdm.local.CollaborativeList');
 goog.require('rdm.local.CollaborativeMap');
 goog.require('rdm.local.CollaborativeObject');

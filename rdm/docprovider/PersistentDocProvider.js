@@ -48,12 +48,12 @@ rdm.PersistentDocProvider.prototype.loadDocument = function(onLoaded, opt_initia
     var model;
     // if retrieved doc is empty, pass normal initializeModel
     if(retrievedDoc == "") {
-      model = new rdm.local.LocalModel();
+      model = new rdm.local.Model();
       model.initialize_(opt_initializerFn);
       doInitialSave = true;
     } else {
       // otherwise, initialize with json data
-      model = new rdm.local.LocalModel();
+      model = new rdm.local.Model();
       model.initializeFromJSON_(JSON.parse(retrievedDoc));
     }
     // listen for changes on model

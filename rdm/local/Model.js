@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalModel');
+goog.provide('rdm.local.Model');
 goog.require('rdm.local.UndoHistory');
 goog.require('rdm.local.CollaborativeList');
 goog.require('rdm.local.CollaborativeMap');
@@ -22,7 +22,7 @@ goog.require('rdm.local.CustomObject');
 goog.require('rdm.custom');
 goog.require('goog.events.EventTarget');
 
-rdm.local.LocalModel = function() {
+rdm.local.Model = function() {
   goog.events.EventTarget.call(this);
 
   this.isReadyOnly = false;
@@ -34,9 +34,9 @@ rdm.local.LocalModel = function() {
   this.root_ = this.createMap();
   this.isInitialized_ = false;
 };
-goog.inherits(rdm.local.LocalModel, goog.events.EventTarget);
+goog.inherits(rdm.local.Model, goog.events.EventTarget);
 
-rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
+rdm.local.Model.prototype.initialize_ = function(initializeModel) {
   this.undoHistory_ = new rdm.local.UndoHistory(this);
   if(initializeModel != null) {
     this.undoHistory_.initializeModel(initializeModel);
@@ -47,38 +47,38 @@ rdm.local.LocalModel.prototype.initialize_ = function(initializeModel) {
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.beginCreationCompoundOperation = function() {};
+rdm.local.Model.prototype.beginCreationCompoundOperation = function() {};
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.endCompoundOperation = function() {
+rdm.local.Model.prototype.endCompoundOperation = function() {
   this.undoHistory_.endCompoundOperation();
 };
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.getRoot = function() {
+rdm.local.Model.prototype.getRoot = function() {
   return this.root_;
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.isInitialized = function() {
+rdm.local.Model.prototype.isInitialized = function() {
   return isInitialized_;
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.beginCompoundOperation = function(name) {
+rdm.local.Model.prototype.beginCompoundOperation = function(name) {
   this.undoHistory_.beginCompoundOperation(rdm.local.UndoHistory.Scope.EXPLICIT_CO);
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.create = function(ref, var_args) {
+rdm.local.Model.prototype.create = function(ref, var_args) {
   var name = ref;
   if(goog.isString(ref)) {
     ref = rdm.local.CustomObject.customTypes_[ref].type;
@@ -109,28 +109,28 @@ rdm.local.LocalModel.prototype.create = function(ref, var_args) {
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.createList = function(initialValue) {
+rdm.local.Model.prototype.createList = function(initialValue) {
   return new rdm.local.CollaborativeList(this, initialValue);
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.createMap = function(initialValue) {
+rdm.local.Model.prototype.createMap = function(initialValue) {
   return new rdm.local.CollaborativeMap(this, initialValue);
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.createString = function(initialValue) {
+rdm.local.Model.prototype.createString = function(initialValue) {
   return new rdm.local.CollaborativeString(this, initialValue);
 }
 
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.undo = function() {
+rdm.local.Model.prototype.undo = function() {
   if(!this.canUndo) return;
   // undo events
   this.undoHistory_.undo();
@@ -139,7 +139,7 @@ rdm.local.LocalModel.prototype.undo = function() {
 /**
  * @expose
  */
-rdm.local.LocalModel.prototype.redo = function() {
+rdm.local.Model.prototype.redo = function() {
   if(!this.canRedo) return;
   // redo events
   this.undoHistory_.redo();
