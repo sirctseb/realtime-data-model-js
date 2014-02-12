@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalEvent');
+goog.provide('rdm.local.Event');
 goog.require('goog.events.Event');
 
-rdm.local.LocalEvent = function(type, target_) {
+rdm.local.Event = function(type, target_) {
   goog.events.Event.call(this, type, target_);
   // in the local implementation, all events are local
   this.isLocal = true;
@@ -25,4 +25,4 @@ rdm.local.LocalEvent = function(type, target_) {
   this.target_ = target_;
   this.bubbles = false;
 };
-goog.inherits(rdm.local.LocalEvent, goog.events.Event);
+goog.inherits(rdm.local.Event, goog.events.Event);

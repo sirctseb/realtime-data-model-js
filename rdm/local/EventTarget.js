@@ -22,7 +22,7 @@
  * @see ../demos/eventtarget.html
  */
 
-// TODO document everything as rdm.local.LocalEvent because we use LocalEvent.bubbles
+// TODO document everything as rdm.local.Event because we use LocalEvent.bubbles
 goog.provide('rdm.local.EventTarget');
 
 goog.require('goog.array');
