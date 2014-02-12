@@ -13,16 +13,16 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModelObject');
-goog.require('rdm.local.LocalModelObjectBase');
+goog.require('rdm.local.CollaborativeObjectBase');
 
 
 rdm.local.LocalModelObject = function(model) {
-  rdm.local.LocalModelObjectBase.call(this, model);
+  rdm.local.CollaborativeObjectBase.call(this, model);
   Object.defineProperties(this, {
     'id': { get: function() { return this.id_; }}
   });
 };
-goog.inherits(rdm.local.LocalModelObject, rdm.local.LocalModelObjectBase);
+goog.inherits(rdm.local.LocalModelObject, rdm.local.CollaborativeObjectBase);
 
 /**
  * @expose

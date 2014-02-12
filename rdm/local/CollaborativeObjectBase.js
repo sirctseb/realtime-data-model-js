@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalModelObjectBase');
+goog.provide('rdm.local.CollaborativeObjectBase');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.EventTarget');
 
-rdm.local.LocalModelObjectBase = function(model) {
+rdm.local.CollaborativeObjectBase = function(model) {
   rdm.local.EventTarget.call(this);
-  this.id_ = rdm.local.LocalModelObjectBase.idNum_.toString();
+  this.id_ = rdm.local.CollaborativeObjectBase.idNum_.toString();
   this.model_ = model;
-  rdm.local.LocalModelObjectBase.idNum_++;
+  rdm.local.CollaborativeObjectBase.idNum_++;
 };
-goog.inherits(rdm.local.LocalModelObjectBase, rdm.local.EventTarget);
-rdm.local.LocalModelObjectBase.idNum_ = 0;
+goog.inherits(rdm.local.CollaborativeObjectBase, rdm.local.EventTarget);
+rdm.local.CollaborativeObjectBase.idNum_ = 0;
 
 // create an emit a LocalObjectChangedEvent from a list of events
-rdm.local.LocalModelObjectBase.prototype.emitEventsAndChanged_ = function(events) {
+rdm.local.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
   this.model_.beginCompoundOperation();
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_(events);
@@ -44,7 +44,7 @@ rdm.local.LocalModelObjectBase.prototype.emitEventsAndChanged_ = function(events
 };
 
 
-rdm.local.LocalModelObjectBase.prototype.executeAndEmitEvent_ = function(event) {
+rdm.local.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(event) {
   this.model_.beginCompoundOperation();
 
   // add events to undo history
@@ -59,4 +59,4 @@ rdm.local.LocalModelObjectBase.prototype.executeAndEmitEvent_ = function(event) 
 };
 
 
-rdm.local.LocalModelObjectBase.prototype.executeEvent_ = function(event) {};
+rdm.local.CollaborativeObjectBase.prototype.executeEvent_ = function(event) {};
