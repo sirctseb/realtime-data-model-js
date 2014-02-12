@@ -13,12 +13,12 @@
 // limitations under the License.
 
 goog.provide('rdm.local.UndoableEvent');
-goog.require('rdm.local.Event');
+goog.require('rdm.local.BaseModelEvent');
 
 rdm.local.UndoableEvent = function(type, target_) {
-  rdm.local.Event.call(this, type, target_)
+  rdm.local.BaseModelEvent.call(this, type, target_)
 };
-goog.inherits(rdm.local.UndoableEvent, rdm.local.Event);
+goog.inherits(rdm.local.UndoableEvent, rdm.local.BaseModelEvent);
 
 
 rdm.local.UndoableEvent.prototype.executeAndEmit_ = function() {

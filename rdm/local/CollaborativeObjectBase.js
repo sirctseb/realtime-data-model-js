@@ -14,15 +14,15 @@
 
 goog.provide('rdm.local.CollaborativeObjectBase');
 goog.require('rdm.local.ObjectChangedEvent');
-goog.require('rdm.local.EventTarget');
+goog.require('rdm.local.BaseModelEventTarget');
 
 rdm.local.CollaborativeObjectBase = function(model) {
-  rdm.local.EventTarget.call(this);
+  rdm.local.BaseModelEventTarget.call(this);
   this.id_ = rdm.local.CollaborativeObjectBase.idNum_.toString();
   this.model_ = model;
   rdm.local.CollaborativeObjectBase.idNum_++;
 };
-goog.inherits(rdm.local.CollaborativeObjectBase, rdm.local.EventTarget);
+goog.inherits(rdm.local.CollaborativeObjectBase, rdm.local.BaseModelEventTarget);
 rdm.local.CollaborativeObjectBase.idNum_ = 0;
 
 // create an emit a LocalObjectChangedEvent from a list of events

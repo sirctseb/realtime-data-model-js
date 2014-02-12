@@ -13,13 +13,13 @@
 // limitations under the License.
 
 goog.provide('rdm.local.ReferenceShiftedEvent');
-goog.require('rdm.local.Event');
+goog.require('rdm.local.BaseModelEvent');
 goog.require('rdm.EventType');
 
 rdm.local.ReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
-  rdm.local.Event.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
+  rdm.local.BaseModelEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
   this.bubbles = false;
   this.newIndex = newIndex;
   this.oldIndex = oldIndex;
 };
-goog.inherits(rdm.local.ReferenceShiftedEvent, rdm.local.Event);
+goog.inherits(rdm.local.ReferenceShiftedEvent, rdm.local.BaseModelEvent);
