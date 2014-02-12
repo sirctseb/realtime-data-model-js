@@ -13,15 +13,15 @@
 // limitations under the License.
 
 goog.provide('rdm.local.LocalModelMap');
-goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.local.LocalValueChangedEvent');
 goog.require('rdm.EventType');
 
 rdm.local.LocalModelMap = function(model, initialValue) {
-  rdm.local.LocalModelObject.call(this, model);
+  rdm.local.CollaborativeObject.call(this, model);
   this.map_ = initialValue || {};
   for(var key in this.map_) {
-    if(this.map_[key] instanceof rdm.local.LocalModelObject) {
+    if(this.map_[key] instanceof rdm.local.CollaborativeObject) {
       this.map_[key].setParentEventTarget(this);
     }
   };
@@ -30,7 +30,7 @@ rdm.local.LocalModelMap = function(model, initialValue) {
     "size": { get: function() { return Object.keys(this_.map_).length; }}
   });
 };
-goog.inherits(rdm.local.LocalModelMap, rdm.local.LocalModelObject);
+goog.inherits(rdm.local.LocalModelMap, rdm.local.CollaborativeObject);
 
 
 /**
@@ -132,13 +132,13 @@ rdm.local.LocalModelMap.prototype.executeEvent_ = function(event) {
       delete this.map_[event.property];
     }
     // stop propagating changes if we're writing over a model object
-    if(event.oldValue instanceof rdm.local.LocalModelObject) {
+    if(event.oldValue instanceof rdm.local.CollaborativeObject) {
       if(!goog.object.contains(this.map_, event.oldValue)) {
         event.oldValue.removeParentEventTarget(this);
       }
     }
     // propagate changes on model data objects
-    if(event.newValue instanceof rdm.local.LocalModelObject) {
+    if(event.newValue instanceof rdm.local.CollaborativeObject) {
       event.newValue.addParentEventTarget(this);
     }
   }

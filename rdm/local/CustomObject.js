@@ -57,10 +57,10 @@ rdm.local.CustomObject.prototype.executeEvent_ = function(event) {
     this.backingFields_[event.property] = event.newValue;
     // update parents
     var children = this.getChildren_();
-    if(event.oldValue instanceof rdm.local.LocalModelObject && !goog.contains(children, event.oldValue)) {
+    if(event.oldValue instanceof rdm.local.CollaborativeObject && !goog.contains(children, event.oldValue)) {
       event.oldValue.removeParentEventTarget(this);
     }
-    if(event.newValue instanceof rdm.local.LocalModelObject) {
+    if(event.newValue instanceof rdm.local.CollaborativeObject) {
       event.newValue.addParentEventTarget(this);
     }
   }

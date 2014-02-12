@@ -13,15 +13,15 @@
 // limitations under the License.
 
 goog.provide('rdm.local.IndexReferenceContainer');
-goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.local.IndexReference');
 
 // Implements index reference management
 rdm.local.IndexReferenceContainer = function(model) {
-  rdm.local.LocalModelObject.call(this, model);
+  rdm.local.CollaborativeObject.call(this, model);
   this.indexReferences_ = [];
 }
-goog.inherits(rdm.local.IndexReferenceContainer, rdm.local.LocalModelObject);
+goog.inherits(rdm.local.IndexReferenceContainer, rdm.local.CollaborativeObject);
 
 /**
  * @expose

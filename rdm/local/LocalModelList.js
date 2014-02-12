@@ -17,7 +17,7 @@ goog.require('rdm.local.IndexReferenceContainer');
 goog.require('rdm.local.LocalValuesAddedEvent');
 goog.require('rdm.local.LocalValuesRemovedEvent');
 goog.require('rdm.local.LocalValuesSetEvent');
-goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.EventType');
 goog.require('goog.array');
 
@@ -185,7 +185,7 @@ rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
 
 // check if value is a model object and set this as parent
 rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
-  if(element instanceof rdm.local.LocalModelObject) {
+  if(element instanceof rdm.local.CollaborativeObject) {
     element.addParentEventTarget(this);
   }
 }
@@ -193,7 +193,7 @@ rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
 // check if value is a model object and remove self as parent
 rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
   // stop propagation if overwritten element is model object and it is no longer anywhere in the list
-  if(element instanceof rdm.local.LocalModelObject && this.list_.indexOf(element) == -1) {
+  if(element instanceof rdm.local.CollaborativeObject && this.list_.indexOf(element) == -1) {
     element.removeParentEventTarget(this);
   }
 }

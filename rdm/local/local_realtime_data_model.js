@@ -21,7 +21,7 @@ goog.require('rdm.local.IndexReferenceContainer');
 goog.require('rdm.local.LocalModel');
 goog.require('rdm.local.LocalModelList');
 goog.require('rdm.local.LocalModelMap');
-goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.local.LocalModelString');
 goog.require('rdm.local.LocalObjectChangedEvent');
 goog.require('rdm.local.LocalReferenceShiftedEvent');

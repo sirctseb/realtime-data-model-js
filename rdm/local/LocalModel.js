@@ -17,7 +17,7 @@ goog.require('rdm.local.UndoHistory');
 goog.require('rdm.local.LocalModelList');
 goog.require('rdm.local.LocalModelMap');
 goog.require('rdm.local.LocalModelString');
-goog.require('rdm.local.LocalModelObject');
+goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.local.CustomObject');
 goog.require('rdm.custom');
 goog.require('goog.events.EventTarget');
