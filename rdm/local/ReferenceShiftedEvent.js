@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalReferenceShiftedEvent');
+goog.provide('rdm.local.ReferenceShiftedEvent');
 goog.require('rdm.local.Event');
 goog.require('rdm.EventType');
 
-rdm.local.LocalReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
+rdm.local.ReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
   rdm.local.Event.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
   this.bubbles = false;
   this.newIndex = newIndex;
   this.oldIndex = oldIndex;
 };
-goog.inherits(rdm.local.LocalReferenceShiftedEvent, rdm.local.Event);
+goog.inherits(rdm.local.ReferenceShiftedEvent, rdm.local.Event);

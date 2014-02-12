@@ -14,7 +14,7 @@
 
 goog.provide('rdm.local.IndexReference');
 goog.require('rdm.local.CollaborativeObject');
-goog.require('rdm.local.LocalReferenceShiftedEvent');
+goog.require('rdm.local.ReferenceShiftedEvent');
 
 rdm.local.IndexReference = function(index, canBeDeleted, referencedObject) {
   rdm.local.CollaborativeObject.call(this);
@@ -27,5 +27,5 @@ goog.inherits(rdm.local.IndexReference, rdm.local.CollaborativeObject);
 rdm.local.IndexReference.prototype.shift_ = function(newIndex) {
   var oldIndex = this.index;
   this.index = newIndex;
-  this.dispatchEvent(new rdm.local.LocalReferenceShiftedEvent(this, this.index, oldIndex));
+  this.dispatchEvent(new rdm.local.ReferenceShiftedEvent(this, this.index, oldIndex));
 };
