@@ -577,6 +577,10 @@ onFileLoaded = function(doc) {
     var json = '[{"type":"text_deleted","text":"Hello R","index":0},{"type":"text_inserted","text":"r","index":0},{"type":"text_deleted","text":"alt","index":2},{"type":"text_inserted","text":"d","index":2},{"type":"text_deleted","text":"me World!","index":4},{"type":"text_inserted","text":"d","index":4}]';
     deepEqual(events, JSON.parse(json));
   });
+  test('toString', function() {
+    string.setText('stringValue');
+    equal(string.toString(), 'stringValue');
+  });
 
   module('CollaborativeList', {
     setup: function() {
@@ -684,6 +688,17 @@ onFileLoaded = function(doc) {
       list.set(-1, 1);
       // TODO rt throws error with {n: 'Index: -1, Size: 1'}
     });
+  });
+  test('toString', function() {
+    list.clear();
+    list.push(1);
+    list.push([1,2,3]);
+    list.push('string');
+    list.push({'string': 1});
+    list.push(doc.getModel().createString('collabString'));
+    list.push(doc.getModel().createList([1,2,3]));
+    list.push(doc.getModel().createMap({string: 1}));
+    equal(list.toString(), "[[JsonValue 1], [JsonValue [1,2,3]], [JsonValue \"string\"], [JsonValue {\"string\":1}], collabString, [[JsonValue 1], [JsonValue 2], [JsonValue 3]], {string: [JsonValue 1]}]");
   });
 
   module('CollaborativeMap', {
@@ -812,6 +827,11 @@ onFileLoaded = function(doc) {
     doc.getModel().undo();
     equal(map.has('key1'), false);
     equal(map.keys().indexOf('key1'), -1);
+  });
+  test('toString', function() {
+    map.clear();
+    map.set('string', 1);
+    equal(map.toString(), '{string: [JsonValue 1]}');
   });
 
   module('RealtimeIndexReference');
