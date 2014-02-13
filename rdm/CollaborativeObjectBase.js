@@ -14,15 +14,15 @@
 
 goog.provide('rdm.CollaborativeObjectBase');
 goog.require('rdm.ObjectChangedEvent');
-goog.require('rdm.BaseModelEventTarget');
+goog.require('rdm.EventTarget');
 
 rdm.CollaborativeObjectBase = function(model) {
-  rdm.BaseModelEventTarget.call(this);
+  rdm.EventTarget.call(this);
   this.id_ = rdm.CollaborativeObjectBase.idNum_.toString();
   this.model_ = model;
   rdm.CollaborativeObjectBase.idNum_++;
 };
-goog.inherits(rdm.CollaborativeObjectBase, rdm.BaseModelEventTarget);
+goog.inherits(rdm.CollaborativeObjectBase, rdm.EventTarget);
 rdm.CollaborativeObjectBase.idNum_ = 0;
 
 rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
