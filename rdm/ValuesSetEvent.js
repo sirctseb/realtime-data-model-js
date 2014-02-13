@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.ValuesSetEvent');
-goog.require('rdm.local.UndoableEvent');
+goog.provide('rdm.ValuesSetEvent');
+goog.require('rdm.UndoableEvent');
 goog.require('rdm.EventType');
 
-rdm.local.ValuesSetEvent = function(target_, index, newValues, oldValues) {
-  rdm.local.UndoableEvent.call(this, rdm.EventType.VALUES_SET, target_);
+rdm.ValuesSetEvent = function(target_, index, newValues, oldValues) {
+  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_SET, target_);
   this.bubbles = false;
   this.index = index;
   this.newValues = newValues;
   this.oldValues = oldValues;
 };
-goog.inherits(rdm.local.ValuesSetEvent, rdm.local.UndoableEvent);
+goog.inherits(rdm.ValuesSetEvent, rdm.UndoableEvent);
 
-rdm.local.ValuesSetEvent.prototype.getInverse = function() {
-  return new rdm.local.ValuesSetEvent(this.target_, this.index, this.oldValues, this.newValues);
+rdm.ValuesSetEvent.prototype.getInverse = function() {
+  return new rdm.ValuesSetEvent(this.target_, this.index, this.oldValues, this.newValues);
 };
 
-rdm.local.ValuesSetEvent.prototype.updateState_ = function() {
+rdm.ValuesSetEvent.prototype.updateState_ = function() {
   this.oldValues = this.target_.asArray().slice(this.index, this.index + this.newValues.length);
 };

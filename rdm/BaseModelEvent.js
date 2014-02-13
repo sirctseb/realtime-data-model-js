@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.TextDeletedEvent');
-goog.require('rdm.local.UndoableEvent');
-// goog.require('rdm.local.TextInsertedEvent');
-goog.require('rdm.EventType');
+goog.provide('rdm.BaseModelEvent');
+goog.require('goog.events.Event');
 
-rdm.local.TextDeletedEvent = function(target_, index, text) {
-  rdm.local.UndoableEvent.call(this, rdm.EventType.TEXT_DELETED, target_);
-  this.index = index;
-  this.text = text;
-  this.bubbles = null;
+rdm.BaseModelEvent = function(type, target_) {
+  goog.events.Event.call(this, type, target_);
+  // in the local implementation, all events are local
+  this.isLocal = true;
+  // no sessionId or userId in the local implementation
+  this.sessionId = null;
+  this.userId = null;
+  this.target_ = target_;
+  this.bubbles = false;
 };
-goog.inherits(rdm.local.TextDeletedEvent, rdm.local.UndoableEvent);
-
-rdm.local.TextDeletedEvent.prototype.getInverse = function() {
-  return new rdm.local.TextInsertedEvent(this.target_, this.index, this.text);
-};
+goog.inherits(rdm.BaseModelEvent, goog.events.Event);

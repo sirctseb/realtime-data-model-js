@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.UndoHistory');
-goog.require('rdm.local.ObjectChangedEvent');
-goog.require('rdm.local.UndoRedoStateChangedEvent');
+goog.provide('rdm.UndoHistory');
+goog.require('rdm.ObjectChangedEvent');
+goog.require('rdm.UndoRedoStateChangedEvent');
 goog.require('rdm.EventType')
 
 /** [UndoHistory] manages the history of actions performed in the app */
-rdm.local.UndoHistory = function(model) {
+rdm.UndoHistory = function(model) {
   this.model = model;
   this.history_ = [];
   /**
@@ -55,7 +55,7 @@ rdm.local.UndoHistory = function(model) {
   });
 };
 
-rdm.local.UndoHistory.prototype.beginCompoundOperation = function(scope) {
+rdm.UndoHistory.prototype.beginCompoundOperation = function(scope) {
   if(this.COScopes_.length == 0) {
     // create storage for operations in the CO
     this.currentCO_ = [];
@@ -63,7 +63,7 @@ rdm.local.UndoHistory.prototype.beginCompoundOperation = function(scope) {
   this.COScopes_.push(scope);
 };
 // Complete the compound operation and add to the undo history
-rdm.local.UndoHistory.prototype.endCompoundOperation = function() {
+rdm.UndoHistory.prototype.endCompoundOperation = function() {
   var scope = this.COScopes_.pop();
   if(this.COScopes_.length == 0) {
     // invert the operations and reverse the order
@@ -72,13 +72,13 @@ rdm.local.UndoHistory.prototype.endCompoundOperation = function() {
     }).reverse();
     // clear current CO
     this.currentCO_ = null;
-    if(scope === rdm.local.UndoHistory.Scope.UNDO) {
+    if(scope === rdm.UndoHistory.Scope.UNDO) {
       // if we started from an undo, replace history at previous index with current CO and update index
       this.history_[this.index_] = inverseCO;
-    } else if(scope === rdm.local.UndoHistory.Scope.REDO) {
+    } else if(scope === rdm.UndoHistory.Scope.REDO) {
       // if we started from a redo, replace history at current index with current CO and update index
       this.history_[this.index_] = inverseCO;
-    } else if(scope !== rdm.local.UndoHistory.Scope.INIT) {
+    } else if(scope !== rdm.UndoHistory.Scope.INIT) {
       // add to the history
       this.history_.splice(this.index_, this.history_.length, inverseCO);
       // update index
@@ -87,37 +87,37 @@ rdm.local.UndoHistory.prototype.endCompoundOperation = function() {
   }
 };
 
-rdm.local.UndoHistory.Scope = {
+rdm.UndoHistory.Scope = {
   NONE: 0,
   EXPLICIT_CO: 2,
   UNDO: 3,
   REDO: 4,
   INIT: 5
 };
-rdm.local.UndoHistory.prototype.scope = rdm.local.UndoHistory.Scope.NONE;
+rdm.UndoHistory.prototype.scope = rdm.UndoHistory.Scope.NONE;
 
 // Add a list of events to the current compound operation
-rdm.local.UndoHistory.prototype.addUndoEvents_ = function(events, terminateSet) {
-  if(this.COScopes_.length === 0 || this.COScopes_[0] !== rdm.local.UndoHistory.Scope.INIT) {
+rdm.UndoHistory.prototype.addUndoEvents_ = function(events, terminateSet) {
+  if(this.COScopes_.length === 0 || this.COScopes_[0] !== rdm.UndoHistory.Scope.INIT) {
     Array.prototype.push.apply(this.currentCO_, events);
   }
 };
 
 
-rdm.local.UndoHistory.prototype.initializeModel = function(initialize) {
+rdm.UndoHistory.prototype.initializeModel = function(initialize) {
   // call initialization callback with scope set to INIT
-  this.beginCompoundOperation(rdm.local.UndoHistory.Scope.INIT);
+  this.beginCompoundOperation(rdm.UndoHistory.Scope.INIT);
   initialize(this.model);
   this.endCompoundOperation();
 };
 
-rdm.local.UndoHistory.prototype.undo = function() {
+rdm.UndoHistory.prototype.undo = function() {
   // store current undo/redo state
   var canUndo_ = this.canUndo;
   var canRedo_ = this.canRedo;
 
   // start compound operation
-  this.beginCompoundOperation(rdm.local.UndoHistory.Scope.UNDO);
+  this.beginCompoundOperation(rdm.UndoHistory.Scope.UNDO);
 
   // decrement index
   this.index_--;
@@ -127,7 +127,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
-    var event = new rdm.local.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
+    var event = new rdm.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
   }
 
@@ -136,18 +136,18 @@ rdm.local.UndoHistory.prototype.undo = function() {
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-    this.model.dispatchEvent(new rdm.local.UndoRedoStateChangedEvent(this.canRedo, this.canUndo));
+    this.model.dispatchEvent(new rdm.UndoRedoStateChangedEvent(this.canRedo, this.canUndo));
   }
 };
 
 
-rdm.local.UndoHistory.prototype.redo = function() {
+rdm.UndoHistory.prototype.redo = function() {
   // store current undo/redo state
   var canUndo_ = this.canUndo;
   var canRedo_ = this.canRedo;
 
   // start compound operation
-  this.beginCompoundOperation(rdm.local.UndoHistory.Scope.REDO);
+  this.beginCompoundOperation(rdm.UndoHistory.Scope.REDO);
 
   // redo events
   this.history_[this.index_].map(function(e) { e.executeAndEmit_(); });
@@ -155,7 +155,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
-    var event = new rdm.local.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
+    var event = new rdm.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
   }
 
@@ -166,7 +166,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-    this.model.dispatchEvent(new rdm.local.UndoRedoStateChangedEvent(this.model, this.canUndo, this.canRedo));
+    this.model.dispatchEvent(new rdm.UndoRedoStateChangedEvent(this.model, this.canUndo, this.canRedo));
   }
 };
 

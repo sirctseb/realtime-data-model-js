@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm');
+goog.provide('rdm.local');
 
-goog.require('rdm.Model');
-goog.require('rdm.Document');
-goog.require('rdm.GoogleDocProvider');
-goog.require('rdm.LocalDocumentProvider');
 goog.require('rdm.Document');
 goog.require('rdm.BaseModelEvent');
 goog.require('rdm.IndexReference');
@@ -37,5 +33,3 @@ goog.require('rdm.ValuesAddedEvent');
 goog.require('rdm.ValuesRemovedEvent');
 goog.require('rdm.ValuesSetEvent');
 goog.require('rdm.UndoHistory');
-
-window['rdm'] = rdm;

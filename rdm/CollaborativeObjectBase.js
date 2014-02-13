@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.CollaborativeObjectBase');
-goog.require('rdm.local.ObjectChangedEvent');
-goog.require('rdm.local.BaseModelEventTarget');
+goog.provide('rdm.CollaborativeObjectBase');
+goog.require('rdm.ObjectChangedEvent');
+goog.require('rdm.BaseModelEventTarget');
 
-rdm.local.CollaborativeObjectBase = function(model) {
-  rdm.local.BaseModelEventTarget.call(this);
-  this.id_ = rdm.local.CollaborativeObjectBase.idNum_.toString();
+rdm.CollaborativeObjectBase = function(model) {
+  rdm.BaseModelEventTarget.call(this);
+  this.id_ = rdm.CollaborativeObjectBase.idNum_.toString();
   this.model_ = model;
-  rdm.local.CollaborativeObjectBase.idNum_++;
+  rdm.CollaborativeObjectBase.idNum_++;
 };
-goog.inherits(rdm.local.CollaborativeObjectBase, rdm.local.BaseModelEventTarget);
-rdm.local.CollaborativeObjectBase.idNum_ = 0;
+goog.inherits(rdm.CollaborativeObjectBase, rdm.BaseModelEventTarget);
+rdm.CollaborativeObjectBase.idNum_ = 0;
 
 // create an emit a LocalObjectChangedEvent from a list of events
-rdm.local.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
+rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
   this.model_.beginCompoundOperation();
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_(events);
   // construct change event
-  var event = new rdm.local.ObjectChangedEvent(this, events);
+  var event = new rdm.ObjectChangedEvent(this, events);
   for(var i = 0; i < events.length; i++) {
     // execute events
     this.executeEvent_(events[i]);
@@ -44,7 +44,7 @@ rdm.local.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(eve
 };
 
 
-rdm.local.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(event) {
+rdm.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(event) {
   this.model_.beginCompoundOperation();
 
   // add events to undo history
@@ -59,4 +59,4 @@ rdm.local.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(even
 };
 
 
-rdm.local.CollaborativeObjectBase.prototype.executeEvent_ = function(event) {};
+rdm.CollaborativeObjectBase.prototype.executeEvent_ = function(event) {};

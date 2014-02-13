@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.Collaborator');
+goog.provide('rdm.ValuesAddedEvent');
+goog.require('rdm.UndoableEvent');
+// goog.require('rdm.ValuesRemovedEvent');
+goog.require('rdm.EventType');
 
-/**
- * A collaborator on the document.
- */
-rdm.local.Collaborator = function() {
-	// TODO can we document fields in the constructor?
-	this.color = 'blue';
-	this.displayName = 'Me';
-	this.isAnonymous = false;
-	this.isMe = true;
-	this.photoUrl = null;
-	this.sessionId = null;
-	this.userId = null;
+rdm.ValuesAddedEvent = function(target_, index, values) {
+  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_ADDED, target_);
+  this.bubbles = false;
+  this.index = index;
+  this.values = values;
+};
+goog.inherits(rdm.ValuesAddedEvent, rdm.UndoableEvent);
+
+rdm.ValuesAddedEvent.prototype.getInverse = function() {
+  return new rdm.ValuesRemovedEvent(this.target_, this.index, this.values);
 };

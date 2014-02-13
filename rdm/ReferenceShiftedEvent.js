@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.DocumentSaveStateChangedEvent');
-goog.require('goog.events.Event');
+goog.provide('rdm.ReferenceShiftedEvent');
+goog.require('rdm.BaseModelEvent');
+goog.require('rdm.EventType');
 
-rdm.local.DocumentSaveStateChangedEvent = function(document, isSaving, isPending) {
-	goog.events.Event.call(this, rdm.EventType.DOCUMENT_SAVE_STATE_CHANGED, document);
-	this.isSaving = isSaving;
-	this.isPending = isPending;
+rdm.ReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
+  rdm.BaseModelEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
+  this.bubbles = false;
+  this.newIndex = newIndex;
+  this.oldIndex = oldIndex;
 };
+goog.inherits(rdm.ReferenceShiftedEvent, rdm.BaseModelEvent);

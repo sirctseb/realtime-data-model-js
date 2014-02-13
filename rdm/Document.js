@@ -12,32 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.Document');
+goog.provide('rdm.Document');
 goog.require('goog.events.EventTarget');
-goog.require('rdm.local.Collaborator');
+goog.require('rdm.Collaborator');
 
-rdm.local.Document = function(model) {
+rdm.Document = function(model) {
   goog.events.EventTarget.call(this);
   this.model_ = model;
 };
-goog.inherits(rdm.local.Document, goog.events.EventTarget);
+goog.inherits(rdm.Document, goog.events.EventTarget);
 
 /**
  * @expose
  */
-rdm.local.Document.prototype.getModel = function() {
+rdm.Document.prototype.getModel = function() {
   return this.model_;
 };
 
 /**
  * @expose
  */
-rdm.local.Document.prototype.close = function() {};
+rdm.Document.prototype.close = function() {};
 
 /**
  * @expose
  */
-rdm.local.Document.prototype.exportDocument = function(successFn, failureFn) {
+rdm.Document.prototype.exportDocument = function(successFn, failureFn) {
   try {
     successFn(JSON.stringify(this.model_.getRoot()));
   } catch(e) {
@@ -48,8 +48,8 @@ rdm.local.Document.prototype.exportDocument = function(successFn, failureFn) {
 /**
  * @expose
  */
-rdm.local.Document.prototype.getCollaborators = function() {
-  return [new rdm.local.Collaborator()];
+rdm.Document.prototype.getCollaborators = function() {
+  return [new rdm.Collaborator()];
 }
 
 // TODO support implementing a document supplier class to retrieve documents and give them back in json

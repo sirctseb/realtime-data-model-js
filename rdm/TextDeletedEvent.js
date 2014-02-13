@@ -12,12 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.UndoRedoStateChangedEvent');
+goog.provide('rdm.TextDeletedEvent');
+goog.require('rdm.UndoableEvent');
+// goog.require('rdm.TextInsertedEvent');
 goog.require('rdm.EventType');
 
-rdm.local.UndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
-  goog.events.Event.call(this, rdm.EventType.UNDO_REDO_STATE_CHANGED, target_);
-  this.canUndo = canUndo;
-  this.canRedo = canRedo;
+rdm.TextDeletedEvent = function(target_, index, text) {
+  rdm.UndoableEvent.call(this, rdm.EventType.TEXT_DELETED, target_);
+  this.index = index;
+  this.text = text;
+  this.bubbles = null;
 };
-goog.inherits(rdm.local.UndoRedoStateChangedEvent, goog.events.Event);
+goog.inherits(rdm.TextDeletedEvent, rdm.UndoableEvent);
+
+rdm.TextDeletedEvent.prototype.getInverse = function() {
+  return new rdm.TextInsertedEvent(this.target_, this.index, this.text);
+};

@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.ValueChangedEvent');
-goog.require('rdm.local.UndoableEvent');
+goog.provide('rdm.ValueChangedEvent');
+goog.require('rdm.UndoableEvent');
 goog.require('rdm.EventType');
 
-rdm.local.ValueChangedEvent = function(target_, property, newValue, oldValue) {
-  rdm.local.UndoableEvent.call(this, rdm.EventType.VALUE_CHANGED, target_);
+rdm.ValueChangedEvent = function(target_, property, newValue, oldValue) {
+  rdm.UndoableEvent.call(this, rdm.EventType.VALUE_CHANGED, target_);
   this.bubbles = false;
   this.newValue = newValue;
   this.oldValue = oldValue;
   this.property = property;
 };
-goog.inherits(rdm.local.ValueChangedEvent, rdm.local.UndoableEvent);
+goog.inherits(rdm.ValueChangedEvent, rdm.UndoableEvent);
 
-rdm.local.ValueChangedEvent.prototype.getInverse = function() {
-  return new rdm.local.ValueChangedEvent(this.target_, this.property, this.oldValue, this.newValue);
+rdm.ValueChangedEvent.prototype.getInverse = function() {
+  return new rdm.ValueChangedEvent(this.target_, this.property, this.oldValue, this.newValue);
 };
 
-rdm.local.ValueChangedEvent.prototype.updateState_ = function() {
+rdm.ValueChangedEvent.prototype.updateState_ = function() {
 	this.oldValue = this.target_.get(this.property);
 };

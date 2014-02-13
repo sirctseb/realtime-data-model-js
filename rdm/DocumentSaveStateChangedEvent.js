@@ -12,19 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.ValuesRemovedEvent');
-goog.require('rdm.local.UndoableEvent');
-// goog.require('rdm.local.ValuesAddedEvent');
-goog.require('rdm.EventType');
+goog.provide('rdm.DocumentSaveStateChangedEvent');
+goog.require('goog.events.Event');
 
-rdm.local.ValuesRemovedEvent = function(target_, index, values) {
-  rdm.local.UndoableEvent.call(this, rdm.EventType.VALUES_REMOVED, target_);
-  this.bubbles = false;
-  this.index = index;
-  this.values = values;
+rdm.DocumentSaveStateChangedEvent = function(document, isSaving, isPending) {
+	goog.events.Event.call(this, rdm.EventType.DOCUMENT_SAVE_STATE_CHANGED, document);
+	this.isSaving = isSaving;
+	this.isPending = isPending;
 };
-goog.inherits(rdm.local.ValuesRemovedEvent, rdm.local.UndoableEvent);
-
-rdm.local.ValuesRemovedEvent.prototype.getInverse = function() {
-  return new rdm.local.ValuesAddedEvent(this.target_, this.index, this.values);
-}

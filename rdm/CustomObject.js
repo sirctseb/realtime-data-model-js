@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.CustomObject');
-goog.require('rdm.local.CollaborativeObjectBase');
-goog.require('rdm.local.ObjectChangedEvent');
-goog.require('rdm.local.ValueChangedEvent');
+goog.provide('rdm.CustomObject');
+goog.require('rdm.CollaborativeObjectBase');
+goog.require('rdm.ObjectChangedEvent');
+goog.require('rdm.ValueChangedEvent');
 
-rdm.local.CustomObject = function(model) {
-	rdm.local.CollaborativeObjectBase.call(this, model);
+rdm.CustomObject = function(model) {
+	rdm.CollaborativeObjectBase.call(this, model);
 
   /**
    * Stores the actual values of the custom object fields
@@ -26,9 +26,9 @@ rdm.local.CustomObject = function(model) {
    */
 	this.backingFields_ = {};
 };
-goog.inherits(rdm.local.CustomObject, rdm.local.CollaborativeObjectBase);
+goog.inherits(rdm.CustomObject, rdm.CollaborativeObjectBase);
 
-rdm.local.CustomObject.instances_ = [];
+rdm.CustomObject.instances_ = [];
 
 /**
  * Maps from names to {type, initializerFn, onLoadedFn, fields} as registered by
@@ -36,37 +36,37 @@ rdm.local.CustomObject.instances_ = [];
  * rdm.LocalDocumentProvider.setOnLoaded
  * @private
  */
-rdm.local.CustomObject.customTypes_ = {};
+rdm.CustomObject.customTypes_ = {};
 
 /**
  * Given a registered custom object type, find the registered name
  * @private
  */
-rdm.local.CustomObject.customTypeName_ = function(ref) {
-  for(var name in rdm.local.CustomObject.customTypes_) {
-    if(rdm.local.CustomObject.customTypes_[name].type === ref) {
+rdm.CustomObject.customTypeName_ = function(ref) {
+  for(var name in rdm.CustomObject.customTypes_) {
+    if(rdm.CustomObject.customTypes_[name].type === ref) {
       return name;
     }
   }
   throw ref + ' is not a registered custom object type';
 };
 
-rdm.local.CustomObject.prototype.executeEvent_ = function(event) {
-  if(event instanceof rdm.local.ValueChangedEvent) {
+rdm.CustomObject.prototype.executeEvent_ = function(event) {
+  if(event instanceof rdm.ValueChangedEvent) {
     // set backing value
     this.backingFields_[event.property] = event.newValue;
     // update parents
     var children = this.getChildren_();
-    if(event.oldValue instanceof rdm.local.CollaborativeObject && !goog.contains(children, event.oldValue)) {
+    if(event.oldValue instanceof rdm.CollaborativeObject && !goog.contains(children, event.oldValue)) {
       event.oldValue.removeParentEventTarget(this);
     }
-    if(event.newValue instanceof rdm.local.CollaborativeObject) {
+    if(event.newValue instanceof rdm.CollaborativeObject) {
       event.newValue.addParentEventTarget(this);
     }
   }
 };
 
-rdm.local.CustomObject.prototype.getChildren_ = function() {
+rdm.CustomObject.prototype.getChildren_ = function() {
   var values = [];
   for(var prop in this.backingFields_) {
     values.push(this.backingFields_[prop]);

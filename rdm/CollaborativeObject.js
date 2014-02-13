@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.ReferenceShiftedEvent');
-goog.require('rdm.local.BaseModelEvent');
-goog.require('rdm.EventType');
+goog.provide('rdm.CollaborativeObject');
+goog.require('rdm.CollaborativeObjectBase');
 
-rdm.local.ReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
-  rdm.local.BaseModelEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
-  this.bubbles = false;
-  this.newIndex = newIndex;
-  this.oldIndex = oldIndex;
+
+rdm.CollaborativeObject = function(model) {
+  rdm.CollaborativeObjectBase.call(this, model);
+  Object.defineProperties(this, {
+    'id': { get: function() { return this.id_; }}
+  });
 };
-goog.inherits(rdm.local.ReferenceShiftedEvent, rdm.local.BaseModelEvent);
+goog.inherits(rdm.CollaborativeObject, rdm.CollaborativeObjectBase);
+
+/**
+ * @expose
+ */
+rdm.CollaborativeObject.prototype.getId = function() {
+  return this.id_;
+};

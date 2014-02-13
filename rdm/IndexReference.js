@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.IndexReference');
-goog.require('rdm.local.CollaborativeObject');
-goog.require('rdm.local.ReferenceShiftedEvent');
+goog.provide('rdm.IndexReference');
+goog.require('rdm.CollaborativeObject');
+goog.require('rdm.ReferenceShiftedEvent');
 
-rdm.local.IndexReference = function(index, canBeDeleted, referencedObject) {
-  rdm.local.CollaborativeObject.call(this);
+rdm.IndexReference = function(index, canBeDeleted, referencedObject) {
+  rdm.CollaborativeObject.call(this);
   this.index = index;
   this.canBeDeleted = canBeDeleted;
   this.referencedObject = referencedObject;
 };
-goog.inherits(rdm.local.IndexReference, rdm.local.CollaborativeObject);
+goog.inherits(rdm.IndexReference, rdm.CollaborativeObject);
 
-rdm.local.IndexReference.prototype.shift_ = function(newIndex) {
+rdm.IndexReference.prototype.shift_ = function(newIndex) {
   var oldIndex = this.index;
   this.index = newIndex;
-  this.dispatchEvent(new rdm.local.ReferenceShiftedEvent(this, this.index, oldIndex));
+  this.dispatchEvent(new rdm.ReferenceShiftedEvent(this, this.index, oldIndex));
 };

@@ -14,7 +14,7 @@
 
 goog.provide('rdm.custom');
 goog.require('rdm.GoogleDocProvider');
-goog.require('rdm.local.CustomObject');
+goog.require('rdm.CustomObject');
 
 rdm.custom = {
 
@@ -23,7 +23,7 @@ rdm.custom = {
    */
   registerType: function(type, name) {
     // store local type info
-    rdm.local.CustomObject.customTypes_[name] = {type: type, fields: {}};
+    rdm.CustomObject.customTypes_[name] = {type: type, fields: {}};
     // do realtime registration
     if(rdm.GoogleDocProvider.globallySetup_) {
       gapi.drive.realtime.custom.registerType(type, name);
@@ -43,7 +43,7 @@ rdm.custom = {
     }
 
     // store field on local custom object info to be added when local model creates object
-    rdm.local.CustomObject.customTypes_[rdm.local.CustomObject.customTypeName_(type)].fields[name] = 
+    rdm.CustomObject.customTypes_[rdm.CustomObject.customTypeName_(type)].fields[name] = 
       rdm.custom.localCollaborativeField_(name);
   },
 
@@ -62,7 +62,7 @@ rdm.custom = {
       },
       set: function (b) {
         // create event
-        var event = new rdm.local.ValueChangedEvent(this, name, b, this.backingFields_[name] || null);
+        var event = new rdm.ValueChangedEvent(this, name, b, this.backingFields_[name] || null);
         // emit event
         this.emitEventsAndChanged_([event]);
 
@@ -88,9 +88,9 @@ rdm.custom = {
     }
 
     // store initializer in local custom object info
-    for(var name in rdm.local.CustomObject.customTypes_) {
-      if(rdm.local.CustomObject.customTypes_[name].type === type) {
-        rdm.local.CustomObject.customTypes_[name].initializerFn = initializerFn;
+    for(var name in rdm.CustomObject.customTypes_) {
+      if(rdm.CustomObject.customTypes_[name].type === type) {
+        rdm.CustomObject.customTypes_[name].initializerFn = initializerFn;
         return;
       }
     }
@@ -107,9 +107,9 @@ rdm.custom = {
     }
 
     // store loaded function in local custom object info
-    for(var name in rdm.local.CustomObjectustomTypes_) {
-      if(rdm.local.CustomObject.customTypes_[name].type === type) {
-        rdm.local.CustomObject.customTypes_[name].onLoadedFn = opt_onLoadedFn;
+    for(var name in rdm.CustomObjectustomTypes_) {
+      if(rdm.CustomObject.customTypes_[name].type === type) {
+        rdm.CustomObject.customTypes_[name].onLoadedFn = opt_onLoadedFn;
         return;
       }
     }
@@ -125,8 +125,8 @@ rdm.custom = {
   },
 
   isCustomObject_: function(obj) {
-    // return obj instanceof rdm.local.CustomObject;
-    return goog.array.contains(rdm.local.CustomObject.instances_, obj);
+    // return obj instanceof rdm.CustomObject;
+    return goog.array.contains(rdm.CustomObject.instances_, obj);
   },
 
   /**

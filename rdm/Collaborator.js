@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.TextInsertedEvent');
-goog.require('rdm.local.UndoableEvent');
-// goog.require('rdm.local.TextDeletedEvent');
-goog.require('rdm.EventType');
+goog.provide('rdm.Collaborator');
 
-rdm.local.TextInsertedEvent = function(target_, index, text) {
-  rdm.local.UndoableEvent.call(this, rdm.EventType.TEXT_INSERTED, target_);
-  this.bubbles = false;
-  this.index = index;
-  this.text = text;
-};
-goog.inherits(rdm.local.TextInsertedEvent, rdm.local.UndoableEvent);
-
-rdm.local.TextInsertedEvent.prototype.getInverse = function() {
-  return new rdm.local.TextDeletedEvent(this.target_, this.index, this.text);
+/**
+ * A collaborator on the document.
+ */
+rdm.Collaborator = function() {
+	// TODO can we document fields in the constructor?
+	this.color = 'blue';
+	this.displayName = 'Me';
+	this.isAnonymous = false;
+	this.isMe = true;
+	this.photoUrl = null;
+	this.sessionId = null;
+	this.userId = null;
 };

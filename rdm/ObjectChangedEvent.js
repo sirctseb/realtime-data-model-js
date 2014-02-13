@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.ObjectChangedEvent');
-goog.require('rdm.local.BaseModelEvent');
+goog.provide('rdm.ObjectChangedEvent');
+goog.require('rdm.BaseModelEvent');
 goog.require('rdm.EventType');
 
-rdm.local.ObjectChangedEvent = function(target_, events, isTerminal_) {
-  rdm.local.BaseModelEvent.call(this, rdm.EventType.OBJECT_CHANGED, target_);
+rdm.ObjectChangedEvent = function(target_, events, isTerminal_) {
+  rdm.BaseModelEvent.call(this, rdm.EventType.OBJECT_CHANGED, target_);
   this.bubbles = true;
   this.events = events;
   this.isTerminal_ = isTerminal_ || false;
 };
-goog.inherits(rdm.local.ObjectChangedEvent, rdm.local.BaseModelEvent);
+goog.inherits(rdm.ObjectChangedEvent, rdm.BaseModelEvent);

@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.CollaborativeObject');
-goog.require('rdm.local.CollaborativeObjectBase');
+goog.provide('rdm.ValuesRemovedEvent');
+goog.require('rdm.UndoableEvent');
+// goog.require('rdm.ValuesAddedEvent');
+goog.require('rdm.EventType');
 
-
-rdm.local.CollaborativeObject = function(model) {
-  rdm.local.CollaborativeObjectBase.call(this, model);
-  Object.defineProperties(this, {
-    'id': { get: function() { return this.id_; }}
-  });
+rdm.ValuesRemovedEvent = function(target_, index, values) {
+  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_REMOVED, target_);
+  this.bubbles = false;
+  this.index = index;
+  this.values = values;
 };
-goog.inherits(rdm.local.CollaborativeObject, rdm.local.CollaborativeObjectBase);
+goog.inherits(rdm.ValuesRemovedEvent, rdm.UndoableEvent);
 
-/**
- * @expose
- */
-rdm.local.CollaborativeObject.prototype.getId = function() {
-  return this.id_;
-};
+rdm.ValuesRemovedEvent.prototype.getInverse = function() {
+  return new rdm.ValuesAddedEvent(this.target_, this.index, this.values);
+}
