@@ -15,14 +15,49 @@
 goog.provide('rdm.BaseModelEvent');
 goog.require('goog.events.Event');
 
-rdm.BaseModelEvent = function(type, target_) {
-  goog.events.Event.call(this, type, target_);
-  // in the local implementation, all events are local
-  this.isLocal = true;
-  // no sessionId or userId in the local implementation
-  this.sessionId = null;
-  this.userId = null;
-  this.target_ = target_;
-  this.bubbles = false;
+/**
+ * A base class for model events.
+ * @constructor
+ * @extends {goog.events.Event}
+ *
+ * @param {string} type The event type.
+ * @param {rdm.EventTarget} target The target object that generated the event.
+ */
+rdm.BaseModelEvent = function(type, target) {
+  goog.events.Event.call(this, type, target);
+
+  this.target_ = target;
 };
 goog.inherits(rdm.BaseModelEvent, goog.events.Event);
+
+/**
+* Whether or not this event should bubble to ancestors.
+* @type {boolean}
+*/
+rdm.BaseModelEvent.prototype.bubbles = false;
+
+/**
+* Whether this event originated in the local session.
+* @type {boolean}
+*/
+// in the local implementation, all events are local
+rdm.BaseModelEvent.prototype.isLocal = true;
+
+/**
+* The id of the session that initiated the event.
+* @type {string}
+*/
+// no sessionId or userId in the local implementation
+rdm.BaseModelEvent.prototype.sessionId = null;
+
+/**
+* Event type.
+* @type {string}
+*/
+rdm.BaseModelEvent.prototype.type = null;
+
+/**
+* The user id of the user that initiated the event.
+* @type {string}
+*/
+rdm.BaseModelEvent.prototype.userId = null;
