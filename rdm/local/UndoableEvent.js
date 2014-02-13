@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalObjectChangedEvent');
-goog.require('rdm.local.LocalEvent');
-goog.require('rdm.EventType');
+goog.provide('rdm.local.UndoableEvent');
+goog.require('rdm.local.BaseModelEvent');
 
-rdm.local.LocalObjectChangedEvent = function(target_, events, isTerminal_) {
-  rdm.local.LocalEvent.call(this, rdm.EventType.OBJECT_CHANGED, target_);
-  this.bubbles = true;
-  this.events = events;
-  this.isTerminal_ = isTerminal_ || false;
+rdm.local.UndoableEvent = function(type, target_) {
+  rdm.local.BaseModelEvent.call(this, type, target_)
 };
-goog.inherits(rdm.local.LocalObjectChangedEvent, rdm.local.LocalEvent);
+goog.inherits(rdm.local.UndoableEvent, rdm.local.BaseModelEvent);
+
+
+rdm.local.UndoableEvent.prototype.executeAndEmit_ = function() {
+  this.updateState_();
+  this.target_.executeAndEmitEvent_(this);
+};
+
+rdm.local.UndoableEvent.prototype.updateState_ = function() {};

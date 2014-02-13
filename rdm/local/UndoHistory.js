@@ -13,8 +13,8 @@
 // limitations under the License.
 
 goog.provide('rdm.local.UndoHistory');
-goog.require('rdm.local.LocalObjectChangedEvent');
-goog.require('rdm.local.LocalUndoRedoStateChangedEvent');
+goog.require('rdm.local.ObjectChangedEvent');
+goog.require('rdm.local.UndoRedoStateChangedEvent');
 goog.require('rdm.EventType')
 
 /** [UndoHistory] manages the history of actions performed in the app */
@@ -127,7 +127,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
-    var event = new rdm.local.LocalObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
+    var event = new rdm.local.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
   }
 
@@ -136,7 +136,7 @@ rdm.local.UndoHistory.prototype.undo = function() {
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-    this.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent(this.canRedo, this.canUndo));
+    this.model.dispatchEvent(new rdm.local.UndoRedoStateChangedEvent(this.canRedo, this.canUndo));
   }
 };
 
@@ -155,7 +155,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
   for(var id in bucketed) {
-    var event = new rdm.local.LocalObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
+    var event = new rdm.local.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
     bucketed[id][0].target_.dispatchEvent(event);
   }
 
@@ -166,7 +166,7 @@ rdm.local.UndoHistory.prototype.redo = function() {
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
-    this.model.dispatchEvent(new rdm.local.LocalUndoRedoStateChangedEvent(this.model, this.canUndo, this.canRedo));
+    this.model.dispatchEvent(new rdm.local.UndoRedoStateChangedEvent(this.model, this.canUndo, this.canRedo));
   }
 };
 

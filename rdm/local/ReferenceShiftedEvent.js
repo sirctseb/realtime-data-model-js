@@ -12,19 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalValuesRemovedEvent');
-goog.require('rdm.local.LocalUndoableEvent');
-// goog.require('rdm.local.LocalValuesAddedEvent');
+goog.provide('rdm.local.ReferenceShiftedEvent');
+goog.require('rdm.local.BaseModelEvent');
 goog.require('rdm.EventType');
 
-rdm.local.LocalValuesRemovedEvent = function(target_, index, values) {
-  rdm.local.LocalUndoableEvent.call(this, rdm.EventType.VALUES_REMOVED, target_);
+rdm.local.ReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
+  rdm.local.BaseModelEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
   this.bubbles = false;
-  this.index = index;
-  this.values = values;
+  this.newIndex = newIndex;
+  this.oldIndex = oldIndex;
 };
-goog.inherits(rdm.local.LocalValuesRemovedEvent, rdm.local.LocalUndoableEvent);
-
-rdm.local.LocalValuesRemovedEvent.prototype.getInverse = function() {
-  return new rdm.local.LocalValuesAddedEvent(this.target_, this.index, this.values);
-}
+goog.inherits(rdm.local.ReferenceShiftedEvent, rdm.local.BaseModelEvent);

@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalUndoableEvent');
-goog.require('rdm.local.LocalEvent');
+goog.provide('rdm.local.BaseModelEvent');
+goog.require('goog.events.Event');
 
-rdm.local.LocalUndoableEvent = function(type, target_) {
-  rdm.local.LocalEvent.call(this, type, target_)
+rdm.local.BaseModelEvent = function(type, target_) {
+  goog.events.Event.call(this, type, target_);
+  // in the local implementation, all events are local
+  this.isLocal = true;
+  // no sessionId or userId in the local implementation
+  this.sessionId = null;
+  this.userId = null;
+  this.target_ = target_;
+  this.bubbles = false;
 };
-goog.inherits(rdm.local.LocalUndoableEvent, rdm.local.LocalEvent);
-
-
-rdm.local.LocalUndoableEvent.prototype.executeAndEmit_ = function() {
-  this.updateState_();
-  this.target_.executeAndEmitEvent_(this);
-};
-
-rdm.local.LocalUndoableEvent.prototype.updateState_ = function() {};
+goog.inherits(rdm.local.BaseModelEvent, goog.events.Event);

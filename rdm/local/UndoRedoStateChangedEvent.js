@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalEvent');
-goog.require('goog.events.Event');
+goog.provide('rdm.local.UndoRedoStateChangedEvent');
+goog.require('rdm.EventType');
 
-rdm.local.LocalEvent = function(type, target_) {
-  goog.events.Event.call(this, type, target_);
-  // in the local implementation, all events are local
-  this.isLocal = true;
-  // no sessionId or userId in the local implementation
-  this.sessionId = null;
-  this.userId = null;
-  this.target_ = target_;
-  this.bubbles = false;
+rdm.local.UndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
+  goog.events.Event.call(this, rdm.EventType.UNDO_REDO_STATE_CHANGED, target_);
+  this.canUndo = canUndo;
+  this.canRedo = canRedo;
 };
-goog.inherits(rdm.local.LocalEvent, goog.events.Event);
+goog.inherits(rdm.local.UndoRedoStateChangedEvent, goog.events.Event);

@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalDocumentSaveStateChangedEvent');
-goog.require('goog.events.Event');
+goog.provide('rdm.local.ObjectChangedEvent');
+goog.require('rdm.local.BaseModelEvent');
+goog.require('rdm.EventType');
 
-rdm.local.LocalDocumentSaveStateChangedEvent = function(document, isSaving, isPending) {
-	goog.events.Event.call(this, rdm.EventType.DOCUMENT_SAVE_STATE_CHANGED, document);
-	this.isSaving = isSaving;
-	this.isPending = isPending;
+rdm.local.ObjectChangedEvent = function(target_, events, isTerminal_) {
+  rdm.local.BaseModelEvent.call(this, rdm.EventType.OBJECT_CHANGED, target_);
+  this.bubbles = true;
+  this.events = events;
+  this.isTerminal_ = isTerminal_ || false;
 };
+goog.inherits(rdm.local.ObjectChangedEvent, rdm.local.BaseModelEvent);

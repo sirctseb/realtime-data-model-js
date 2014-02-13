@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalModelList');
-goog.require('rdm.local.LocalIndexReferenceContainer');
-goog.require('rdm.local.LocalValuesAddedEvent');
-goog.require('rdm.local.LocalValuesRemovedEvent');
-goog.require('rdm.local.LocalValuesSetEvent');
-goog.require('rdm.local.LocalModelObject');
+goog.provide('rdm.local.CollaborativeList');
+goog.require('rdm.local.IndexReferenceContainer');
+goog.require('rdm.local.ValuesAddedEvent');
+goog.require('rdm.local.ValuesRemovedEvent');
+goog.require('rdm.local.ValuesSetEvent');
+goog.require('rdm.local.CollaborativeObject');
 goog.require('rdm.EventType');
 goog.require('goog.array');
 
-rdm.local.LocalModelList = function(model, initialValue) {
-  rdm.local.LocalIndexReferenceContainer.call(this, model);
+rdm.local.CollaborativeList = function(model, initialValue) {
+  rdm.local.IndexReferenceContainer.call(this, model);
   this.list_ = initialValue || [];
   this.list_.map(function(element) { propogateChanges_(element); });
   Object.defineProperty(this, 'length', {
@@ -36,48 +36,48 @@ rdm.local.LocalModelList = function(model, initialValue) {
     }
   });
 };
-goog.inherits(rdm.local.LocalModelList, rdm.local.LocalIndexReferenceContainer);
+goog.inherits(rdm.local.CollaborativeList, rdm.local.IndexReferenceContainer);
 
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.asArray = function() {
+rdm.local.CollaborativeList.prototype.asArray = function() {
   return goog.array.clone(this.list_);
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.clear = function() {
+rdm.local.CollaborativeList.prototype.clear = function() {
   if(this.list_.length == 0) return;
   // add event to stream
-  var event = new rdm.local.LocalValuesRemovedEvent(this, 0, goog.array.clone(this.list_));
+  var event = new rdm.local.ValuesRemovedEvent(this, 0, goog.array.clone(this.list_));
   this.emitEventsAndChanged_([event]);
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.insert = function(index, value) {
+rdm.local.CollaborativeList.prototype.insert = function(index, value) {
   // add event to stream
-  var event = new rdm.local.LocalValuesAddedEvent(this, index, [value]);
+  var event = new rdm.local.ValuesAddedEvent(this, index, [value]);
   this.emitEventsAndChanged_([event]);
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.insertAll = function(index, values) {
+rdm.local.CollaborativeList.prototype.insertAll = function(index, values) {
   // add event to stream
-  var event = new rdm.local.LocalValuesAddedEvent(this, index, values);
+  var event = new rdm.local.ValuesAddedEvent(this, index, values);
   this.emitEventsAndChanged_([event]);
 };
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.lastIndexOf = function(value, opt_comparatorFn) {
+rdm.local.CollaborativeList.prototype.lastIndexOf = function(value, opt_comparatorFn) {
   if(opt_comparatorFn) {
     for(var i = this.list_.length - 1; i >= 0; i--) {
       if(opt_comparatorFn(this.list_[i], value)) {
@@ -93,14 +93,14 @@ rdm.local.LocalModelList.prototype.lastIndexOf = function(value, opt_comparatorF
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.get = function(index) {
+rdm.local.CollaborativeList.prototype.get = function(index) {
   return this.list_[index];
 }
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
+rdm.local.CollaborativeList.prototype.indexOf = function(value, opt_comparatorFn) {
   if(opt_comparatorFn) {
     for(var i = 0; i < this.list_.length; i++) {
       if(opt_comparatorFn(this.list_[i], value)) {
@@ -116,20 +116,20 @@ rdm.local.LocalModelList.prototype.indexOf = function(value, opt_comparatorFn) {
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.set = function(index, value) {
+rdm.local.CollaborativeList.prototype.set = function(index, value) {
   if(index < 0 || index >= length) {
     // TODO rt throws an object with a string of this form in property 'n'
     throw 'Index: ' + index + ', Size: ' + this.length;
   }
-  var event = new rdm.local.LocalValuesSetEvent(this, index, [value], [this.list_[index]]);
+  var event = new rdm.local.ValuesSetEvent(this, index, [value], [this.list_[index]]);
   this.emitEventsAndChanged_([event]);
 }
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.push = function(value) {
-  var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, [value]);
+rdm.local.CollaborativeList.prototype.push = function(value) {
+  var event = new rdm.local.ValuesAddedEvent(this, this.list_.length, [value]);
   this.emitEventsAndChanged_([event]);
   return this.list_.length;
 }
@@ -137,37 +137,37 @@ rdm.local.LocalModelList.prototype.push = function(value) {
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.pushAll = function(values) {
-  var event = new rdm.local.LocalValuesAddedEvent(this, this.list_.length, goog.array.clone(values));
+rdm.local.CollaborativeList.prototype.pushAll = function(values) {
+  var event = new rdm.local.ValuesAddedEvent(this, this.list_.length, goog.array.clone(values));
   this.emitEventsAndChanged_([event]);
 }
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.remove = function(index) {
-  var event = new rdm.local.LocalValuesRemovedEvent(this, index, [this.list_[index]]);
+rdm.local.CollaborativeList.prototype.remove = function(index) {
+  var event = new rdm.local.ValuesRemovedEvent(this, index, [this.list_[index]]);
   this.emitEventsAndChanged_([event]);
 }
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.removeRange = function(startIndex, endIndex) {
+rdm.local.CollaborativeList.prototype.removeRange = function(startIndex, endIndex) {
   // add event to stream
-  var event = new rdm.local.LocalValuesRemovedEvent(this, startIndex, this.list_.slice(startIndex, endIndex));
+  var event = new rdm.local.ValuesRemovedEvent(this, startIndex, this.list_.slice(startIndex, endIndex));
   this.emitEventsAndChanged_([event]);
 }
 
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.removeValue = function(value) {
+rdm.local.CollaborativeList.prototype.removeValue = function(value) {
   // get index of value for event
   var index = this.list_.indexOf(value);
   if(index != -1) {
     // add to stream
-    var event = new rdm.local.LocalValuesRemovedEvent(this, index, [value]);
+    var event = new rdm.local.ValuesRemovedEvent(this, index, [value]);
     this.emitEventsAndChanged_([event]);
     return true;
   }
@@ -177,28 +177,28 @@ rdm.local.LocalModelList.prototype.removeValue = function(value) {
 /**
  * @expose
  */
-rdm.local.LocalModelList.prototype.replaceRange = function(index, values) {
+rdm.local.CollaborativeList.prototype.replaceRange = function(index, values) {
   // add event to stream
-  var event = new rdm.local.LocalValuesSetEvent(this, index, values, this.list_.slice(index, index + values.length));
+  var event = new rdm.local.ValuesSetEvent(this, index, values, this.list_.slice(index, index + values.length));
   this.emitEventsAndChanged_([event]);
 }
 
 // check if value is a model object and set this as parent
-rdm.local.LocalModelList.prototype.propagateChanges_ = function(element) {
-  if(element instanceof rdm.local.LocalModelObject) {
+rdm.local.CollaborativeList.prototype.propagateChanges_ = function(element) {
+  if(element instanceof rdm.local.CollaborativeObject) {
     element.addParentEventTarget(this);
   }
 }
 
 // check if value is a model object and remove self as parent
-rdm.local.LocalModelList.prototype.stopPropagatingChanges_ = function(element) {
+rdm.local.CollaborativeList.prototype.stopPropagatingChanges_ = function(element) {
   // stop propagation if overwritten element is model object and it is no longer anywhere in the list
-  if(element instanceof rdm.local.LocalModelObject && this.list_.indexOf(element) == -1) {
+  if(element instanceof rdm.local.CollaborativeObject && this.list_.indexOf(element) == -1) {
     element.removeParentEventTarget(this);
   }
 }
 
-rdm.local.LocalModelList.prototype.executeEvent_ = function(event) {
+rdm.local.CollaborativeList.prototype.executeEvent_ = function(event) {
   if(event.type == rdm.EventType.VALUES_SET) {
       Array.prototype.splice.apply(this.list_, [event.index, event.newValues.length].concat(event.newValues));
       // update event parents

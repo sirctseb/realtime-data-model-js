@@ -22,8 +22,8 @@
  * @see ../demos/eventtarget.html
  */
 
-// TODO document everything as rdm.local.LocalEvent because we use LocalEvent.bubbles
-goog.provide('rdm.local.EventTarget');
+// TODO document everything as rdm.local.BaseModelEvent because we use LocalEvent.bubbles
+goog.provide('rdm.local.BaseModelEventTarget');
 
 goog.require('goog.array');
 goog.require('goog.asserts');
@@ -58,7 +58,7 @@ goog.require('goog.object');
  *
  * <p>Example usage:
  * <pre>
- *   var source = new rdm.local.EventTarget();
+ *   var source = new rdm.local.BaseModelEventTarget();
  *   function handleEvent(event) {
  *     alert('Type: ' + e.type + '\nTarget: ' + e.target);
  *   }
@@ -74,7 +74,7 @@ goog.require('goog.object');
  *
  * @constructor
  */
-rdm.local.EventTarget = function() {
+rdm.local.BaseModelEventTarget = function() {
   goog.Disposable.call(this);
     /**
      * Maps of event type to an array of listeners.
@@ -84,7 +84,7 @@ rdm.local.EventTarget = function() {
      */
     this.eventTargetListeners_ = new goog.events.ListenerMap(this);
 };
-goog.inherits(rdm.local.EventTarget, goog.Disposable);
+goog.inherits(rdm.local.BaseModelEventTarget, goog.Disposable);
 
 
 /**
@@ -93,23 +93,23 @@ goog.inherits(rdm.local.EventTarget, goog.Disposable);
  * @type {boolean}
  * @private
  */
-rdm.local.EventTarget.prototype.customEvent_ = true;
+rdm.local.BaseModelEventTarget.prototype.customEvent_ = true;
 
 
 /**
  * Parent event targets, used during event bubbling.
- * @type {rdm.local.EventTarget?}
+ * @type {rdm.local.BaseModelEventTarget?}
  * @private
  */
-rdm.local.EventTarget.prototype.parentEventTargets_ = [];
+rdm.local.BaseModelEventTarget.prototype.parentEventTargets_ = [];
 
 
 /**
  * Returns the parents of this event target to use for bubbling.
  *
- * @return {rdm.local.EventTarget} The parent EventTargets
+ * @return {rdm.local.BaseModelEventTarget} The parent EventTargets
  */
-rdm.local.EventTarget.prototype.getParentEventTargets = function() {
+rdm.local.BaseModelEventTarget.prototype.getParentEventTargets = function() {
   return this.parentEventTargets_;
 };
 
@@ -117,9 +117,9 @@ rdm.local.EventTarget.prototype.getParentEventTargets = function() {
 /**
  * Adds a parent of this event target to use for bubbling.
  *
- * @param {rdm.local.EventTarget?} parent Parent EventTarget.
+ * @param {rdm.local.BaseModelEventTarget?} parent Parent EventTarget.
  */
-rdm.local.EventTarget.prototype.addParentEventTarget = function(parent) {
+rdm.local.BaseModelEventTarget.prototype.addParentEventTarget = function(parent) {
   goog.array.insert(this.parentEventTargets_, parent);
 };
 
@@ -127,9 +127,9 @@ rdm.local.EventTarget.prototype.addParentEventTarget = function(parent) {
 /**
  * Removes a parent of this event target.
  *
- * @param {rdm.local.EventTarget?} parent Parent EventTarget.
+ * @param {rdm.local.BaseModelEventTarget?} parent Parent EventTarget.
  */
-rdm.local.EventTarget.prototype.removeParentEventTarget = function(parent) {
+rdm.local.BaseModelEventTarget.prototype.removeParentEventTarget = function(parent) {
   goog.array.remove(this.parentEventTargets_, parent);
 };
 
@@ -150,7 +150,7 @@ rdm.local.EventTarget.prototype.removeParentEventTarget = function(parent) {
  * @param {Object=} opt_handlerScope Object in whose scope to call
  *     the listener.
  */
-rdm.local.EventTarget.prototype.addEventListener = function(
+rdm.local.BaseModelEventTarget.prototype.addEventListener = function(
     type, handler, opt_capture, opt_handlerScope) {
   this.listen(type, handler, opt_capture, opt_handlerScope);
 };
@@ -170,14 +170,14 @@ rdm.local.EventTarget.prototype.addEventListener = function(
  * @param {Object=} opt_handlerScope Object in whose scope to call
  *     the listener.
  */
-rdm.local.EventTarget.prototype.removeEventListener = function(
+rdm.local.BaseModelEventTarget.prototype.removeEventListener = function(
     type, handler, opt_capture, opt_handlerScope) {
   this.unlisten(type, handler, opt_capture, opt_handlerScope);
 };
 
 
 /** @override */
-rdm.local.EventTarget.prototype.dispatchEvent = function(e) {
+rdm.local.BaseModelEventTarget.prototype.dispatchEvent = function(e) {
   var ancestorsTree, parents = this.getParentEventTargets();
   if (parents.length > 0) {
     ancestorsTree = parents.slice(0);
@@ -191,7 +191,7 @@ rdm.local.EventTarget.prototype.dispatchEvent = function(e) {
     }
   }
 
-  return rdm.local.EventTarget.dispatchEventInternal_(
+  return rdm.local.BaseModelEventTarget.dispatchEventInternal_(
     this, e, ancestorsTree);
 };
 
@@ -209,8 +209,8 @@ rdm.local.EventTarget.prototype.dispatchEvent = function(e) {
  * @override
  * @protected
  */
-rdm.local.EventTarget.prototype.disposeInternal = function() {
-  rdm.local.EventTarget.superClass_.disposeInternal.call(this);
+rdm.local.BaseModelEventTarget.prototype.disposeInternal = function() {
+  rdm.local.BaseModelEventTarget.superClass_.disposeInternal.call(this);
 
   this.removeAllListeners();
 
@@ -219,7 +219,7 @@ rdm.local.EventTarget.prototype.disposeInternal = function() {
 
 
 /** @override */
-rdm.local.EventTarget.prototype.listen = function(
+rdm.local.BaseModelEventTarget.prototype.listen = function(
     type, listener, opt_useCapture, opt_listenerScope) {
   this.assertInitialized_();
   return this.eventTargetListeners_.add(
@@ -229,7 +229,7 @@ rdm.local.EventTarget.prototype.listen = function(
 
 
 /** @override */
-rdm.local.EventTarget.prototype.listenOnce = function(
+rdm.local.BaseModelEventTarget.prototype.listenOnce = function(
     type, listener, opt_useCapture, opt_listenerScope) {
   return this.eventTargetListeners_.add(
     String(type), listener, true /* calllOnce */, opt_useCapture,
@@ -238,7 +238,7 @@ rdm.local.EventTarget.prototype.listenOnce = function(
 
 
 /** @override */
-rdm.local.EventTarget.prototype.unlisten = function(
+rdm.local.BaseModelEventTarget.prototype.unlisten = function(
     type, listener, opt_useCapture, opt_listenerScope) {
   return this.eventTargetListeners_.remove(
     String(type), listener, opt_useCapture, opt_listenerScope);
@@ -246,13 +246,13 @@ rdm.local.EventTarget.prototype.unlisten = function(
 
 
 /** @override */
-rdm.local.EventTarget.prototype.unlistenByKey = function(key) {
+rdm.local.BaseModelEventTarget.prototype.unlistenByKey = function(key) {
   return this.eventTargetListeners_.removeByKey(key);
 };
 
 
 /** @override */
-rdm.local.EventTarget.prototype.removeAllListeners = function(
+rdm.local.BaseModelEventTarget.prototype.removeAllListeners = function(
     opt_type, opt_capture) {
   // TODO(user): Previously, removeAllListeners can be called on
   // uninitialized EventTarget, so we preserve that behavior. We
@@ -265,7 +265,7 @@ rdm.local.EventTarget.prototype.removeAllListeners = function(
 
 
 /** @override */
-rdm.local.EventTarget.prototype.fireListeners = function(
+rdm.local.BaseModelEventTarget.prototype.fireListeners = function(
     type, capture, eventObject) {
   // TODO(user): Original code avoids array creation when there
   // is no listener, so we do the same. If this optimization turns
@@ -297,13 +297,13 @@ rdm.local.EventTarget.prototype.fireListeners = function(
 
 
 /** @override */
-rdm.local.EventTarget.prototype.getListeners = function(type, capture) {
+rdm.local.BaseModelEventTarget.prototype.getListeners = function(type, capture) {
   return this.eventTargetListeners_.getListeners(String(type), capture);
 };
 
 
 /** @override */
-rdm.local.EventTarget.prototype.getListener = function(
+rdm.local.BaseModelEventTarget.prototype.getListener = function(
     type, listener, capture, opt_listenerScope) {
   return this.eventTargetListeners_.getListener(
       String(type), listener, capture, opt_listenerScope);
@@ -311,7 +311,7 @@ rdm.local.EventTarget.prototype.getListener = function(
 
 
 /** @override */
-rdm.local.EventTarget.prototype.hasListener = function(
+rdm.local.BaseModelEventTarget.prototype.hasListener = function(
     opt_type, opt_capture) {
   var id = goog.isDef(opt_type) ? String(opt_type) : undefined;
   return this.eventTargetListeners_.hasListener(id, opt_capture);
@@ -322,7 +322,7 @@ rdm.local.EventTarget.prototype.hasListener = function(
  * Asserts that the event target instance is initialized properly.
  * @private
  */
-rdm.local.EventTarget.prototype.assertInitialized_ = function() {
+rdm.local.BaseModelEventTarget.prototype.assertInitialized_ = function() {
   goog.asserts.assert(
       this.eventTargetListeners_,
       'Event target is not initialized. Did you call the superclass ' +
@@ -345,7 +345,7 @@ rdm.local.EventTarget.prototype.assertInitialized_ = function() {
  *     if any of the listeners returns false this will also return false.
  * @private
  */
-rdm.local.EventTarget.dispatchEventInternal_ = function(
+rdm.local.BaseModelEventTarget.dispatchEventInternal_ = function(
     target, e, opt_ancestorsTree) {
   var type = e.type || /** @type {string} */ (e);
 

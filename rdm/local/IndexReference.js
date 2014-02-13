@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.provide('rdm.local.LocalTextInsertedEvent');
-goog.require('rdm.local.LocalUndoableEvent');
-// goog.require('rdm.local.LocalTextDeletedEvent');
-goog.require('rdm.EventType');
+goog.provide('rdm.local.IndexReference');
+goog.require('rdm.local.CollaborativeObject');
+goog.require('rdm.local.ReferenceShiftedEvent');
 
-rdm.local.LocalTextInsertedEvent = function(target_, index, text) {
-  rdm.local.LocalUndoableEvent.call(this, rdm.EventType.TEXT_INSERTED, target_);
-  this.bubbles = false;
+rdm.local.IndexReference = function(index, canBeDeleted, referencedObject) {
+  rdm.local.CollaborativeObject.call(this);
   this.index = index;
-  this.text = text;
+  this.canBeDeleted = canBeDeleted;
+  this.referencedObject = referencedObject;
 };
-goog.inherits(rdm.local.LocalTextInsertedEvent, rdm.local.LocalUndoableEvent);
+goog.inherits(rdm.local.IndexReference, rdm.local.CollaborativeObject);
 
-rdm.local.LocalTextInsertedEvent.prototype.getInverse = function() {
-  return new rdm.local.LocalTextDeletedEvent(this.target_, this.index, this.text);
+rdm.local.IndexReference.prototype.shift_ = function(newIndex) {
+  var oldIndex = this.index;
+  this.index = newIndex;
+  this.dispatchEvent(new rdm.local.ReferenceShiftedEvent(this, this.index, oldIndex));
 };
