@@ -25,7 +25,6 @@ rdm.CollaborativeObjectBase = function(model) {
 goog.inherits(rdm.CollaborativeObjectBase, rdm.BaseModelEventTarget);
 rdm.CollaborativeObjectBase.idNum_ = 0;
 
-// create an emit a LocalObjectChangedEvent from a list of events
 rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
   this.model_.beginCompoundOperation();
   // add events to undo history

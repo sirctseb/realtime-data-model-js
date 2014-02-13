@@ -22,7 +22,7 @@
  * @see ../demos/eventtarget.html
  */
 
-// TODO document everything as rdm.BaseModelEvent because we use LocalEvent.bubbles
+// TODO document everything as rdm.BaseModelEvent because we use rdm.BaseModelEvent.bubbles
 goog.provide('rdm.BaseModelEventTarget');
 
 goog.require('goog.array');
