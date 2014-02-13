@@ -76,13 +76,21 @@ goog.require('goog.object');
  */
 rdm.local.BaseModelEventTarget = function() {
   goog.Disposable.call(this);
-    /**
-     * Maps of event type to an array of listeners.
-     *
-     * @type {Object.<string, !Array.<!goog.events.ListenableKey>>}
-     * @private
-     */
-    this.eventTargetListeners_ = new goog.events.ListenerMap(this);
+
+  /**
+   * Maps of event type to an array of listeners.
+   *
+   * @type {Object.<string, !Array.<!goog.events.ListenableKey>>}
+   * @private
+   */
+  this.eventTargetListeners_ = new goog.events.ListenerMap(this);
+
+  /**
+   * Parent event targets, used during event bubbling.
+   * @type {rdm.local.BaseModelEventTarget?}
+   * @private
+   */
+   this.parentEventTargets_ = [];
 };
 goog.inherits(rdm.local.BaseModelEventTarget, goog.Disposable);
 
@@ -94,14 +102,6 @@ goog.inherits(rdm.local.BaseModelEventTarget, goog.Disposable);
  * @private
  */
 rdm.local.BaseModelEventTarget.prototype.customEvent_ = true;
-
-
-/**
- * Parent event targets, used during event bubbling.
- * @type {rdm.local.BaseModelEventTarget?}
- * @private
- */
-rdm.local.BaseModelEventTarget.prototype.parentEventTargets_ = [];
 
 
 /**
@@ -182,7 +182,7 @@ rdm.local.BaseModelEventTarget.prototype.dispatchEvent = function(e) {
   if (parents.length > 0) {
     ancestorsTree = parents.slice(0);
     for (var i = 0; i < ancestorsTree.length; i++) {
-      var grandparents = ancestorsTree[i];
+      var grandparents = ancestorsTree[i].getParentEventTargets();
       for (var j = 0; j < grandparents.length; j++) {
         if (ancestorsTree.indexOf(grandparents[j]) == -1) {
           ancestorsTree.push(grandparents[j]);

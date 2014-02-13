@@ -24,7 +24,8 @@ goog.require('goog.array');
 rdm.local.CollaborativeList = function(model, initialValue) {
   rdm.local.IndexReferenceContainer.call(this, model);
   this.list_ = initialValue || [];
-  this.list_.map(function(element) { propogateChanges_(element); });
+  var this_ = this;
+  this.list_.map(function(element) { this_.propagateChanges_(element); });
   Object.defineProperty(this, 'length', {
     get: function() { return this.list_.length; },
     set: function(l) {
