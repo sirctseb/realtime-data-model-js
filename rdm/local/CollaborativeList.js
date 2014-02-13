@@ -229,3 +229,14 @@ rdm.local.CollaborativeList.prototype.executeEvent_ = function(event) {
       this.shiftReferencesOnInsert_(event.index, event.values.length);
   }
 }
+
+rdm.local.CollaborativeList.prototype.toString = function() {
+  var renderedList = this.list_.map(function(element) {
+    if(element instanceof rdm.local.CollaborativeObject) {
+      return element.toString();
+    } else {
+      return '[JsonValue ' + JSON.stringify(element) + ']';
+    }
+  });
+  return '[' + renderedList.join(', ') + ']';
+};

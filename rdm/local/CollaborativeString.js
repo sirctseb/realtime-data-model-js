@@ -147,3 +147,7 @@ rdm.local.CollaborativeString.prototype.executeEvent_ = function(event) {
     this.shiftReferencesOnInsert_(event.index, event.text.length);
   }
 };
+
+rdm.local.CollaborativeString.prototype.toString = function() {
+  return this.string_;
+};

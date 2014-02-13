@@ -143,3 +143,17 @@ rdm.local.CollaborativeMap.prototype.executeEvent_ = function(event) {
     }
   }
 };
+
+rdm.local.CollaborativeMap.prototype.toString = function() {
+  var valList = [];
+  for(var key in this.map_) {
+    var valString;
+    if(this.map_[key] instanceof rdm.local.CollaborativeObject) {
+      valString = this.map_[key].toString();
+    } else {
+      valString = '[JsonValue ' + JSON.stringify(this.map_[key]) + ']';
+    }
+    valList.push(key + ': ' + valString);
+  }
+  return '{' + valList.join(', ') + '}';
+};
