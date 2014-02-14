@@ -14,20 +14,20 @@
 
 goog.provide('rdm.CollaborativeMap');
 goog.require('rdm.CollaborativeObject');
-goog.require('rdm.ValueChangedEvent');
 goog.require('rdm.EventType');
+goog.require('rdm.ValueChangedEvent');
 
 rdm.CollaborativeMap = function(model, initialValue) {
   rdm.CollaborativeObject.call(this, model);
   this.map_ = initialValue || {};
-  for(var key in this.map_) {
-    if(this.map_[key] instanceof rdm.CollaborativeObject) {
+  for (var key in this.map_) {
+    if (this.map_[key] instanceof rdm.CollaborativeObject) {
       this.map_[key].setParentEventTarget(this);
     }
-  };
+  }
   var this_ = this;
   Object.defineProperties(this, {
-    "size": { get: function() { return Object.keys(this_.map_).length; }}
+    'size': { get: function() { return Object.keys(this_.map_).length; }}
   });
 };
 goog.inherits(rdm.CollaborativeMap, rdm.CollaborativeObject);
@@ -38,7 +38,7 @@ goog.inherits(rdm.CollaborativeMap, rdm.CollaborativeObject);
  */
 rdm.CollaborativeMap.prototype.clear = function() {
   // remove each key and let it produce the event
-  for(var key in this.map_) {
+  for (var key in this.map_) {
     // not using dot at behest of closure compiler
     this['delete'](key);
   }
@@ -107,7 +107,7 @@ rdm.CollaborativeMap.prototype.set = function(key, value) {
   // TODO check what is returned by rt when they fix
   // http://stackoverflow.com/questions/21563791/why-doesnt-collaborativemap-set-return-the-old-map-value
   // don't do anything if current value is already new value
-  if(this.map_[key] === value) return value;
+  if (this.map_[key] === value) return value;
   // save the current value for return
   var ret = this.map_[key];
   // send the event
@@ -126,19 +126,19 @@ rdm.CollaborativeMap.prototype.values = function() {
 
 
 rdm.CollaborativeMap.prototype.executeEvent_ = function(event) {
-  if(event.type == rdm.EventType.VALUE_CHANGED) {
+  if (event.type == rdm.EventType.VALUE_CHANGED) {
     this.map_[event.property] = event.newValue;
-    if(this.map_[event.property] === null) {
+    if (this.map_[event.property] === null) {
       delete this.map_[event.property];
     }
     // stop propagating changes if we're writing over a model object
-    if(event.oldValue instanceof rdm.CollaborativeObject) {
-      if(!goog.object.contains(this.map_, event.oldValue)) {
+    if (event.oldValue instanceof rdm.CollaborativeObject) {
+      if (!goog.object.contains(this.map_, event.oldValue)) {
         event.oldValue.removeParentEventTarget(this);
       }
     }
     // propagate changes on model data objects
-    if(event.newValue instanceof rdm.CollaborativeObject) {
+    if (event.newValue instanceof rdm.CollaborativeObject) {
       event.newValue.addParentEventTarget(this);
     }
   }
@@ -146,9 +146,9 @@ rdm.CollaborativeMap.prototype.executeEvent_ = function(event) {
 
 rdm.CollaborativeMap.prototype.toString = function() {
   var valList = [];
-  for(var key in this.map_) {
+  for (var key in this.map_) {
     var valString;
-    if(this.map_[key] instanceof rdm.CollaborativeObject) {
+    if (this.map_[key] instanceof rdm.CollaborativeObject) {
       valString = this.map_[key].toString();
     } else {
       valString = '[JsonValue ' + JSON.stringify(this.map_[key]) + ']';
