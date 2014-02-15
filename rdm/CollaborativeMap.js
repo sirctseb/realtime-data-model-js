@@ -17,6 +17,24 @@ goog.require('rdm.CollaborativeObject');
 goog.require('rdm.EventType');
 goog.require('rdm.ValueChangedEvent');
 
+/**
+ * A collaborative map. A map's key must be a string. The values can contain
+ * other Realtime collaborative objects, custom collaborative objects,
+ * JavaScript primitive values or JavaScript objects that can be serialized to
+ * JSON.
+ *
+ * <p>Changes to the map will automatically be synced with the server and other
+ * collaborators. To listen for changes, add EventListeners for the
+ * rdm.EventType.VALUE_CHANGED event type.</p>
+ *
+ * <p>This class should not be instantiated directly. To create a new map, use
+ * rdm.Model.prototype.createMap().</p>
+ *
+ * @constructor
+ * @extends {rdm.CollaborativeObject}
+ * @param {rdm.Model} model The document model.
+ * @param {Object} initialValue The initial contents of the map.
+ */
 rdm.CollaborativeMap = function(model, initialValue) {
   rdm.CollaborativeObject.call(this, model);
   this.map_ = initialValue || {};
@@ -27,6 +45,13 @@ rdm.CollaborativeMap = function(model, initialValue) {
   }
   var this_ = this;
   Object.defineProperties(this, {
+    /**
+     * The number of keys in the map.
+     *
+     * @type number
+     * @instance
+     * @memberOf rdm.CollaborativeMap
+     */
     'size': { get: function() { return Object.keys(this_.map_).length; }}
   });
 };
@@ -34,7 +59,7 @@ goog.inherits(rdm.CollaborativeMap, rdm.CollaborativeObject);
 
 
 /**
- * @expose
+ * Removes all entries.
  */
 rdm.CollaborativeMap.prototype.clear = function() {
   // remove each key and let it produce the event
@@ -47,7 +72,11 @@ rdm.CollaborativeMap.prototype.clear = function() {
 
 // not using dot at behest of closure compiler
 /**
- * @expose
+ * Removes the entry for the given key (if any such an entry exists).
+ *
+ * @param {string} key The key to unmap.
+ * @return {*} The value that was mapped to this key, or null if there was no
+ * existing value.
  */
 rdm.CollaborativeMap.prototype['delete'] = function(key) {
   // save value for return
@@ -61,7 +90,10 @@ rdm.CollaborativeMap.prototype['delete'] = function(key) {
 
 
 /**
- * @expose
+ * Returns the value mapped to the given key.
+ *
+ * @param {string} key The key to look up.
+ * @return {*} The value mapped to the given key.
  */
 rdm.CollaborativeMap.prototype.get = function(key) {
   return this.map_[key] === undefined ? null : this.map_[key];
@@ -69,7 +101,11 @@ rdm.CollaborativeMap.prototype.get = function(key) {
 
 
 /**
- * @expose
+ * Checks if this map contains an entry for the given key.
+ *
+ * @param {string} key The key to check.
+ * @return {boolean} REturns true if this map contains a mapping for the given
+ * key.
  */
 rdm.CollaborativeMap.prototype.has = function(key) {
   return this.map_[key] !== undefined;
@@ -77,7 +113,9 @@ rdm.CollaborativeMap.prototype.has = function(key) {
 
 
 /**
- * @expose
+ * Returns whether this map is empty.
+ *
+ * @return {boolean} Returns true if this map is empty.
  */
 rdm.CollaborativeMap.prototype.isEmpty = function() {
   return this.map_.size === 0;
@@ -85,15 +123,24 @@ rdm.CollaborativeMap.prototype.isEmpty = function() {
 
 
 /**
- * @expose
+ * Returns an array containing a copy of the items in this map. Modifications
+ * to the returned array do not modify this collaborative map.
+ *
+ * @return {Array.<Array>} The items in this map. Each item is a [key, value]
+ * pair.
  */
 rdm.CollaborativeMap.prototype.items = function() {
-  return Object.keys(this.map_).map(function(key) { return [key, this.map_[key]]; });
+  return Object.keys(this.map_).map(function(key) {
+      return [key, this.map_[key]];
+  });
 };
 
 
 /**
- * @expose
+ * Returns an array containing a copy of the keys in this map. Modifications to
+ * the returned array do not modify this collaborative map.
+ *
+ * @return {Array.<string>} The keys in this map.
  */
 rdm.CollaborativeMap.prototype.keys = function() {
   return Object.keys(this.map_).slice(0);
@@ -101,7 +148,13 @@ rdm.CollaborativeMap.prototype.keys = function() {
 
 
 /**
- * @expose
+ * Put the value into the map with the given key, overwriting an existing value
+ * for that key.
+ *
+ * @param {string} key The map key.
+ * @param {*} value The map value.
+ * @return {*} The old map value, if any, that used to be mapped to the given
+ * key.
  */
 rdm.CollaborativeMap.prototype.set = function(key, value) {
   // TODO check what is returned by rt when they fix
@@ -111,14 +164,18 @@ rdm.CollaborativeMap.prototype.set = function(key, value) {
   // save the current value for return
   var ret = this.map_[key];
   // send the event
-  var event = new rdm.ValueChangedEvent(this, key, value, this.map_[key] === undefined ? null : this.map_[key]);
+  var event = new rdm.ValueChangedEvent(
+      this, key, value, this.map_[key] === undefined ? null : this.map_[key]);
   this.emitEventsAndChanged_([event]);
   return ret;
 };
 
 
 /**
- * @expose
+ * Returns an array containing a copy of the values in this map. Modifications
+ * to the returned array do not modify this collaborative map.
+ *
+ * @return {Array.<Object>} The values in this map.
  */
 rdm.CollaborativeMap.prototype.values = function() {
   return Object.keys(this.map_).map(function(key) { return this.map_[key]; });
@@ -144,6 +201,11 @@ rdm.CollaborativeMap.prototype.executeEvent_ = function(event) {
   }
 };
 
+/**
+ * Returns a string representation of this collaborative object.
+ *
+ * @return {string} A string representation.
+ */
 rdm.CollaborativeMap.prototype.toString = function() {
   var valList = [];
   for (var key in this.map_) {
