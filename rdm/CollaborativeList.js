@@ -51,14 +51,25 @@ rdm.CollaborativeList = function(model, initialValue) {
   this.list_ = initialValue || [];
   var this_ = this;
   this.list_.map(function(element) { this_.propagateChanges_(element); });
-  Object.defineProperty(this, 'length', {
-    get: function() { return this.list_.length; },
-    set: function(l) {
-      if (l < this.list_.length) {
-        this.removeRange(l, this.list_.length);
-      } else {
-        throw new Error('Cannot set the list length to be greater than the' +
-            ' current value.');
+  Object.defineProperties(this, {
+    /**
+     * The number of entries in the list. Assign to this field to reduce the
+     * size of the list. Note that the length given must be < or equal to the
+     * current size. The length of a list cannot be extended in this way.
+     *
+     * @type number
+     * @instance
+     * @memberOf rdm.CollaborativeList
+     */
+   'length': {
+      get: function() { return this.list_.length; },
+      set: function(l) {
+        if (l < this.list_.length) {
+          this.removeRange(l, this.list_.length);
+        } else {
+          throw new Error('Cannot set the list length to be greater than the' +
+              ' current value.');
+        }
       }
     }
   });
