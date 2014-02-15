@@ -21,6 +21,8 @@ goog.require('rdm.ValuesAddedEvent');
 goog.require('rdm.ValuesRemovedEvent');
 goog.require('rdm.ValuesSetEvent');
 
+// TODO document as extending CollaborativeObject instead of
+// IndexReferenceContainer?
 /**
  * A collaborative list. A list can contain other Realtime collaborative
  * object, custom collaborative objects, JavaScript primitive values, or
@@ -40,6 +42,7 @@ goog.require('rdm.ValuesSetEvent');
  * rdm.Model.prototype.createList().</p>
  *
  * @constructor
+ * @extends {rdm.IndexReferenceContainer}
  * @param {rdm.Model} model The document model.
  * @param {Array.<*>} initialValue The initial contents of the list.
  */
