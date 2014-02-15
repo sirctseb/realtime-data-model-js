@@ -15,17 +15,35 @@
 goog.provide('rdm.CollaborativeObject');
 goog.require('rdm.CollaborativeObjectBase');
 
-
+// TODO rt has this extending EventTarget
+// TODO rt has documentation for toString and add/removeEventListener
+/**
+ * CollaborativeObject contains behavior common to all built in collaborative
+ * types. This class should not be instantiated directly. Use the create*
+ * methods on rdm to create specific types of collaborative objects.
+ *
+ * @constructor
+ * @extends {rdm.CollaborativeObjectBase}
+ */
 rdm.CollaborativeObject = function(model) {
   rdm.CollaborativeObjectBase.call(this, model);
   Object.defineProperties(this, {
+    /**
+     * The id of the collaborative object. Readonly.
+     *
+     * @type string
+     * @instance
+     * @memberOf rdm.CollaborativeObject
+     */
     'id': { get: function() { return this.id_; }}
   });
 };
 goog.inherits(rdm.CollaborativeObject, rdm.CollaborativeObjectBase);
 
 /**
- * @expose
+ * Returns the object id.
+ *
+ * @return {string} The id.
  */
 rdm.CollaborativeObject.prototype.getId = function() {
   return this.id_;
