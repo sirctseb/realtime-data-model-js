@@ -24,6 +24,7 @@ goog.require('rdm.CollaborativeObjectBase');
  *
  * @constructor
  * @extends {rdm.CollaborativeObjectBase}
+ * @param {rdm.Model} model The document model
  */
 rdm.CollaborativeObject = function(model) {
   rdm.CollaborativeObjectBase.call(this, model);
