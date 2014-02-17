@@ -18,18 +18,52 @@ goog.require('rdm.IndexReferenceContainer');
 goog.require('rdm.TextDeletedEvent');
 goog.require('rdm.TextInsertedEvent');
 
+// TODO rt has this extending collaborative object
+/**
+ * Creates a new collaborative string. Unlike regular JavaScript strings,
+ * collaborative strings are mutable.
+ * <p>Changes to the string will automatically be synced with the server and
+ * other collaborators. To listen for changes, add EventListeners for the
+ * following event types:</p>
+ * <ul>
+ * <li>gapi.drive.realtime.EventType.TEXT_INSERTED
+ * <li>gapi.drive.realtime.EventType.TEXT_DELETED
+ * </ul>
+ * <p>This class should not be instantiated directly. To create a new
+ * collaborative string, use
+ * gapi.drive.realtime.Model.prototype.createString</p>
+ *
+ * @constructor
+ * @extends {rdm.IndexReferenceContainer}
+ * @param {rdm.Model} model The document model.
+ * @param {string} initialValue The initial value of the collaborative string.
+*/
 rdm.CollaborativeString = function(model, initialValue) {
   rdm.IndexReferenceContainer.call(this, model);
+  /**
+   * The current value of the collaborative string.
+   *
+   * @type {string}
+   * @private
+   */
   this.string_ = initialValue || '';
-  Object.defineProperty(this, 'length', {
-    get: function() { return this.string_.length; }
+  Object.defineProperties(this,
+    /**
+     * The length of the string. Read only.
+     *
+     * @type {number}
+     */
+    'length' : {
+      get: function() { return this.string_.length; }
   });
 };
 goog.inherits(rdm.CollaborativeString, rdm.IndexReferenceContainer);
 
 
 /**
- * @expose
+ * Appends a string to the end of this one.
+ *
+ * @param {string} text The new text to append.
  */
 rdm.CollaborativeString.prototype.append = function(text) {
   var insertEvent = new rdm.TextInsertedEvent(this, this.string_.length, text);
@@ -38,7 +72,9 @@ rdm.CollaborativeString.prototype.append = function(text) {
 
 
 /**
- * @expose
+ * Gets a string representation of the collaborative string.
+ *
+ * @return {string} A string representation of the collaborative string.
  */
 rdm.CollaborativeString.prototype.getText = function() {
   return this.string_;
@@ -46,7 +82,10 @@ rdm.CollaborativeString.prototype.getText = function() {
 
 
 /**
- * @expose
+ * Inserts a string into the collaborative string at a specific index.
+ *
+ * @param {number} index The index to insert at.
+ * @param {string} text The new text to insert.
  */
 rdm.CollaborativeString.prototype.insertString = function(index, text) {
   var insertEvent = new rdm.TextInsertedEvent(this, index, text);
@@ -55,7 +94,11 @@ rdm.CollaborativeString.prototype.insertString = function(index, text) {
 
 
 /**
- * @expose
+ * Deletes the text between startIndex (inclusive) and endIndex (exclusive).
+ *
+ * @param {number} startIndex The start index of the range to delete
+ *     (inclusive).
+ * @param {number} endIndex The end index of the range to delete (exclusive).
  */
 rdm.CollaborativeString.prototype.removeRange = function(startIndex, endIndex) {
   // get removed text for event
@@ -67,7 +110,13 @@ rdm.CollaborativeString.prototype.removeRange = function(startIndex, endIndex) {
 
 
 /**
- * @expose
+ * Sets the contents of this collaborative string. Note that this method
+ * performs a text diff between the current string and the new contents so that
+ * the string will be modified using the minimum number of text inserts and
+ * deletes possible to change the current contents to the newly-specified
+ * contents.
+ *
+ * @param {string} text The new value of the string.
  */
 rdm.CollaborativeString.prototype.setText = function(text) {
   // calculate diffs
@@ -81,6 +130,14 @@ rdm.CollaborativeString.prototype.setText = function(text) {
   this.emitEventsAndChanged_(events);
 };
 
+/**
+ * Compute the modifications that must be made to a string to create another.
+ *
+ * @param {string} string1 The string to be modified.
+ * @param {string} string2 The string resulting from the modifications.
+ * @return {Array.<Object>} The modifications required to transform one
+ *     string into another.
+ */
 rdm.CollaborativeString.stringDiff = function(string1, string2) {
   var C = new Array(string1.length + 1);
   for (var i = 0; i <= string1.length; i++) {
@@ -100,7 +157,8 @@ rdm.CollaborativeString.stringDiff = function(string1, string2) {
       }
     }
   }
-  var diff = rdm.CollaborativeString.printDiff(C, string1, string2, string1.length, string2.length);
+  var diff = rdm.CollaborativeString.printDiff(C, string1, string2,
+      string1.length, string2.length);
   // adjust indices
   var offset;
   if (diff.length > 0) {
@@ -117,37 +175,54 @@ rdm.CollaborativeString.stringDiff = function(string1, string2) {
 rdm.CollaborativeString.printDiff = function(C, string1, string2, i, j, diff) {
   diff = diff || [];
   if (i > 0 && j > 0 && string1[i - 1] === string2[j - 1]) {
-    diff = rdm.CollaborativeString.printDiff(C, string1, string2, i - 1, j - 1, diff);
+    diff = rdm.CollaborativeString.printDiff(C, string1, string2, i - 1,
+        j - 1, diff);
   } else if (i > 0 && (j === 0 || C[i][j - 1] < C[i - 1][j])) {
-    diff = rdm.CollaborativeString.printDiff(C, string1, string2, i - 1, j, diff);
-    if (diff.length > 0 && diff[diff.length - 1].type === 'delete' && diff[diff.length - 1].toIndex === i - 2) {
+    diff = rdm.CollaborativeString.printDiff(C, string1, string2, i - 1,
+        j, diff);
+    if (diff.length > 0 && diff[diff.length - 1].type === 'delete' &&
+        diff[diff.length - 1].toIndex === i - 2) {
       diff[diff.length - 1].text = diff[diff.length - 1].text + string1[i - 1];
       diff[diff.length - 1].toIndex = i - 1;
     } else {
-      diff.push({type: 'delete', text: string1[i - 1], index: i - 1, toIndex: i - 1});
+      diff.push({type: 'delete', text: string1[i - 1],
+          index: i - 1, toIndex: i - 1});
     }
   } else if (j > 0 && (i === 0 || C[i][j - 1] >= C[i - 1][j])) {
-    diff = rdm.CollaborativeString.printDiff(C, string1, string2, i, j - 1, diff);
-    if (diff.length > 0 && diff[diff.length - 1].type === 'add' && diff[diff.length - 1].toIndex === j - 2) {
+    diff = rdm.CollaborativeString.printDiff(C, string1, string2, i,
+        j - 1, diff);
+    if (diff.length > 0 && diff[diff.length - 1].type === 'add' &&
+        diff[diff.length - 1].toIndex === j - 2) {
       diff[diff.length - 1].text = diff[diff.length - 1].text + string2[j - 1];
       diff[diff.length - 1].toIndex = j - 1;
     } else {
-      diff.push({type: 'add', text: string2[j - 1], index: j - 1, toIndex: j - 1});
+      diff.push({type: 'add', text: string2[j - 1],
+          index: j - 1, toIndex: j - 1});
     }
   }
   return diff;
 };
 
+
+/**
+ * @inheritDoc
+ * @private
+ */
 rdm.CollaborativeString.prototype.executeEvent_ = function(event) {
   if (event.type == rdm.EventType.TEXT_DELETED) {
-    this.string_ = this.string_.slice(0, event.index) + this.string_.slice(event.index + event.text.length);
+    this.string_ = this.string_.slice(0, event.index) +
+        this.string_.slice(event.index + event.text.length);
     this.shiftReferencesOnDelete_(event.index, event.text.length);
   } else if (event.type == rdm.EventType.TEXT_INSERTED) {
-    this.string_ = this.string_.slice(0, event.index) + event.text + this.string_.slice(event.index);
+    this.string_ = this.string_.slice(0, event.index) + event.text +
+        this.string_.slice(event.index);
     this.shiftReferencesOnInsert_(event.index, event.text.length);
   }
 };
 
+/**
+ * @inheritDoc
+ */
 rdm.CollaborativeString.prototype.toString = function() {
   return this.string_;
 };
