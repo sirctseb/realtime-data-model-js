@@ -20,3 +20,4 @@ rdm.DocumentSaveStateChangedEvent = function(document, isSaving, isPending) {
 	this.isSaving = isSaving;
 	this.isPending = isPending;
 };
+goog.inherits(rdm.DocumentSaveStateChangedEvent, goog.events.Event);
