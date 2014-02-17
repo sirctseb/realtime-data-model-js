@@ -16,10 +16,20 @@ goog.provide('rdm.ObjectChangedEvent');
 goog.require('rdm.BaseModelEvent');
 goog.require('rdm.EventType');
 
-rdm.ObjectChangedEvent = function(target_, events, isTerminal_) {
-  rdm.BaseModelEvent.call(this, rdm.EventType.OBJECT_CHANGED, target_);
+/**
+ * Event fired when a collaborative object changes. This event will bubble to
+ * all of the ancestors of the changed object. it includes an array of events
+ * describing the specific changes.
+ *
+ * @constructor
+ * @extends rdm.BaseModelEvent
+ * @param {rdm.EventTarget} target The target object that generated the event.
+ * @param {Array.<rdm.BaseModelevent>} events The events that caused the object
+ *     to change.
+ */
+rdm.ObjectChangedEvent = function(target, events) {
+  rdm.BaseModelEvent.call(this, rdm.EventType.OBJECT_CHANGED, target);
   this.bubbles = true;
   this.events = events;
-  this.isTerminal_ = isTerminal_ || false;
 };
 goog.inherits(rdm.ObjectChangedEvent, rdm.BaseModelEvent);
