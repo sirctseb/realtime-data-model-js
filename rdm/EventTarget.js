@@ -17,12 +17,13 @@
  *
  * @author arv@google.com (Erik Arvidsson) [Original implementation]
  * @author pupius@google.com (Daniel Pupius) [Port to use goog.events]
- * @author bestchris@gmail.com (Christopher Best) Modified for multiple parents 
+ * @author bestchris@gmail.com (Christopher Best) Modified for multiple parents
  *  and taken out of closure library
  * @see ../demos/eventtarget.html
  */
 
-// TODO document everything as rdm.BaseModelEvent because we use rdm.BaseModelEvent.bubbles
+// TODO document everything as rdm.BaseModelEvent because we use
+//     rdm.BaseModelEvent.bubbles
 goog.provide('rdm.EventTarget');
 
 goog.require('goog.array');
@@ -32,15 +33,15 @@ goog.require('goog.events.ListenerMap');
 goog.require('goog.object');
 
 
-
+// TODO remove or make private everything but add/removeEventListener
 /**
  * Inherit from this class to give your object the ability to dispatch events.
  * Note that this class provides event <em>sending</em> behaviour, not event
  * receiving behaviour: your object will be able to broadcast events, and other
  * objects will be able to listen for those events using addEventListener.
  *
- * <p>The name "EventTarget" reflects the fact that this class approximately implements
- * the <a href="http://www.w3.org/TR/DOM-Level-2-Events/events.html">
+ * <p>The name "EventTarget" reflects the fact that this class approximately
+ * implements the <a href="http://www.w3.org/TR/DOM-Level-2-Events/events.html">
  * EventTarget interface</a> as defined by W3C DOM 2/3, with a few differences:
  * <ul>
  * <li>Event objects do not have to implement the Event interface. An object
@@ -366,7 +367,8 @@ rdm.EventTarget.dispatchEventInternal_ = function(
   // Executes all capture listeners on the ancestors, if any.
   if (e.bubbles) {
     if (opt_ancestorsTree) {
-      for (var i = opt_ancestorsTree.length - 1; !e.propagationStopped_ && i >= 0;
+      for (var i = opt_ancestorsTree.length - 1;
+          !e.propagationStopped_ && i >= 0;
        i--) {
         currentTarget = e.currentTarget = opt_ancestorsTree[i];
         rv = currentTarget.fireListeners(type, true, e) && rv;
