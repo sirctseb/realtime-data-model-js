@@ -16,40 +16,59 @@ goog.provide('rdm.Document');
 goog.require('goog.events.EventTarget');
 goog.require('rdm.Collaborator');
 
+/**
+ * A Realtime document. A document consists of a Realtime model and a set of
+ * collaborators. Listen on the document for the following events:
+ * <ul>
+ * <li>gapi.drive.realtime.EventType.COLLABORATOR_LEFT
+ * <li>gapi.drive.realtime.EventType.COLLABORATOR_JOINED
+ * <li>gapi.drive.realtime.EventType.DOCUMENT_SAVE_STATE_CHANGED
+ * </ul>
+ * <p>This class should not be instantiated directly. The document object is
+ * generated during the document load process.</p>
+ *
+ * @constructor
+ * @extends goog.events.EventTarget
+ * @param {rdm.Model} model The document model.
+ */
 rdm.Document = function(model) {
   goog.events.EventTarget.call(this);
+  /**
+   * The document model.
+   * @type rdm.Model
+   * @private
+   */
   this.model_ = model;
 };
 goog.inherits(rdm.Document, goog.events.EventTarget);
 
 /**
- * @expose
+ * Gets the collaborative model associated with this document.
+ * @return {rdm.Model} The collaborative model for this document.
  */
 rdm.Document.prototype.getModel = function() {
   return this.model_;
 };
 
+// TODO update documentation
+// TODO implement
 /**
- * @expose
+ * Closes the document and disconnects from the server. After this function is
+ * called, event listeners will no longer fire and attempts to access the
+ * document, model, or model object will throw a
+ * {gapi.drive.realtime.DocumentClosedError}. Calling this function after the
+ * document has been closed will have no effect.
  */
 rdm.Document.prototype.close = function() {};
 
 /**
- * @expose
- */
-rdm.Document.prototype.exportDocument = function(successFn, failureFn) {
-  try {
-    successFn(JSON.stringify(this.model_.getRoot()));
-  } catch(e) {
-    failureFn(e);
-  }
-};
-
-/**
- * @expose
+ * Gets an array of collaborators active in this session. Each collaborator is
+ * a jsMap with these fields: sessionId, userId, displayName, color, isMe,
+ * isAnonymous.
+ * @return {Array.<rdm.Collaborator>} A jsArray of collaborators.
  */
 rdm.Document.prototype.getCollaborators = function() {
   return [new rdm.Collaborator()];
-}
+};
 
-// TODO support implementing a document supplier class to retrieve documents and give them back in json
+// TODO event add/removeEventListener methods are documented in rt
