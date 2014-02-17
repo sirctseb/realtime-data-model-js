@@ -47,14 +47,17 @@ rdm.CollaborativeString = function(model, initialValue) {
    * @private
    */
   this.string_ = initialValue || '';
-  Object.defineProperties(this,
+  Object.defineProperties(this, {
     /**
      * The length of the string. Read only.
      *
-     * @type {number}
+     * @type number
+     * @instance
+     * @memberOf rdm.CollaborativeString
      */
     'length' : {
       get: function() { return this.string_.length; }
+    }
   });
 };
 goog.inherits(rdm.CollaborativeString, rdm.IndexReferenceContainer);
@@ -120,7 +123,7 @@ rdm.CollaborativeString.prototype.removeRange = function(startIndex, endIndex) {
  */
 rdm.CollaborativeString.prototype.setText = function(text) {
   // calculate diffs
-  var diffs = rdm.CollaborativeString.stringDiff(this.string_, text);
+  var diffs = rdm.CollaborativeString.stringDiff_(this.string_, text);
   var this_ = this;
   var events = diffs.map(function(diff) {
     return diff.type === 'add' ?
@@ -133,12 +136,13 @@ rdm.CollaborativeString.prototype.setText = function(text) {
 /**
  * Compute the modifications that must be made to a string to create another.
  *
+ * @private
  * @param {string} string1 The string to be modified.
  * @param {string} string2 The string resulting from the modifications.
  * @return {Array.<Object>} The modifications required to transform one
  *     string into another.
  */
-rdm.CollaborativeString.stringDiff = function(string1, string2) {
+rdm.CollaborativeString.stringDiff_ = function(string1, string2) {
   var C = new Array(string1.length + 1);
   for (var i = 0; i <= string1.length; i++) {
     C[i] = new Array(string2.length + 1);
