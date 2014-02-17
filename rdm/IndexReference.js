@@ -23,22 +23,56 @@ goog.require('rdm.ReferenceShiftedEvent');
  * To listen for changes to the referenced index, add an EventListener for
  * rdm.EventType.REFERENCE_SHIFTED.
  * <p>This class should not be instantiated directly. To create an index
- * referene, call registerReference on the appropriate string or list.
+ * reference, call registerReference on the appropriate string or list.
  *
  * @constructor
  * @extends rdm.CollaborativeObject
+ * @param {rdm.Model} model The document model.
  * @param {number} index The initial value of the index.
+ * @param {boolean} canBeDeleted Whether this reference can be deleted.
+ * @param {rdm.CollaborativeObject} referencedObject The object this reference
+ *     points to.
  */
 rdm.IndexReference = function(model, index, canBeDeleted, referencedObject) {
   rdm.CollaborativeObject.call(this, model);
+  /**
+   * The index of the current location the reference points to. Write to this
+   * property to change the referenced index.
+   *
+   * @type number
+   */
   this.index = index;
   Object.defineProperties(this, {
+    /**
+     * Whether this reference can be deleted. Read-only.
+     * This property affects the behavior of the index reference when the index
+     * the reference points to is deleted. If this is true, the index reference
+     * will be deleted. If it is false, the index reference will move to point
+     * at the beginning of the deleted range.
+     *
+     * @type boolean
+     * @instance
+     * @memberOf rdm.IndexReference
+     */
     'canBeDeleted': {get: function() {return canBeDeleted;}},
+    /**
+     * The object this reference points to. Read-only.
+     *
+     * @type rdm.CollaborativeObject
+     * @instance
+     * @memberOf rdm.IndexReference
+     */
     'referencedObject': {get: function() {return referencedObject;}}
   });
 };
 goog.inherits(rdm.IndexReference, rdm.CollaborativeObject);
 
+/**
+ * Change the value of the index to be newIndex and fire a corresponding event.
+ *
+ * @private
+ * @param {number} newIndex The new value of the index.
+ */
 rdm.IndexReference.prototype.shift_ = function(newIndex) {
   var oldIndex = this.index;
   this.index = newIndex;
