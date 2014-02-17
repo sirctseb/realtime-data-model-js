@@ -20,9 +20,9 @@ goog.require('rdm.Collaborator');
  * A Realtime document. A document consists of a Realtime model and a set of
  * collaborators. Listen on the document for the following events:
  * <ul>
- * <li>gapi.drive.realtime.EventType.COLLABORATOR_LEFT
- * <li>gapi.drive.realtime.EventType.COLLABORATOR_JOINED
- * <li>gapi.drive.realtime.EventType.DOCUMENT_SAVE_STATE_CHANGED
+ * <li>rdm.EventType.COLLABORATOR_LEFT
+ * <li>rdm.EventType.COLLABORATOR_JOINED
+ * <li>rdm.EventType.DOCUMENT_SAVE_STATE_CHANGED
  * </ul>
  * <p>This class should not be instantiated directly. The document object is
  * generated during the document load process.</p>

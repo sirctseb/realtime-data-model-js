@@ -26,8 +26,8 @@ goog.require('rdm.TextInsertedEvent');
  * other collaborators. To listen for changes, add EventListeners for the
  * following event types:</p>
  * <ul>
- * <li>gapi.drive.realtime.EventType.TEXT_INSERTED
- * <li>gapi.drive.realtime.EventType.TEXT_DELETED
+ * <li>rdm.EventType.TEXT_INSERTED
+ * <li>rdm.EventType.TEXT_DELETED
  * </ul>
  * <p>This class should not be instantiated directly. To create a new
  * collaborative string, use
