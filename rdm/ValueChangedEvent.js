@@ -13,22 +13,50 @@
 // limitations under the License.
 
 goog.provide('rdm.ValueChangedEvent');
-goog.require('rdm.UndoableEvent');
 goog.require('rdm.EventType');
+goog.require('rdm.UndoableEvent');
 
-rdm.ValueChangedEvent = function(target_, property, newValue, oldValue) {
-  rdm.UndoableEvent.call(this, rdm.EventType.VALUE_CHANGED, target_);
+/**
+ * Event fired when a map or custom object property changes.
+ * @constructor
+ * @extends rdm.UndoableEvent
+ * @param {string} property The property whose value changed.
+ * @param {*} newValue The new property value.
+ * @param {*} oldValue The old property value.
+ */
+rdm.ValueChangedEvent = function(target, property, newValue, oldValue) {
+  rdm.UndoableEvent.call(this, rdm.EventType.VALUE_CHANGED, target);
   this.bubbles = false;
+  /**
+   * The new property value.
+   * @type *
+   */
   this.newValue = newValue;
+  /**
+   * The old property value.
+   * @type *
+   */
   this.oldValue = oldValue;
+  /**
+   * The property whose value changed.
+   * @type string
+   */
   this.property = property;
 };
 goog.inherits(rdm.ValueChangedEvent, rdm.UndoableEvent);
 
+/**
+ * @inheritDoc
+ */
 rdm.ValueChangedEvent.prototype.getInverse = function() {
-  return new rdm.ValueChangedEvent(this.target_, this.property, this.oldValue, this.newValue);
+  return new rdm.ValueChangedEvent(this.target_, this.property, this.oldValue,
+      this.newValue);
 };
 
+/**
+ * @inheritDoc
+ * @private
+ */
 rdm.ValueChangedEvent.prototype.updateState_ = function() {
-	this.oldValue = this.target_.get(this.property);
+  this.oldValue = this.target_.get(this.property);
 };

@@ -13,22 +13,53 @@
 // limitations under the License.
 
 goog.provide('rdm.ValuesSetEvent');
-goog.require('rdm.UndoableEvent');
 goog.require('rdm.EventType');
+goog.require('rdm.UndoableEvent');
 
-rdm.ValuesSetEvent = function(target_, index, newValues, oldValues) {
-  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_SET, target_);
+/**
+ * Event fired when items in a collaborative list are changed in place.
+ * @constructor
+ * @extends rdm.UndoableEvent
+ * @param {rdm.CollaborativeList} target The target object that generated the
+ *     event.
+ * @param {number} index The index of the change.
+ * @param {Array.<*>} oldValues The old values.
+ * @param {Array.<*>} newValues The new values.
+ */
+rdm.ValuesSetEvent = function(target, index, oldValues, newValues) {
+  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_SET, target);
   this.bubbles = false;
+  /**
+   * The index of the first value that was replaced.
+   * @type number
+   */
   this.index = index;
+  /**
+   * The new values.
+   * @type Array.<*>
+   */
   this.newValues = newValues;
+  /**
+   * The oldValues.
+   * @type Array.<*>
+   */
   this.oldValues = oldValues;
 };
 goog.inherits(rdm.ValuesSetEvent, rdm.UndoableEvent);
 
+/**
+ * @inheritDoc
+ */
 rdm.ValuesSetEvent.prototype.getInverse = function() {
-  return new rdm.ValuesSetEvent(this.target_, this.index, this.oldValues, this.newValues);
+  return new rdm.ValuesSetEvent(this.target_, this.index, this.oldValues,
+        this.newValues);
 };
 
+/**
+ * @inheritDoc
+ * @private
+ */
 rdm.ValuesSetEvent.prototype.updateState_ = function() {
-  this.oldValues = this.target_.asArray().slice(this.index, this.index + this.newValues.length);
+  this.oldValues = this.target_.asArray().slice(this.index,
+      this.index + this.newValues.length);
 };

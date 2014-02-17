@@ -181,7 +181,7 @@ rdm.CollaborativeList.prototype.set = function(index, value) {
     // TODO rt throws an object with a string of this form in property 'n'
     throw 'Index: ' + index + ', Size: ' + this.length;
   }
-  var event = new rdm.ValuesSetEvent(this, index, [value], [this.list_[index]]);
+  var event = new rdm.ValuesSetEvent(this, index, [this.list_[index]], [value]);
   this.emitEventsAndChanged_([event]);
 };
 
@@ -253,7 +253,7 @@ rdm.CollaborativeList.prototype.removeValue = function(value) {
 rdm.CollaborativeList.prototype.replaceRange = function(index, values) {
   // add event to stream
   var event = new rdm.ValuesSetEvent(
-    this, index, values, this.list_.slice(index, index + values.length));
+    this, index, this.list_.slice(index, index + values.length), values);
   this.emitEventsAndChanged_([event]);
 };
 

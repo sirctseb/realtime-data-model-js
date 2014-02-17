@@ -13,18 +13,37 @@
 // limitations under the License.
 
 goog.provide('rdm.ValuesRemovedEvent');
-goog.require('rdm.UndoableEvent');
-// goog.require('rdm.ValuesAddedEvent');
 goog.require('rdm.EventType');
+goog.require('rdm.UndoableEvent');
 
-rdm.ValuesRemovedEvent = function(target_, index, values) {
-  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_REMOVED, target_);
+/**
+ * Event fired when items are removed from a collaborative list.
+ * @constructor
+ * @extends rdm.UndoableEvent
+ * @param {rdm.CollaborativeList} target The target object that generated the
+ *     event.
+ * @param {number} index The index where values were removed.
+ * @param {Array.<*>} values The values removed.
+ */
+rdm.ValuesRemovedEvent = function(target, index, values) {
+  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_REMOVED, target);
   this.bubbles = false;
+  /**
+   * The index of the first removed value.
+   * @type number
+   */
   this.index = index;
+  /**
+   * The values that were removed.
+   * @type Array.<!Object|string|number|boolean>
+   */
   this.values = values;
 };
 goog.inherits(rdm.ValuesRemovedEvent, rdm.UndoableEvent);
 
+/**
+ * @inheritDoc
+ */
 rdm.ValuesRemovedEvent.prototype.getInverse = function() {
   return new rdm.ValuesAddedEvent(this.target_, this.index, this.values);
-}
+};

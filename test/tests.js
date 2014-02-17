@@ -910,6 +910,19 @@ onFileLoaded = function(doc) {
     string.insertString(0, "x");
     equal(ref.index, 4);
   });
+  test('canBeDeleted', function() {
+    var bool = true;
+    var refTrue = string.registerReference(3, bool);
+    bool = false;
+    equal(refTrue.canBeDeleted, true);
+    var refFalse = string.registerReference(3, false);
+    equal(refFalse.canBeDeleted, false);
+  });
+  test('referencedObject', function() {
+    var ref = string.registerReference(2, false);
+    strictEqual(ref.referencedObject, string);
+  });
+
   module('Events');
   test('Object Change Bubbling', function() {
     var order = '';
