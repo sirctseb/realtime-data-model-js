@@ -76,5 +76,5 @@ goog.inherits(rdm.IndexReference, rdm.CollaborativeObject);
 rdm.IndexReference.prototype.shift_ = function(newIndex) {
   var oldIndex = this.index;
   this.index = newIndex;
-  this.dispatchEvent(new rdm.ReferenceShiftedEvent(this, this.index, oldIndex));
+  this.dispatchEvent(new rdm.ReferenceShiftedEvent(this, oldIndex, this.index));
 };
