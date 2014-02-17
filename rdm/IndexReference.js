@@ -16,11 +16,26 @@ goog.provide('rdm.IndexReference');
 goog.require('rdm.CollaborativeObject');
 goog.require('rdm.ReferenceShiftedEvent');
 
-rdm.IndexReference = function(index, canBeDeleted, referencedObject) {
-  rdm.CollaborativeObject.call(this);
+/**
+ * An IndexReference is a pointer to a specific location in a collaborative list
+ * or string. This pointer automatically shifts as new elements are added to and
+ * removed from the object.<br/>
+ * To listen for changes to the referenced index, add an EventListener for
+ * rdm.EventType.REFERENCE_SHIFTED.
+ * <p>This class should not be instantiated directly. To create an index
+ * referene, call registerReference on the appropriate string or list.
+ *
+ * @constructor
+ * @extends rdm.CollaborativeObject
+ * @param {number} index The initial value of the index.
+ */
+rdm.IndexReference = function(model, index, canBeDeleted, referencedObject) {
+  rdm.CollaborativeObject.call(this, model);
   this.index = index;
-  this.canBeDeleted = canBeDeleted;
-  this.referencedObject = referencedObject;
+  Object.defineProperties(this, {
+    'canBeDeleted': {get: function() {return canBeDeleted;}},
+    'referencedObject': {get: function() {return referencedObject;}}
+  });
 };
 goog.inherits(rdm.IndexReference, rdm.CollaborativeObject);
 
