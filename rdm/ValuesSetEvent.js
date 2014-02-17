@@ -51,8 +51,8 @@ goog.inherits(rdm.ValuesSetEvent, rdm.UndoableEvent);
  * @inheritDoc
  */
 rdm.ValuesSetEvent.prototype.getInverse = function() {
-  return new rdm.ValuesSetEvent(this.target_, this.index, this.oldValues,
-        this.newValues);
+  return new rdm.ValuesSetEvent(this.target_, this.index, this.newValues,
+      this.oldValues);
 };
 
 /**
