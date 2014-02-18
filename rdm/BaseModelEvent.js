@@ -57,7 +57,7 @@ rdm.BaseModelEvent = function(type, target) {
   * Event type.
   * @type {string}
   */
-  this.type = null;
+  this.type = type;
 
   /**
   * The user id of the user that initiated the event.
