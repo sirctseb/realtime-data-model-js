@@ -66,3 +66,15 @@ rdm.BaseModelEvent = function(type, target) {
   this.userId = null;
 };
 goog.inherits(rdm.BaseModelEvent, goog.events.Event);
+
+/**
+ * Update the state of the event based on the current state of the target.
+ * @protected
+ */
+rdm.BaseModelEvent.prototype.updateState_ = function() {};
+
+/**
+ * Create an event that is the inverse of this event.
+ * @private
+ */
+rdm.BaseModelEvent.prototype.getInverse = function() {};

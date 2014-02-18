@@ -14,20 +14,20 @@
 
 goog.provide('rdm.TextDeletedEvent');
 goog.require('rdm.EventType');
-goog.require('rdm.UndoableEvent');
+goog.require('rdm.BaseModelEvent');
 
 /**
  * Event fired when text is removed from a string.
  *
  * @constructor
- * @extends rdm.UndoableEvent
+ * @extends rdm.BaseModelEvent
  * @param {rdm.CollaborativeString} target The target object that generated the
  *     event.
  * @param {number} index The index of the change.
  * @param {string} text The deleted text.
  */
 rdm.TextDeletedEvent = function(target, index, text) {
-  rdm.UndoableEvent.call(this, rdm.EventType.TEXT_DELETED, target);
+  rdm.BaseModelEvent.call(this, rdm.EventType.TEXT_DELETED, target);
   /**
    * The index of the first character that was deleted.
    *
@@ -42,7 +42,7 @@ rdm.TextDeletedEvent = function(target, index, text) {
   this.text = text;
   this.bubbles = null;
 };
-goog.inherits(rdm.TextDeletedEvent, rdm.UndoableEvent);
+goog.inherits(rdm.TextDeletedEvent, rdm.BaseModelEvent);
 
 /**
  * @inheritDoc

@@ -122,7 +122,10 @@ rdm.UndoHistory.prototype.undo = function() {
   // decrement index
   this.index_--;
   // do changes and events
-  this.history_[this.index_].map(function(e) { e.executeAndEmit_(); });
+  this.history_[this.index_].map(function(e) {
+    e.updateState_();
+    e.target_.executeAndEmitEvent_(e);
+  });
   // group by target
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
@@ -150,7 +153,10 @@ rdm.UndoHistory.prototype.redo = function() {
   this.beginCompoundOperation(rdm.UndoHistory.Scope.REDO);
 
   // redo events
-  this.history_[this.index_].map(function(e) { e.executeAndEmit_(); });
+  this.history_[this.index_].map(function(e) {
+    e.updateState_();
+    e.target_.executeAndEmitEvent_(e);
+  });
   // group by target
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events

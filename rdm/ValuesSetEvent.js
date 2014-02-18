@@ -14,12 +14,12 @@
 
 goog.provide('rdm.ValuesSetEvent');
 goog.require('rdm.EventType');
-goog.require('rdm.UndoableEvent');
+goog.require('rdm.BaseModelEvent');
 
 /**
  * Event fired when items in a collaborative list are changed in place.
  * @constructor
- * @extends rdm.UndoableEvent
+ * @extends rdm.BaseModelEvent
  * @param {rdm.CollaborativeList} target The target object that generated the
  *     event.
  * @param {number} index The index of the change.
@@ -27,7 +27,7 @@ goog.require('rdm.UndoableEvent');
  * @param {Array.<*>} newValues The new values.
  */
 rdm.ValuesSetEvent = function(target, index, oldValues, newValues) {
-  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_SET, target);
+  rdm.BaseModelEvent.call(this, rdm.EventType.VALUES_SET, target);
   this.bubbles = false;
   /**
    * The index of the first value that was replaced.
@@ -45,7 +45,7 @@ rdm.ValuesSetEvent = function(target, index, oldValues, newValues) {
    */
   this.oldValues = oldValues;
 };
-goog.inherits(rdm.ValuesSetEvent, rdm.UndoableEvent);
+goog.inherits(rdm.ValuesSetEvent, rdm.BaseModelEvent);
 
 /**
  * @inheritDoc

@@ -14,19 +14,19 @@
 
 goog.provide('rdm.ValuesAddedEvent');
 goog.require('rdm.EventType');
-goog.require('rdm.UndoableEvent');
+goog.require('rdm.BaseModelEvent');
 
 /**
  * Event fired when items are added to a collaborative list.
  * @constructor
- * @extends rdm.UndoableEvent
+ * @extends rdm.BaseModelEvent
  * @param {rdm.CollaborativeList} target The target object that generated the
  *     event.
  * @param {number} index The index where values were added.
  * @param {Array.<*>} values The values added.
  */
 rdm.ValuesAddedEvent = function(target, index, values) {
-  rdm.UndoableEvent.call(this, rdm.EventType.VALUES_ADDED, target);
+  rdm.BaseModelEvent.call(this, rdm.EventType.VALUES_ADDED, target);
   this.bubbles = false;
   /**
    * The index of the first added value.
@@ -39,7 +39,7 @@ rdm.ValuesAddedEvent = function(target, index, values) {
    */
   this.values = values;
 };
-goog.inherits(rdm.ValuesAddedEvent, rdm.UndoableEvent);
+goog.inherits(rdm.ValuesAddedEvent, rdm.BaseModelEvent);
 
 /**
  * @inheritDoc

@@ -14,18 +14,18 @@
 
 goog.provide('rdm.ValueChangedEvent');
 goog.require('rdm.EventType');
-goog.require('rdm.UndoableEvent');
+goog.require('rdm.BaseModelEvent');
 
 /**
  * Event fired when a map or custom object property changes.
  * @constructor
- * @extends rdm.UndoableEvent
+ * @extends rdm.BaseModelEvent
  * @param {string} property The property whose value changed.
  * @param {*} newValue The new property value.
  * @param {*} oldValue The old property value.
  */
 rdm.ValueChangedEvent = function(target, property, newValue, oldValue) {
-  rdm.UndoableEvent.call(this, rdm.EventType.VALUE_CHANGED, target);
+  rdm.BaseModelEvent.call(this, rdm.EventType.VALUE_CHANGED, target);
   this.bubbles = false;
   /**
    * The new property value.
@@ -43,7 +43,7 @@ rdm.ValueChangedEvent = function(target, property, newValue, oldValue) {
    */
   this.property = property;
 };
-goog.inherits(rdm.ValueChangedEvent, rdm.UndoableEvent);
+goog.inherits(rdm.ValueChangedEvent, rdm.BaseModelEvent);
 
 /**
  * @inheritDoc

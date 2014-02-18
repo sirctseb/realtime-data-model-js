@@ -14,20 +14,20 @@
 
 goog.provide('rdm.TextInsertedEvent');
 goog.require('rdm.EventType');
-goog.require('rdm.UndoableEvent');
+goog.require('rdm.BaseModelEvent');
 
 /**
  * Event fired when text is inserted into a string.
  *
  * @constructor
- * @extends rdm.UndoableEvent
+ * @extends rdm.BaseModelEvent
  * @param {rdm.CollaborativeString} target The target object that generated the
  *     event.
  * @param {number} index The index of the chnage.
  * @param {string} text The inserted text.
  */
 rdm.TextInsertedEvent = function(target, index, text) {
-  rdm.UndoableEvent.call(this, rdm.EventType.TEXT_INSERTED, target);
+  rdm.BaseModelEvent.call(this, rdm.EventType.TEXT_INSERTED, target);
   this.bubbles = false;
   /**
    * The index of the change.
@@ -40,7 +40,7 @@ rdm.TextInsertedEvent = function(target, index, text) {
    */
   this.text = text;
 };
-goog.inherits(rdm.TextInsertedEvent, rdm.UndoableEvent);
+goog.inherits(rdm.TextInsertedEvent, rdm.BaseModelEvent);
 
 /**
  * @inheritDoc
