@@ -16,10 +16,27 @@ goog.provide('rdm.ReferenceShiftedEvent');
 goog.require('rdm.BaseModelEvent');
 goog.require('rdm.EventType');
 
-rdm.ReferenceShiftedEvent = function(target_, newIndex, oldIndex) {
-  rdm.BaseModelEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target_);
+/**
+ * Event fired when an index reference shifts.
+ *
+ * @constructor
+ * @extends rdm.BaseModelEvent
+ * @param {rdm.IndexReference} target The reference that shifted.
+ * @param {number} oldIndex The previous index.
+ * @param {number} newIndex The new index.
+ */
+rdm.ReferenceShiftedEvent = function(target, oldIndex, newIndex) {
+  rdm.BaseModelEvent.call(this, rdm.EventType.REFERENCE_SHIFTED, target);
   this.bubbles = false;
+  /**
+   * The new index.
+   * @type number
+   */
   this.newIndex = newIndex;
+  /**
+   * The previous index.
+   * @type number
+   */
   this.oldIndex = oldIndex;
 };
 goog.inherits(rdm.ReferenceShiftedEvent, rdm.BaseModelEvent);

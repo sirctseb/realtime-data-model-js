@@ -15,8 +15,35 @@
 goog.provide('rdm.DocumentSaveStateChangedEvent');
 goog.require('goog.events.Event');
 
+/**
+ * An even that indicates that the save state of a document has changed. If both
+ * isSaving and isPending are false, the document is completely saved and up to
+ * date.
+ *
+ * @constructor
+ * @extends goog.events.Event
+ * @param {rdm.Document} document The document being saved.
+ * @param {boolean} isSaving The saving state.
+ * @param {boolean} isPending The state of pending mutations.
+ */
 rdm.DocumentSaveStateChangedEvent = function(document, isSaving, isPending) {
-	goog.events.Event.call(this, rdm.EventType.DOCUMENT_SAVE_STATE_CHANGED, document);
-	this.isSaving = isSaving;
-	this.isPending = isPending;
+  goog.events.Event.call(this, rdm.EventType.DOCUMENT_SAVE_STATE_CHANGED,
+      document);
+  /**
+   * If true, the document is in the process of saving. Mutations have been
+   * sent to the server, but we have not yet received an ack. If false,
+   * nothing is in the process of being sent.
+   *
+   * @type {boolean}
+   */
+  this.isSaving = isSaving;
+  /**
+   * If true, the client has mutations that have not yet been sent to the
+   * server. If false, all mutations have been sent to the server, but some
+   * may not yet have been acked.
+   *
+   * @type {boolean}
+   */
+  this.isPending = isPending;
 };
+goog.inherits(rdm.DocumentSaveStateChangedEvent, goog.events.Event);

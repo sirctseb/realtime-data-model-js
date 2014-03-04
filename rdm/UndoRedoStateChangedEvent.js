@@ -15,9 +15,25 @@
 goog.provide('rdm.UndoRedoStateChangedEvent');
 goog.require('rdm.EventType');
 
-rdm.UndoRedoStateChangedEvent = function(target_, canUndo, canRedo) {
-  goog.events.Event.call(this, rdm.EventType.UNDO_REDO_STATE_CHANGED, target_);
+/**
+ * An event indicating that canUndo or canRedo changed.
+ *
+ * @constructor
+ * @extends goog.events.Event
+ * @param {rdm.Model} model Themodel whose state changed.
+ * @param {boolean} canUndo True if you can currently undo.
+ * @param {boolean} canRedo True if you can currently redo.
+ */
+rdm.UndoRedoStateChangedEvent = function(model, canUndo, canRedo) {
+  goog.events.Event.call(this, rdm.EventType.UNDO_REDO_STATE_CHANGED, model);
+  /**
+   * True if you can currently redo, false otherwise.
+   * @type boolean
+   */
   this.canUndo = canUndo;
+  /**
+   * True if you can currently undo, false otherwise.
+   */
   this.canRedo = canRedo;
 };
 goog.inherits(rdm.UndoRedoStateChangedEvent, goog.events.Event);

@@ -16,14 +16,42 @@ goog.provide('rdm.Collaborator');
 
 /**
  * A collaborator on the document.
+ * @constructor
  */
 rdm.Collaborator = function() {
-	// TODO can we document fields in the constructor?
-	this.color = 'blue';
-	this.displayName = 'Me';
-	this.isAnonymous = false;
-	this.isMe = true;
-	this.photoUrl = null;
-	this.sessionId = null;
-	this.userId = null;
+  /**
+   * The color associated with the collaborator.
+   * @type {string}
+   */
+  this.color = 'blue';
+  /**
+   * The display name of the collaborator.
+   * @type {string}
+   */
+  this.displayName = 'Me';
+  /**
+   * True if the collaborator is anonymous, false otherwise.
+   * @type {boolean}
+   */
+  this.isAnonymous = false;
+  /**
+   * True if the collaborator is the local user, false otherwise.
+   * @type {boolean}
+   */
+  this.isMe = true;
+  /**
+   * A url that points to the profile of the user.
+   * @type {string}
+   */
+  this.photoUrl = null;
+  /**
+   * The sessionId of the collaborator.
+   * @type {string}
+   */
+  this.sessionId = null;
+  /**
+   * The userId of the collaborator.
+   * @type {string}
+   */
+  this.userId = null;
 };

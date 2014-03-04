@@ -42,14 +42,14 @@ rdm.UndoHistory = function(model) {
    */
   this.COScopes_ = [];
   var this_ = this;
+  // TODO document
   Object.defineProperties(this, {
     "canUndo": {
       get: function() { return this_.index_ > 0; }
     },
     "canRedo": {
       get: function() {
-        var ret = this_.index_ < this_.history_.length;
-        return ret;
+        return this_.index_ < this_.history_.length;
       }
     }
   });
@@ -73,10 +73,10 @@ rdm.UndoHistory.prototype.endCompoundOperation = function() {
     // clear current CO
     this.currentCO_ = null;
     if(scope === rdm.UndoHistory.Scope.UNDO) {
-      // if we started from an undo, replace history at previous index with current CO and update index
+      // if we started from an undo, replace history at current index with current CO
       this.history_[this.index_] = inverseCO;
     } else if(scope === rdm.UndoHistory.Scope.REDO) {
-      // if we started from a redo, replace history at current index with current CO and update index
+      // if we started from a redo, replace history at current index with current CO
       this.history_[this.index_] = inverseCO;
     } else if(scope !== rdm.UndoHistory.Scope.INIT) {
       // add to the history
@@ -122,7 +122,10 @@ rdm.UndoHistory.prototype.undo = function() {
   // decrement index
   this.index_--;
   // do changes and events
-  this.history_[this.index_].map(function(e) { e.executeAndEmit_(); });
+  this.history_[this.index_].map(function(e) {
+    e.updateState_();
+    e.target_.executeAndEmitEvent_(e);
+  });
   // group by target
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events
@@ -150,7 +153,10 @@ rdm.UndoHistory.prototype.redo = function() {
   this.beginCompoundOperation(rdm.UndoHistory.Scope.REDO);
 
   // redo events
-  this.history_[this.index_].map(function(e) { e.executeAndEmit_(); });
+  this.history_[this.index_].map(function(e) {
+    e.updateState_();
+    e.target_.executeAndEmitEvent_(e);
+  });
   // group by target
   var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
   // do object changed events

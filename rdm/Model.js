@@ -13,74 +13,158 @@
 // limitations under the License.
 
 goog.provide('rdm.Model');
-goog.require('rdm.UndoHistory');
+goog.require('goog.events.EventTarget');
 goog.require('rdm.CollaborativeList');
 goog.require('rdm.CollaborativeMap');
-goog.require('rdm.CollaborativeString');
 goog.require('rdm.CollaborativeObject');
+goog.require('rdm.CollaborativeString');
 goog.require('rdm.CustomObject');
+goog.require('rdm.UndoHistory');
 goog.require('rdm.custom');
-goog.require('goog.events.EventTarget');
 
+/**
+ * The collaborative model is the data model for a Realtime document. The
+ * document's object graph should be added to the model under the root object.
+ * All objects that are part of the model must be accessible from this root.
+ * <br/>
+ * The model class is also used to create instances of built in and custom
+ * collaborative objects via the appropriate create method.
+ *
+ * <p>Listen on the model for the following events:</p>
+ * <ul>
+ * <li>gapi.drive.realtime.EventType.UNDO_REDO_STATE_CHANGED
+ * </ul>
+ * This class should not be instantiated directly. The collaborative model is
+ * generated during the document load process. The model can be initialized by
+ * passing an initializer function to rdm.DocumentProvider.loadDocument.
+ *
+ * @constructor
+ * @extends goog.events.EventTarget
+*/
 rdm.Model = function() {
   goog.events.EventTarget.call(this);
 
+  // TODO is this Read-Only?
+  /**
+   * The mode of the document. If true, the document is readonly. If false it is
+   * editable.
+   *
+   * @type boolean
+   */
   this.isReadyOnly = false;
   // pass canUndo and canRedo through to undo history object
   Object.defineProperties(this, {
-    "canUndo": { get: function() { return this.undoHistory_.canUndo; } },
-    "canRedo": { get: function() { return this.undoHistory_.canRedo; } }
+    /**
+     * True if the model can currently undo.
+     *
+     * @type boolean
+     * @instance
+     * @memberOf rdm.Model
+     */
+    'canUndo': { get: function() { return this.undoHistory_.canUndo; } },
+    /**
+     * True if the model can currently redo.
+     *
+     * @type boolean
+     * @instance
+     * @memberOf rdm.Model
+     */
+    'canRedo': { get: function() { return this.undoHistory_.canRedo; } }
   });
+  /**
+   * The root of the document graph.
+   *
+   * @type rdm.CollaborativeMap
+   * @private
+   */
   this.root_ = this.createMap();
+  /**
+   * Whether the model is initialized.
+   *
+   * @type boolean
+   * @private
+   */
   this.isInitialized_ = false;
 };
 goog.inherits(rdm.Model, goog.events.EventTarget);
 
-rdm.Model.prototype.initialize_ = function(initializeModel) {
+/**
+ * Initialize the model.
+ *
+ * @private
+ * @param {function(rdm.Model)=} opt_initializerFn An optional initialization
+ *     function that will be called only the first time that the document
+ *     is loaded. The document's model object will be passed to this function.
+ */
+rdm.Model.prototype.initialize_ = function(opt_initializerFn) {
   this.undoHistory_ = new rdm.UndoHistory(this);
-  if(initializeModel != null) {
-    this.undoHistory_.initializeModel(initializeModel);
+  if (initializeModel != null) {
+    this.undoHistory_.initializeModel(opt_initializerFn);
   }
   this.isInitialized_ = true;
 };
 
 /**
- * @expose
+ * Starts a compound operation for the creation of the document's initial state.
+ * @private
  */
-rdm.Model.prototype.beginCreationCompoundOperation = function() {};
+rdm.Model.prototype.beginCreationCompoundOperation_ = function() {};
+
 /**
- * @expose
+ * Ends a compound operation. This method will throw an exception if no compound
+ * operation is in progress.
  */
 rdm.Model.prototype.endCompoundOperation = function() {
   this.undoHistory_.endCompoundOperation();
 };
+
 /**
- * @expose
+ * Returns the root of the object model
+ *
+ * @return {rdm.CollaborativeMap} The root of the object model.
  */
 rdm.Model.prototype.getRoot = function() {
   return this.root_;
 };
 
 /**
- * @expose
+ * Returns whether the model is initialized.
+ *
+ * @return {boolean} Whether the model is initialized.
  */
 rdm.Model.prototype.isInitialized = function() {
   return isInitialized_;
 };
 
 /**
- * @expose
+ * Starts a compound operation. If a name is given, that name will be recorded
+ * for used in revision history, undo menus, etc. When beginCompoundOperation()
+ * is called, all subsequent edits to the data model will be batched together in
+ * the undo stack and revision history until endCompoundOperation() is called.
+ * Compound operations may be nested inside other compound operations. Note that
+ * the compound operation MUST start and end in the same synchronous execution
+ * block. If this invariant is violated, the data model will become invalid and
+ * all future changes will fail.
+ *
+ * @param {string=} opt_name An optional name for this compound operation.
  */
-rdm.Model.prototype.beginCompoundOperation = function(name) {
+rdm.Model.prototype.beginCompoundOperation = function(opt_name) {
   this.undoHistory_.beginCompoundOperation(rdm.UndoHistory.Scope.EXPLICIT_CO);
 };
 
 /**
- * @expose
+ * Creates and returns a new collaborative object. This can be used to create
+ * custom collaborative objects. For built in types, use the specific create*
+ * functions.
+ *
+ * @param {function(*)|string} ref An object constructor or type name.
+ * @param {...*} var_args Arguments to the newly-created object's initialize()
+ *     method.
+ * @return {Object} A new collaborative object.
  */
 rdm.Model.prototype.create = function(ref, var_args) {
   var name = ref;
-  if(goog.isString(ref)) {
+  if (goog.isString(ref)) {
     ref = rdm.CustomObject.customTypes_[ref].type;
   } else {
     name = rdm.CustomObject.customTypeName_(ref);
@@ -96,51 +180,63 @@ rdm.Model.prototype.create = function(ref, var_args) {
   // store id to model in map
   rdm.custom.customObjectModels_['' + rdm.custom.getId(instance)] = this;
   // replace collab fields by defining properties
-  for(var field in rdm.CustomObject.customTypes_[name].fields) {
-    Object.defineProperty(instance, field, rdm.CustomObject.customTypes_[name].fields[field]);
+  for (var field in rdm.CustomObject.customTypes_[name].fields) {
+    Object.defineProperty(instance, field,
+        rdm.CustomObject.customTypes_[name].fields[field]);
   }
   // run initializer function
-  if(rdm.CustomObject.customTypes_[name].initializerFn) {
+  if (rdm.CustomObject.customTypes_[name].initializerFn) {
     rdm.CustomObject.customTypes_[name].initializerFn.apply(instance, var_args);
   }
   return instance;
 };
 
+// TODO why aren't the return values for these typed?
 /**
- * @expose
+ * Creates a collaborative list.
+ *
+ * @param {Array.<*>=} opt_initialValue Initial value for the list.
+ * @return {Object} A collaborative list.
  */
-rdm.Model.prototype.createList = function(initialValue) {
-  return new rdm.CollaborativeList(this, initialValue);
+rdm.Model.prototype.createList = function(opt_initialValue) {
+  return new rdm.CollaborativeList(this, opt_initialValue);
 };
 
 /**
- * @expose
+ * Creates a collaborative map.
+ *
+ * @param {Object.<*>=} opt_initialValue Initial value for the map.
+ * @return {Object} A collaborative map.
  */
-rdm.Model.prototype.createMap = function(initialValue) {
-  return new rdm.CollaborativeMap(this, initialValue);
+rdm.Model.prototype.createMap = function(opt_initialValue) {
+  return new rdm.CollaborativeMap(this, opt_initialValue);
+};
+
+// TODO init value description inconsistent with list and map
+/**
+ * Creates a collaborative string.
+ *
+ * @param {string=} opt_initialValue Sets the initial value for this string.
+ * @return {Object} A collaborative string.
+ */
+rdm.Model.prototype.createString = function(opt_initialValue) {
+  return new rdm.CollaborativeString(this, opt_initialValue);
 };
 
 /**
- * @expose
- */
-rdm.Model.prototype.createString = function(initialValue) {
-  return new rdm.CollaborativeString(this, initialValue);
-}
-
-/**
- * @expose
+ * Undo the last thing the active colllaborator did.
  */
 rdm.Model.prototype.undo = function() {
-  if(!this.canUndo) return;
+  if (!this.canUndo) return;
   // undo events
   this.undoHistory_.undo();
-}
+};
 
 /**
- * @expose
+ * Redo the last thing the active collaborator undid.
  */
 rdm.Model.prototype.redo = function() {
-  if(!this.canRedo) return;
+  if (!this.canRedo) return;
   // redo events
   this.undoHistory_.redo();
-}
+};

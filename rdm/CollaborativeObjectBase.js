@@ -13,25 +13,57 @@
 // limitations under the License.
 
 goog.provide('rdm.CollaborativeObjectBase');
-goog.require('rdm.ObjectChangedEvent');
 goog.require('rdm.EventTarget');
+goog.require('rdm.ObjectChangedEvent');
 
+// TODO(cjb) it would be better if this class didn't exist.
+//     we would have to move both id_ and model_ into
+//     EventTarget to get rid of it though
+/**
+ * A base class for collaborative objects and custom objects.
+ *
+ * @constructor
+ * @extends {rdm.EventTarget}
+ * @param {rdm.Model} model The document model
+ */
 rdm.CollaborativeObjectBase = function(model) {
   rdm.EventTarget.call(this);
+  /**
+   * The id of the collaborative object.
+   *
+   * @private
+   */
   this.id_ = rdm.CollaborativeObjectBase.idNum_.toString();
+  /**
+   * The model that created the collaborative object.
+   *
+   * @private
+   */
   this.model_ = model;
   rdm.CollaborativeObjectBase.idNum_++;
 };
 goog.inherits(rdm.CollaborativeObjectBase, rdm.EventTarget);
+
+/**
+ * Source of new id values for collaborative objects.
+ *
+ * @type {number}
+ */
 rdm.CollaborativeObjectBase.idNum_ = 0;
 
+/**
+ * Execute and fire the events given as well as an rdm.ObjectChangedEvent containing the events.
+ *
+ * @private
+ * @param {Array.<rdm.BaseModelEvent>} events The events to fire.
+ */
 rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
   this.model_.beginCompoundOperation();
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_(events);
   // construct change event
   var event = new rdm.ObjectChangedEvent(this, events);
-  for(var i = 0; i < events.length; i++) {
+  for (var i = 0; i < events.length; i++) {
     // execute events
     this.executeEvent_(events[i]);
     // fire actual events
@@ -43,6 +75,12 @@ rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
 };
 
 
+/**
+ * Execute and fire the event given.
+ *
+ * @private
+ * @param {rdm.BaseModelEvent} event The event to execute and fire.
+ */
 rdm.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(event) {
   this.model_.beginCompoundOperation();
 
@@ -58,4 +96,10 @@ rdm.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(event) {
 };
 
 
+/**
+ * Make the modifications to the list described by the given event.
+ *
+ * @param {rdm.BaseModelEvent} event The event whose modifications should be
+ *     applied to the object
+ */
 rdm.CollaborativeObjectBase.prototype.executeEvent_ = function(event) {};

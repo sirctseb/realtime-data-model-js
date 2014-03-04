@@ -13,18 +13,40 @@
 // limitations under the License.
 
 goog.provide('rdm.TextDeletedEvent');
-goog.require('rdm.UndoableEvent');
-// goog.require('rdm.TextInsertedEvent');
 goog.require('rdm.EventType');
+goog.require('rdm.BaseModelEvent');
 
-rdm.TextDeletedEvent = function(target_, index, text) {
-  rdm.UndoableEvent.call(this, rdm.EventType.TEXT_DELETED, target_);
+/**
+ * Event fired when text is removed from a string.
+ *
+ * @constructor
+ * @extends rdm.BaseModelEvent
+ * @param {rdm.CollaborativeString} target The target object that generated the
+ *     event.
+ * @param {number} index The index of the change.
+ * @param {string} text The deleted text.
+ */
+rdm.TextDeletedEvent = function(target, index, text) {
+  rdm.BaseModelEvent.call(this, rdm.EventType.TEXT_DELETED, target);
+  /**
+   * The index of the first character that was deleted.
+   *
+   * @type number
+   */
   this.index = index;
+  /**
+   * The deleted text.
+   *
+   * @type string
+   */
   this.text = text;
   this.bubbles = null;
 };
-goog.inherits(rdm.TextDeletedEvent, rdm.UndoableEvent);
+goog.inherits(rdm.TextDeletedEvent, rdm.BaseModelEvent);
 
+/**
+ * @inheritDoc
+ */
 rdm.TextDeletedEvent.prototype.getInverse = function() {
-  return new rdm.TextInsertedEvent(this.target_, this.index, this.text);
+  return new rdm.TextInsertedEvent(this.target, this.index, this.text);
 };
