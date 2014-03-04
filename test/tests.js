@@ -212,11 +212,6 @@ onFileLoaded = function(doc) {
   });
   test('undo in compound map set operation from empty', function() {
     map.clear();
-    var mapVC = function(e) {
-      console.log(e.oldValue + ' -> ' + e.newValue);
-    };
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    map.set('key2', 'val2');
     doc.getModel().beginCompoundOperation();
     map.set('key1', 'val1');
     equal(map.get('key1'), 'val1');
@@ -226,7 +221,6 @@ onFileLoaded = function(doc) {
     doc.getModel().endCompoundOperation();
     equal(map.get('key1'), 'val1');
     equal(doc.getModel().canRedo, false);
-    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
   });
   test('undo in compound map set operation from value', function() {
     map.clear();
@@ -664,7 +658,7 @@ onFileLoaded = function(doc) {
   test('propagation', function() {
     expect(1);
     var ss = function(event) {
-      equal(event.events[0].type == rdm.EventType.VALUES_ADDED, true);
+      equal(event.events[0].type, rdm.EventType.VALUES_ADDED);
     };
     doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, ss);
 
@@ -804,17 +798,15 @@ onFileLoaded = function(doc) {
     equal(oldVal, 'val');
   });
   test('same value', function() {
-    expect(3);
+    expect(1);
     map.clear();
     map.set('key1', 'val1');
-    map.set('key1', 'val2');
     var mapVC = function(e) {
       equal(e.newValue, 'val3');
       equal(e.oldValue, 'val2');
     };
     map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    var val = map.set('key1', 'val3');
-    equal(val, 'val2');
+    equal(map.set('key1', 'val1'), 'val1');
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
   });
   test('undo to absent', function() {
@@ -911,9 +903,7 @@ onFileLoaded = function(doc) {
     equal(ref.index, 4);
   });
   test('canBeDeleted', function() {
-    var bool = true;
-    var refTrue = string.registerReference(3, bool);
-    bool = false;
+    var refTrue = string.registerReference(3, true);
     equal(refTrue.canBeDeleted, true);
     var refFalse = string.registerReference(3, false);
     equal(refFalse.canBeDeleted, false);
@@ -921,6 +911,22 @@ onFileLoaded = function(doc) {
   test('referencedObject', function() {
     var ref = string.registerReference(2, false);
     strictEqual(ref.referencedObject, string);
+  });
+
+  module('Initial Values');
+  test('map', function() {
+    doc.getModel().getRoot().set('filled-map', doc.getModel().createMap({'key1': doc.getModel().createString(), 'key2': 4}));
+    equal(doc.getModel().getRoot().get('filled-map').get('key1').getText(), '');
+    equal(doc.getModel().getRoot().get('filled-map').get('key2'), 4);
+  });
+  test('list', function() {
+    doc.getModel().getRoot().set('filled-list', doc.getModel().createList([doc.getModel().createString(), 4]));
+    equal(doc.getModel().getRoot().get('filled-list').get(0).text, '');
+    equal(doc.getModel().getRoot().get('filled-list').get(1), 4);
+  });
+  test('string', function() {
+    doc.getModel().getRoot().set('filled-string', doc.getModel().createString('content'));
+    equal(doc.getModel().getRoot().get('filled-string').text, 'content');
   });
 
   module('Events');
