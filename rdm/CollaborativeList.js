@@ -177,7 +177,7 @@ rdm.CollaborativeList.prototype.indexOf = function(value, opt_comparatorFn) {
  * @param {*} value The value to set.
  */
 rdm.CollaborativeList.prototype.set = function(index, value) {
-  if (index < 0 || index >= length) {
+  if (index < 0 || index >= this.length) {
     // TODO rt throws an object with a string of this form in property 'n'
     throw 'Index: ' + index + ', Size: ' + this.length;
   }
