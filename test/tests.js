@@ -1135,4 +1135,12 @@ onFileLoaded = function(doc) {
     equal(collaborators[0].isMe, true);
     equal(collaborators[0].isAnonymous, false);
   });
+
+  module('Constants');
+  test('EventType', function() {
+    deepEqual(rdm.EventType, gapi.drive.realtime.EventType);
+  });
+  test('ErrorType', function() {
+    deepEqual(rdm.ErrorType, gapi.drive.realtime.ErrorType);
+  });
 };
