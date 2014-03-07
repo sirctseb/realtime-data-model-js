@@ -39,8 +39,34 @@ rdm.Document = function(model) {
    * @private
    */
   this.model_ = model;
+
+  // record that the document is open
+  rdm.Document.openRootIDs_[model.getRoot().getId()] = true;
 };
 goog.inherits(rdm.Document, goog.events.EventTarget);
+
+// TODO check type specification
+// TODO storing by ID of root because that's the only unique element that has an ID
+/**
+ * The set of IDs of root model elements whose documents are open.
+ * @type Object.<boolean>
+ * @private
+ */
+rdm.Document.openRootIDs_ = {};
+
+/**
+ * Verify that the given object is a collaborative object in an open document.
+ * If the associated document is not open, TODO
+ * @param {Object} object The object to verify.
+ */
+rdm.Document.verifyDocument_ = function(object) {
+  // check that object is a collaborative object
+  if(!object instanceof rdm.CollaborativeObjectBase) {
+    // TODO what error?
+  }
+  // check that associated document is open
+  if(object.model_.root_)
+};
 
 /**
  * Gets the collaborative model associated with this document.
@@ -59,7 +85,10 @@ rdm.Document.prototype.getModel = function() {
  * {gapi.drive.realtime.DocumentClosedError}. Calling this function after the
  * document has been closed will have no effect.
  */
-rdm.Document.prototype.close = function() {};
+rdm.Document.prototype.close = function() {
+  // remove document from set of open documents
+  rdm.Document.openRootIDs_[this.getModel().getRoot().getId()] = null;
+};
 
 /**
  * Gets an array of collaborators active in this session. Each collaborator is
