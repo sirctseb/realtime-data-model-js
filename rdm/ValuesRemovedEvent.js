@@ -44,6 +44,6 @@ goog.inherits(rdm.ValuesRemovedEvent, rdm.BaseModelEvent);
 /**
  * @inheritDoc
  */
-rdm.ValuesRemovedEvent.prototype.getInverse = function() {
+rdm.ValuesRemovedEvent.prototype.getInverse_ = function() {
   return new rdm.ValuesAddedEvent(this.target_, this.index, this.values);
 };

@@ -50,7 +50,7 @@ goog.inherits(rdm.ValuesSetEvent, rdm.BaseModelEvent);
 /**
  * @inheritDoc
  */
-rdm.ValuesSetEvent.prototype.getInverse = function() {
+rdm.ValuesSetEvent.prototype.getInverse_ = function() {
   return new rdm.ValuesSetEvent(this.target_, this.index, this.newValues,
       this.oldValues);
 };

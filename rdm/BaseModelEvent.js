@@ -77,4 +77,4 @@ rdm.BaseModelEvent.prototype.updateState_ = function() {};
  * Create an event that is the inverse of this event.
  * @private
  */
-rdm.BaseModelEvent.prototype.getInverse = function() {};
+rdm.BaseModelEvent.prototype.getInverse_ = function() {};

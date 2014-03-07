@@ -68,7 +68,7 @@ rdm.UndoHistory.prototype.endCompoundOperation = function() {
   if(this.COScopes_.length == 0) {
     // invert the operations and reverse the order
     var inverseCO = this.currentCO_.map(function(op) {
-      return op.getInverse();
+      return op.getInverse_();
     }).reverse();
     // clear current CO
     this.currentCO_ = null;

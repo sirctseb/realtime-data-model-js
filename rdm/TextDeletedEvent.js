@@ -47,6 +47,6 @@ goog.inherits(rdm.TextDeletedEvent, rdm.BaseModelEvent);
 /**
  * @inheritDoc
  */
-rdm.TextDeletedEvent.prototype.getInverse = function() {
+rdm.TextDeletedEvent.prototype.getInverse_ = function() {
   return new rdm.TextInsertedEvent(this.target, this.index, this.text);
 };
