@@ -1138,9 +1138,37 @@ onFileLoaded = function(doc) {
 
   module('Constants');
   test('EventType', function() {
-    deepEqual(rdm.EventType, gapi.drive.realtime.EventType);
+    // TODO this doesn't check for values on gapi side that are missing on our side
+    // TODO if we assume they are duplicated on the gapi side, we could go by the counts
+    for(var type in rdm.EventType) {
+      equal(rdm.EventType[type], gapi.drive.realtime.EventType[type]);
+    }
   });
   test('ErrorType', function() {
-    deepEqual(rdm.ErrorType, gapi.drive.realtime.ErrorType);
+    for(var type in rdm.ErrorType) {
+      equal(rdm.ErrorType[type], gapi.drive.realtime.ErrorType[type]);
+    }
+  });
+
+  module('Close');
+  test('Access existing list length', function() {
+    doc.close();
+    throws(function() {
+      list.length;
+    }, 'Document is closed.');
+  });
+  test('Access existing string', function() {
+    throws(function() {
+      string.getText();
+    }, 'Document is closed.');
+  });
+  test('Access model', function() {
+    throws(function() {
+      doc.getModel();
+    }, 'Document is closed.');
+  });
+  test('Close again', function() {
+    expect(0);
+    doc.close();
   });
 };
