@@ -921,12 +921,12 @@ onFileLoaded = function(doc) {
   });
   test('list', function() {
     doc.getModel().getRoot().set('filled-list', doc.getModel().createList([doc.getModel().createString(), 4]));
-    equal(doc.getModel().getRoot().get('filled-list').get(0).text, '');
+    equal(doc.getModel().getRoot().get('filled-list').get(0).getText(), '');
     equal(doc.getModel().getRoot().get('filled-list').get(1), 4);
   });
   test('string', function() {
     doc.getModel().getRoot().set('filled-string', doc.getModel().createString('content'));
-    equal(doc.getModel().getRoot().get('filled-string').text, 'content');
+    equal(doc.getModel().getRoot().get('filled-string').getText(), 'content');
   });
 
   module('Events');
