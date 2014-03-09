@@ -54,7 +54,10 @@ rdm.IndexReference = function(model, index, canBeDeleted, referencedObject) {
      * @instance
      * @memberOf rdm.IndexReference
      */
-    'canBeDeleted': {get: function() {return canBeDeleted;}},
+    'canBeDeleted': {get: function() {
+      rdm.Document.verifyDocument_(this);
+      return canBeDeleted;
+    }},
     /**
      * The object this reference points to. Read-only.
      *
@@ -62,7 +65,10 @@ rdm.IndexReference = function(model, index, canBeDeleted, referencedObject) {
      * @instance
      * @memberOf rdm.IndexReference
      */
-    'referencedObject': {get: function() {return referencedObject;}}
+    'referencedObject': {get: function() {
+      rdm.Document.verifyDocument_(this);
+      return referencedObject;
+    }}
   });
 };
 goog.inherits(rdm.IndexReference, rdm.CollaborativeObject);

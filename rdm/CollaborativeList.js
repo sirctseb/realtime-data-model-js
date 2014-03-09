@@ -62,8 +62,12 @@ rdm.CollaborativeList = function(model, initialValue) {
      * @memberOf rdm.CollaborativeList
      */
    'length': {
-      get: function() { return this.list_.length; },
+      get: function() {
+        rdm.Document.verifyDocument_(this);
+        return this.list_.length;
+      },
       set: function(l) {
+        rdm.Document.verifyDocument_(this);
         if (l < this.list_.length) {
           this.removeRange(l, this.list_.length);
         } else {
@@ -84,6 +88,7 @@ goog.inherits(rdm.CollaborativeList, rdm.IndexReferenceContainer);
  * @return {Array.<*>} A copy of the contents of this collaborative list.
  */
 rdm.CollaborativeList.prototype.asArray = function() {
+  rdm.Document.verifyDocument_(this);
   return goog.array.clone(this.list_);
 };
 
@@ -91,6 +96,7 @@ rdm.CollaborativeList.prototype.asArray = function() {
  * Removes all the values the list.
  */
 rdm.CollaborativeList.prototype.clear = function() {
+  rdm.Document.verifyDocument_(this);
   if (this.list_.length == 0) return;
   // add event to stream
   var event = new rdm.ValuesRemovedEvent(this, 0, goog.array.clone(this.list_));
@@ -103,6 +109,7 @@ rdm.CollaborativeList.prototype.clear = function() {
  * @param {*} value The value to insert.
  */
 rdm.CollaborativeList.prototype.insert = function(index, value) {
+  rdm.Document.verifyDocument_(this);
   // add event to stream
   var event = new rdm.ValuesAddedEvent(this, index, [value]);
   this.emitEventsAndChanged_([event]);
@@ -114,6 +121,7 @@ rdm.CollaborativeList.prototype.insert = function(index, value) {
  * @param {Array.<*>} values The values to insert.
  */
 rdm.CollaborativeList.prototype.insertAll = function(index, values) {
+  rdm.Document.verifyDocument_(this);
   // add event to stream
   var event = new rdm.ValuesAddedEvent(this, index, values);
   this.emitEventsAndChanged_([event]);
@@ -128,6 +136,7 @@ rdm.CollaborativeList.prototype.insertAll = function(index, values) {
  */
 rdm.CollaborativeList.prototype.lastIndexOf = function(
     value, opt_comparatorFn) {
+  rdm.Document.verifyDocument_(this);
   if (opt_comparatorFn) {
     for (var i = this.list_.length - 1; i >= 0; i--) {
       if (opt_comparatorFn(this.list_[i], value)) {
@@ -146,6 +155,7 @@ rdm.CollaborativeList.prototype.lastIndexOf = function(
  * @return {*} The value at the given index.
  */
 rdm.CollaborativeList.prototype.get = function(index) {
+  rdm.Document.verifyDocument_(this);
   return this.list_[index];
 };
 
@@ -157,6 +167,7 @@ rdm.CollaborativeList.prototype.get = function(index) {
  * @return {number} The index of the given value, or -1 if it cannot be found.
  */
 rdm.CollaborativeList.prototype.indexOf = function(value, opt_comparatorFn) {
+  rdm.Document.verifyDocument_(this);
   if (opt_comparatorFn) {
     for (var i = 0; i < this.list_.length; i++) {
       if (opt_comparatorFn(this.list_[i], value)) {
@@ -177,6 +188,7 @@ rdm.CollaborativeList.prototype.indexOf = function(value, opt_comparatorFn) {
  * @param {*} value The value to set.
  */
 rdm.CollaborativeList.prototype.set = function(index, value) {
+  rdm.Document.verifyDocument_(this);
   if (index < 0 || index >= this.length) {
     // TODO rt throws an object with a string of this form in property 'n'
     throw 'Index: ' + index + ', Size: ' + this.length;
@@ -191,6 +203,7 @@ rdm.CollaborativeList.prototype.set = function(index, value) {
  * @return {number} The new array length.
  */
 rdm.CollaborativeList.prototype.push = function(value) {
+  rdm.Document.verifyDocument_(this);
   var event = new rdm.ValuesAddedEvent(this, this.list_.length, [value]);
   this.emitEventsAndChanged_([event]);
   return this.list_.length;
@@ -201,6 +214,7 @@ rdm.CollaborativeList.prototype.push = function(value) {
  * @param {Array.<*>} values The values to add.
  */
 rdm.CollaborativeList.prototype.pushAll = function(values) {
+  rdm.Document.verifyDocument_(this);
   var event =
     new rdm.ValuesAddedEvent(this, this.list_.length, goog.array.clone(values));
   this.emitEventsAndChanged_([event]);
@@ -211,6 +225,7 @@ rdm.CollaborativeList.prototype.pushAll = function(values) {
  * @param {number} index The index of the item to remove.
  */
 rdm.CollaborativeList.prototype.remove = function(index) {
+  rdm.Document.verifyDocument_(this);
   var event = new rdm.ValuesRemovedEvent(this, index, [this.list_[index]]);
   this.emitEventsAndChanged_([event]);
 };
@@ -222,6 +237,7 @@ rdm.CollaborativeList.prototype.remove = function(index) {
  * @param {number} endIndex The end index of the range to remove (exclusive).
  */
 rdm.CollaborativeList.prototype.removeRange = function(startIndex, endIndex) {
+  rdm.Document.verifyDocument_(this);
   var event = new rdm.ValuesRemovedEvent(
     this, startIndex, this.list_.slice(startIndex, endIndex));
   this.emitEventsAndChanged_([event]);
@@ -233,6 +249,7 @@ rdm.CollaborativeList.prototype.removeRange = function(startIndex, endIndex) {
  * @return {boolean} Whether the item was removed.
  */
 rdm.CollaborativeList.prototype.removeValue = function(value) {
+  rdm.Document.verifyDocument_(this);
   // get index of value for event
   var index = this.list_.indexOf(value);
   if (index != -1) {
@@ -251,6 +268,7 @@ rdm.CollaborativeList.prototype.removeValue = function(value) {
  * @param {Array.<*>} values The values to insert.
  */
 rdm.CollaborativeList.prototype.replaceRange = function(index, values) {
+  rdm.Document.verifyDocument_(this);
   // add event to stream
   var event = new rdm.ValuesSetEvent(
     this, index, this.list_.slice(index, index + values.length), values);
@@ -264,6 +282,7 @@ rdm.CollaborativeList.prototype.replaceRange = function(index, values) {
  * @private
  */
 rdm.CollaborativeList.prototype.propagateChanges_ = function(element) {
+  rdm.Document.verifyDocument_(this);
   if (element instanceof rdm.CollaborativeObject) {
     element.addParentEventTarget(this);
   }
@@ -277,6 +296,7 @@ rdm.CollaborativeList.prototype.propagateChanges_ = function(element) {
  * @private
  */
 rdm.CollaborativeList.prototype.stopPropagatingChanges_ = function(element) {
+  rdm.Document.verifyDocument_(this);
   if (element instanceof rdm.CollaborativeObject &&
         this.list_.indexOf(element) == -1) {
     element.removeParentEventTarget(this);
@@ -290,6 +310,7 @@ rdm.CollaborativeList.prototype.stopPropagatingChanges_ = function(element) {
  * @private
  */
 rdm.CollaborativeList.prototype.executeEvent_ = function(event) {
+  rdm.Document.verifyDocument_(this);
   if (event.type == rdm.EventType.VALUES_SET) {
       Array.prototype.splice.apply(this.list_,
           [event.index, event.newValues.length].concat(event.newValues));
@@ -327,6 +348,7 @@ rdm.CollaborativeList.prototype.executeEvent_ = function(event) {
  * @return {string} A string representation.
  */
 rdm.CollaborativeList.prototype.toString = function() {
+  rdm.Document.verifyDocument_(this);
   var renderedList = this.list_.map(function(element) {
     if (element instanceof rdm.CollaborativeObject) {
       return element.toString();

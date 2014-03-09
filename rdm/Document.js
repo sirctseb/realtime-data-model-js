@@ -15,6 +15,7 @@
 goog.provide('rdm.Document');
 goog.require('goog.events.EventTarget');
 goog.require('rdm.Collaborator');
+goog.require('rdm.DocumentClosedError');
 
 /**
  * A Realtime document. A document consists of a Realtime model and a set of
@@ -39,19 +40,44 @@ rdm.Document = function(model) {
    * @private
    */
   this.model_ = model;
+
+  // record that the document is open
+  rdm.Document.openRootIDs_[model.root_.id_] = true;
 };
 goog.inherits(rdm.Document, goog.events.EventTarget);
+
+// TODO check type specification
+// TODO storing by ID of root because that's the only unique element that has an ID
+/**
+ * The set of IDs of root model elements whose documents are open.
+ * @type Object.<boolean>
+ * @private
+ */
+rdm.Document.openRootIDs_ = {};
+
+/**
+ * Verify that the given object is a collaborative object in an open document.
+ * If the associated document is not open, TODO
+ * @param {Object} object The object to verify.
+ */
+rdm.Document.verifyDocument_ = function(object) {
+  // check that associated document is open
+  var model = object instanceof rdm.CollaborativeObjectBase ? object.model_ : object;
+  if(!rdm.Document.openRootIDs_[model.root_.id_]) {
+    throw new rdm.DocumentClosedError();
+  }
+};
 
 /**
  * Gets the collaborative model associated with this document.
  * @return {rdm.Model} The collaborative model for this document.
  */
 rdm.Document.prototype.getModel = function() {
+  rdm.Document.verifyDocument_(this.model_);
   return this.model_;
 };
 
 // TODO update documentation
-// TODO implement
 /**
  * Closes the document and disconnects from the server. After this function is
  * called, event listeners will no longer fire and attempts to access the
@@ -59,7 +85,10 @@ rdm.Document.prototype.getModel = function() {
  * {gapi.drive.realtime.DocumentClosedError}. Calling this function after the
  * document has been closed will have no effect.
  */
-rdm.Document.prototype.close = function() {};
+rdm.Document.prototype.close = function() {
+  // remove document from set of open documents
+  rdm.Document.openRootIDs_[this.model_.root_.id_] = null;
+};
 
 /**
  * Gets an array of collaborators active in this session. Each collaborator is
@@ -68,6 +97,7 @@ rdm.Document.prototype.close = function() {};
  * @return {Array.<rdm.Collaborator>} A jsArray of collaborators.
  */
 rdm.Document.prototype.getCollaborators = function() {
+  rdm.Document.verifyDocument_(this.model_);
   return [new rdm.Collaborator()];
 };
 
