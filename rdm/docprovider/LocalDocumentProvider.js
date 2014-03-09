@@ -30,10 +30,10 @@ goog.inherits(rdm.LocalDocumentProvider, rdm.DocumentProvider);
 rdm.LocalDocumentProvider.prototype.loadDocument = function(onLoaded, opt_initializerFn, opt_errorFn) {
   // create the model object
   var model = new rdm.Model();
-  // initialize the model with callback
-  model.initialize_(opt_initializerFn);
   // create the document
   this.document = new rdm.Document(model);
+  // initialize the model with callback
+  model.initialize_(opt_initializerFn);
   // call the loaded callback
   onLoaded(this.document);
 };

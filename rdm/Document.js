@@ -15,6 +15,7 @@
 goog.provide('rdm.Document');
 goog.require('goog.events.EventTarget');
 goog.require('rdm.Collaborator');
+goog.require('rdm.DocumentClosedError');
 
 /**
  * A Realtime document. A document consists of a Realtime model and a set of
@@ -41,7 +42,7 @@ rdm.Document = function(model) {
   this.model_ = model;
 
   // record that the document is open
-  rdm.Document.openRootIDs_[model.getRoot().getId()] = true;
+  rdm.Document.openRootIDs_[model.root_.id_] = true;
 };
 goog.inherits(rdm.Document, goog.events.EventTarget);
 
@@ -60,12 +61,11 @@ rdm.Document.openRootIDs_ = {};
  * @param {Object} object The object to verify.
  */
 rdm.Document.verifyDocument_ = function(object) {
-  // check that object is a collaborative object
-  if(!object instanceof rdm.CollaborativeObjectBase) {
-    // TODO what error?
-  }
   // check that associated document is open
-  if(object.model_.root_)
+  var model = object instanceof rdm.CollaborativeObjectBase ? object.model_ : object;
+  if(!rdm.Document.openRootIDs_[model.root_.id_]) {
+    throw new rdm.DocumentClosedError();
+  }
 };
 
 /**
@@ -78,7 +78,6 @@ rdm.Document.prototype.getModel = function() {
 };
 
 // TODO update documentation
-// TODO implement
 /**
  * Closes the document and disconnects from the server. After this function is
  * called, event listeners will no longer fire and attempts to access the
@@ -88,7 +87,7 @@ rdm.Document.prototype.getModel = function() {
  */
 rdm.Document.prototype.close = function() {
   // remove document from set of open documents
-  rdm.Document.openRootIDs_[this.getModel().getRoot().getId()] = null;
+  rdm.Document.openRootIDs_[this.model_.root_.id_] = null;
 };
 
 /**

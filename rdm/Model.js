@@ -83,7 +83,7 @@ rdm.Model = function() {
    * @type rdm.CollaborativeMap
    * @private
    */
-  this.root_ = this.createMap();
+  this.root_ = new rdm.CollaborativeMap(this);
   /**
    * Whether the model is initialized.
    *
