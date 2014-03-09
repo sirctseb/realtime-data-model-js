@@ -56,7 +56,10 @@ rdm.CollaborativeString = function(model, initialValue) {
      * @memberOf rdm.CollaborativeString
      */
     'length' : {
-      get: function() { return this.string_.length; }
+      get: function() {
+        rdm.Document.verifyDocument_(this);
+        return this.string_.length;
+      }
     }
   });
 };
@@ -69,6 +72,7 @@ goog.inherits(rdm.CollaborativeString, rdm.IndexReferenceContainer);
  * @param {string} text The new text to append.
  */
 rdm.CollaborativeString.prototype.append = function(text) {
+  rdm.Document.verifyDocument_(this);
   var insertEvent = new rdm.TextInsertedEvent(this, this.string_.length, text);
   this.emitEventsAndChanged_([insertEvent]);
 };
@@ -80,6 +84,7 @@ rdm.CollaborativeString.prototype.append = function(text) {
  * @return {string} A string representation of the collaborative string.
  */
 rdm.CollaborativeString.prototype.getText = function() {
+  rdm.Document.verifyDocument_(this);
   return this.string_;
 };
 
@@ -91,6 +96,7 @@ rdm.CollaborativeString.prototype.getText = function() {
  * @param {string} text The new text to insert.
  */
 rdm.CollaborativeString.prototype.insertString = function(index, text) {
+  rdm.Document.verifyDocument_(this);
   var insertEvent = new rdm.TextInsertedEvent(this, index, text);
   this.emitEventsAndChanged_([insertEvent]);
 };
@@ -104,6 +110,7 @@ rdm.CollaborativeString.prototype.insertString = function(index, text) {
  * @param {number} endIndex The end index of the range to delete (exclusive).
  */
 rdm.CollaborativeString.prototype.removeRange = function(startIndex, endIndex) {
+  rdm.Document.verifyDocument_(this);
   // get removed text for event
   var removed = this.string_.slice(startIndex, endIndex);
   // add event to stream
@@ -122,6 +129,7 @@ rdm.CollaborativeString.prototype.removeRange = function(startIndex, endIndex) {
  * @param {string} text The new value of the string.
  */
 rdm.CollaborativeString.prototype.setText = function(text) {
+  rdm.Document.verifyDocument_(this);
   // calculate diffs
   var diffs = rdm.CollaborativeString.stringDiff_(this.string_, text);
   var this_ = this;
@@ -228,5 +236,6 @@ rdm.CollaborativeString.prototype.executeEvent_ = function(event) {
  * @inheritDoc
  */
 rdm.CollaborativeString.prototype.toString = function() {
+  rdm.Document.verifyDocument_(this);
   return this.string_;
 };

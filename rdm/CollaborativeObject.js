@@ -36,7 +36,10 @@ rdm.CollaborativeObject = function(model) {
      * @instance
      * @memberOf rdm.CollaborativeObject
      */
-    'id': { get: function() { return this.id_; }}
+    'id': { get: function() {
+      rdm.Document.verifyDocument_(this);
+      return this.id_;
+    }}
   });
 };
 goog.inherits(rdm.CollaborativeObject, rdm.CollaborativeObjectBase);
@@ -47,5 +50,6 @@ goog.inherits(rdm.CollaborativeObject, rdm.CollaborativeObjectBase);
  * @return {string} The id.
  */
 rdm.CollaborativeObject.prototype.getId = function() {
+  rdm.Document.verifyDocument_(this);
   return this.id_;
 };

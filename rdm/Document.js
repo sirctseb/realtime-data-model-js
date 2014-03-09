@@ -73,6 +73,7 @@ rdm.Document.verifyDocument_ = function(object) {
  * @return {rdm.Model} The collaborative model for this document.
  */
 rdm.Document.prototype.getModel = function() {
+  rdm.Document.verifyDocument_(this.model_);
   return this.model_;
 };
 
@@ -97,6 +98,7 @@ rdm.Document.prototype.close = function() {
  * @return {Array.<rdm.Collaborator>} A jsArray of collaborators.
  */
 rdm.Document.prototype.getCollaborators = function() {
+  rdm.Document.verifyDocument_(this.model_);
   return [new rdm.Collaborator()];
 };
 

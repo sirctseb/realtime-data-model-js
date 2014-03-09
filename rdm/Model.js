@@ -61,7 +61,10 @@ rdm.Model = function() {
      * @instance
      * @memberOf rdm.Model
      */
-    'canUndo': { get: function() { return this.undoHistory_.canUndo; } },
+    'canUndo': { get: function() {
+      rdm.Document.verifyDocument_(this);
+      return this.undoHistory_.canUndo;
+    }},
     /**
      * True if the model can currently redo.
      *
@@ -69,7 +72,10 @@ rdm.Model = function() {
      * @instance
      * @memberOf rdm.Model
      */
-    'canRedo': { get: function() { return this.undoHistory_.canRedo; } }
+    'canRedo': { get: function() {
+      rdm.Document.verifyDocument_(this);
+      return this.undoHistory_.canRedo;
+    }}
   });
   /**
    * The root of the document graph.
@@ -115,6 +121,7 @@ rdm.Model.prototype.beginCreationCompoundOperation_ = function() {};
  * operation is in progress.
  */
 rdm.Model.prototype.endCompoundOperation = function() {
+  rdm.Document.verifyDocument_(this);
   this.undoHistory_.endCompoundOperation();
 };
 
@@ -124,6 +131,7 @@ rdm.Model.prototype.endCompoundOperation = function() {
  * @return {rdm.CollaborativeMap} The root of the object model.
  */
 rdm.Model.prototype.getRoot = function() {
+  rdm.Document.verifyDocument_(this);
   return this.root_;
 };
 
@@ -133,6 +141,7 @@ rdm.Model.prototype.getRoot = function() {
  * @return {boolean} Whether the model is initialized.
  */
 rdm.Model.prototype.isInitialized = function() {
+  rdm.Document.verifyDocument_(this);
   return isInitialized_;
 };
 
@@ -149,6 +158,7 @@ rdm.Model.prototype.isInitialized = function() {
  * @param {string=} opt_name An optional name for this compound operation.
  */
 rdm.Model.prototype.beginCompoundOperation = function(opt_name) {
+  rdm.Document.verifyDocument_(this);
   this.undoHistory_.beginCompoundOperation(rdm.UndoHistory.Scope.EXPLICIT_CO);
 };
 
@@ -163,6 +173,7 @@ rdm.Model.prototype.beginCompoundOperation = function(opt_name) {
  * @return {Object} A new collaborative object.
  */
 rdm.Model.prototype.create = function(ref, var_args) {
+  rdm.Document.verifyDocument_(this);
   var name = ref;
   if (goog.isString(ref)) {
     ref = rdm.CustomObject.customTypes_[ref].type;
@@ -199,6 +210,7 @@ rdm.Model.prototype.create = function(ref, var_args) {
  * @return {Object} A collaborative list.
  */
 rdm.Model.prototype.createList = function(opt_initialValue) {
+  rdm.Document.verifyDocument_(this);
   return new rdm.CollaborativeList(this, opt_initialValue);
 };
 
@@ -209,6 +221,7 @@ rdm.Model.prototype.createList = function(opt_initialValue) {
  * @return {Object} A collaborative map.
  */
 rdm.Model.prototype.createMap = function(opt_initialValue) {
+  rdm.Document.verifyDocument_(this);
   return new rdm.CollaborativeMap(this, opt_initialValue);
 };
 
@@ -220,6 +233,7 @@ rdm.Model.prototype.createMap = function(opt_initialValue) {
  * @return {Object} A collaborative string.
  */
 rdm.Model.prototype.createString = function(opt_initialValue) {
+  rdm.Document.verifyDocument_(this);
   return new rdm.CollaborativeString(this, opt_initialValue);
 };
 
@@ -227,6 +241,7 @@ rdm.Model.prototype.createString = function(opt_initialValue) {
  * Undo the last thing the active colllaborator did.
  */
 rdm.Model.prototype.undo = function() {
+  rdm.Document.verifyDocument_(this);
   if (!this.canUndo) return;
   // undo events
   this.undoHistory_.undo();
@@ -236,6 +251,7 @@ rdm.Model.prototype.undo = function() {
  * Redo the last thing the active collaborator undid.
  */
 rdm.Model.prototype.redo = function() {
+  rdm.Document.verifyDocument_(this);
   if (!this.canRedo) return;
   // redo events
   this.undoHistory_.redo();

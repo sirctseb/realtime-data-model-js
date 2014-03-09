@@ -27,6 +27,7 @@ goog.inherits(rdm.IndexReferenceContainer, rdm.CollaborativeObject);
  * @expose
  */
 rdm.IndexReferenceContainer.prototype.registerReference = function(index, canBeDeleted) {
+  rdm.Document.verifyDocument_(this);
   // create the reference
   var ref = new rdm.IndexReference(this.model_, index, canBeDeleted, this);
   // add to list of references

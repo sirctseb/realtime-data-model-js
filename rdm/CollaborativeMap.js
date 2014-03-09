@@ -52,7 +52,10 @@ rdm.CollaborativeMap = function(model, initialValue) {
      * @instance
      * @memberOf rdm.CollaborativeMap
      */
-    'size': { get: function() { return Object.keys(this_.map_).length; }}
+    'size': { get: function() {
+      rdm.Document.verifyDocument_(this);
+      return Object.keys(this_.map_).length;
+    }}
   });
 };
 goog.inherits(rdm.CollaborativeMap, rdm.CollaborativeObject);
@@ -62,6 +65,7 @@ goog.inherits(rdm.CollaborativeMap, rdm.CollaborativeObject);
  * Removes all entries.
  */
 rdm.CollaborativeMap.prototype.clear = function() {
+  rdm.Document.verifyDocument_(this);
   // remove each key and let it produce the event
   for (var key in this.map_) {
     // not using dot at behest of closure compiler
@@ -79,6 +83,7 @@ rdm.CollaborativeMap.prototype.clear = function() {
  * existing value.
  */
 rdm.CollaborativeMap.prototype['delete'] = function(key) {
+  rdm.Document.verifyDocument_(this);
   // save value for return
   var ret = this.map_[key] || null;
   // create the event
@@ -96,6 +101,7 @@ rdm.CollaborativeMap.prototype['delete'] = function(key) {
  * @return {*} The value mapped to the given key.
  */
 rdm.CollaborativeMap.prototype.get = function(key) {
+  rdm.Document.verifyDocument_(this);
   return this.map_[key] === undefined ? null : this.map_[key];
 };
 
@@ -108,6 +114,7 @@ rdm.CollaborativeMap.prototype.get = function(key) {
  * key.
  */
 rdm.CollaborativeMap.prototype.has = function(key) {
+  rdm.Document.verifyDocument_(this);
   return this.map_[key] !== undefined;
 };
 
@@ -118,6 +125,7 @@ rdm.CollaborativeMap.prototype.has = function(key) {
  * @return {boolean} Returns true if this map is empty.
  */
 rdm.CollaborativeMap.prototype.isEmpty = function() {
+  rdm.Document.verifyDocument_(this);
   return this.map_.size === 0;
 };
 
@@ -130,6 +138,7 @@ rdm.CollaborativeMap.prototype.isEmpty = function() {
  * pair.
  */
 rdm.CollaborativeMap.prototype.items = function() {
+  rdm.Document.verifyDocument_(this);
   return Object.keys(this.map_).map(function(key) {
       return [key, this.map_[key]];
   });
@@ -143,6 +152,7 @@ rdm.CollaborativeMap.prototype.items = function() {
  * @return {Array.<string>} The keys in this map.
  */
 rdm.CollaborativeMap.prototype.keys = function() {
+  rdm.Document.verifyDocument_(this);
   return Object.keys(this.map_).slice(0);
 };
 
@@ -157,6 +167,7 @@ rdm.CollaborativeMap.prototype.keys = function() {
  * key.
  */
 rdm.CollaborativeMap.prototype.set = function(key, value) {
+  rdm.Document.verifyDocument_(this);
   // TODO check what is returned by rt when they fix
   // http://stackoverflow.com/questions/21563791/why-doesnt-collaborativemap-set-return-the-old-map-value
   // don't do anything if current value is already new value
@@ -178,11 +189,13 @@ rdm.CollaborativeMap.prototype.set = function(key, value) {
  * @return {Array.<Object>} The values in this map.
  */
 rdm.CollaborativeMap.prototype.values = function() {
+  rdm.Document.verifyDocument_(this);
   return Object.keys(this.map_).map(function(key) { return this.map_[key]; });
 };
 
 
 rdm.CollaborativeMap.prototype.executeEvent_ = function(event) {
+  rdm.Document.verifyDocument_(this);
   if (event.type == rdm.EventType.VALUE_CHANGED) {
     this.map_[event.property] = event.newValue;
     if (this.map_[event.property] === null) {
@@ -207,6 +220,7 @@ rdm.CollaborativeMap.prototype.executeEvent_ = function(event) {
  * @return {string} A string representation.
  */
 rdm.CollaborativeMap.prototype.toString = function() {
+  rdm.Document.verifyDocument_(this);
   var valList = [];
   for (var key in this.map_) {
     var valString;
