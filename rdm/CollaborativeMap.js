@@ -40,7 +40,7 @@ rdm.CollaborativeMap = function(model, initialValue) {
   this.map_ = initialValue || {};
   for (var key in this.map_) {
     if (this.map_[key] instanceof rdm.CollaborativeObject) {
-      this.map_[key].setParentEventTarget(this);
+      this.map_[key].addParentEventTarget(this);
     }
   }
   var this_ = this;
