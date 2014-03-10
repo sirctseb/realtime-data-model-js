@@ -16,6 +16,7 @@ goog.provide('rdm');
 
 goog.require('rdm.Model');
 goog.require('rdm.Document');
+goog.require('rdm.ErrorType');
 goog.require('rdm.GoogleDocProvider');
 goog.require('rdm.LocalDocumentProvider');
 goog.require('rdm.Document');
