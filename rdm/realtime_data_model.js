@@ -24,6 +24,8 @@ goog.require('rdm.BaseModelEvent');
 goog.require('rdm.IndexReference');
 goog.require('rdm.IndexReferenceContainer');
 goog.require('rdm.Model');
+goog.require('rdm.CollaboratorJoinedEvent.js');
+goog.require('rdm.CollaboratorLeftEvent.js');
 goog.require('rdm.CollaborativeList');
 goog.require('rdm.CollaborativeMap');
 goog.require('rdm.CollaborativeObject');
