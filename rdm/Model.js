@@ -104,7 +104,7 @@ goog.inherits(rdm.Model, goog.events.EventTarget);
  */
 rdm.Model.prototype.initialize_ = function(opt_initializerFn) {
   this.undoHistory_ = new rdm.UndoHistory(this);
-  if (initializeModel != null) {
+  if (opt_initializerFn != null) {
     this.undoHistory_.initializeModel(opt_initializerFn);
   }
   this.isInitialized_ = true;
