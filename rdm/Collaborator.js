@@ -53,5 +53,5 @@ rdm.Collaborator = function() {
    * The userId of the collaborator.
    * @type {string}
    */
-  this.userId = null;
+  this.userId = 'a';
 };
