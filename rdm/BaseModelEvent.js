@@ -44,7 +44,7 @@ rdm.BaseModelEvent = function(type, target) {
   * @type {boolean}
   */
   // in the local implementation, all events are local
-  this.isLocal = true;
+  this.isLocal = rdm.BaseModelEvent.isLocal;
 
   /**
   * The id of the session that initiated the event.
@@ -63,9 +63,23 @@ rdm.BaseModelEvent = function(type, target) {
   * The user id of the user that initiated the event.
   * @type {string}
   */
-  this.userId = null;
+  this.userId = rdm.BaseModelEvent.userId;
 };
 goog.inherits(rdm.BaseModelEvent, goog.events.Event);
+
+/**
+ * Whether an event being constructed is local.
+ * @private
+ * @type {boolean}
+ */
+rdm.BaseModelEvent.isLocal = true;
+
+/**
+ * The userId of the user that initiated an event being constructed.
+ * @private
+ * @type {string}
+ */
+rdm.BaseModelEvent.userId = '0';
 
 /**
  * Update the state of the event based on the current state of the target.
