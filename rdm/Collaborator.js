@@ -18,40 +18,42 @@ goog.provide('rdm.Collaborator');
  * A collaborator on the document.
  * @constructor
  */
-rdm.Collaborator = function() {
+// TODO document params
+rdm.Collaborator = function(color, displayName, isAnonymous, isMe, photoUrl, sessionId, userId) {
   /**
    * The color associated with the collaborator.
    * @type {string}
    */
-  this.color = 'blue';
+  this.color = color;
   /**
    * The display name of the collaborator.
    * @type {string}
    */
-  this.displayName = 'Me';
+  this.displayName = displayName;
   /**
    * True if the collaborator is anonymous, false otherwise.
    * @type {boolean}
    */
-  this.isAnonymous = false;
+  this.isAnonymous = isAnonymous;
   /**
    * True if the collaborator is the local user, false otherwise.
    * @type {boolean}
    */
-  this.isMe = true;
+  this.isMe = isMe;
   /**
    * A url that points to the profile of the user.
    * @type {string}
    */
-  this.photoUrl = null;
+  this.photoUrl = photoUrl;
   /**
    * The sessionId of the collaborator.
    * @type {string}
    */
-  this.sessionId = null;
+  this.sessionId = sessionId;
   /**
    * The userId of the collaborator.
    * @type {string}
    */
-  this.userId = 'a';
+  this.userId = userId;
 };
+
