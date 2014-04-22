@@ -46,8 +46,7 @@ rdm.test.CollaboratorManager = function(document) {
         false,
         null,
         null,
-        '' + i);
-      ));
+        '' + i));
   }
 };
 
