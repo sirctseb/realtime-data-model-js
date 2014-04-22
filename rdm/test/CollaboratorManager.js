@@ -39,7 +39,7 @@ rdm.test.CollaboratorManager = function(document) {
   // TODO this assumes there is exactly one collaborator in the document that is Me
   this.collaborators_ = [this.document_.collaborators_[0]];
   for(var i = 1; i < rdm.test.CollaboratorManager.colors_.length; i++) {
-    this.collaborators.push(new rdm.Collaborator(
+    this.collaborators_.push(new rdm.Collaborator(
         rdm.test.CollaboratorManager.colors_[i],
         'Collaborator ' + i,
         false,
@@ -99,7 +99,7 @@ rdm.test.CollaboratorManager.prototype.disenrollCollaborator = function(collabor
 
   // remove from document list
   // TODO check syntax
-  this.document_collaborators_.splice(index, 1);
+  this.document_.collaborators_.splice(index, 1);
 
   // dispatch event
   this.document_.dispatchEvent(event);
