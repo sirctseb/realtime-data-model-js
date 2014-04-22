@@ -129,6 +129,21 @@ rdm.test.CollaboratorManager.prototype.setMe = function(collaborator) {
 };
 
 /**
+ * Set the Collaborator that performs new document changes.
+ * @param {rdm.Collaborator} collaborator The collaborator that will make changes.
+ */
+rdm.test.CollaboratorManager.prototype.setActiveCollaborator = function(collaborator) {
+  // check that collaborator is enrolled
+  if(this.document_.collaborators_.indexOf(collaborator) == -1) {
+    throw 'Collaborator must be enrolled to be Me';
+  }
+
+  // set static values on BaseModelEvent
+  rdm.BaseModelEvent.isLocal = collaborator.isMe;
+  rdm.BaseModelEvent.userId = collaborator.userId;
+};
+
+/**
  * Colors to use for Collaborators
  * @type {Array.<String>}
  * @private
