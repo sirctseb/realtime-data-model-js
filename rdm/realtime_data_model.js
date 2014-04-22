@@ -41,4 +41,6 @@ goog.require('rdm.ValuesRemovedEvent');
 goog.require('rdm.ValuesSetEvent');
 goog.require('rdm.UndoHistory');
 
+goog.require('rdm.test');
+
 window['rdm'] = rdm;
