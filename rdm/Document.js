@@ -41,6 +41,21 @@ rdm.Document = function(model) {
    */
   this.model_ = model;
 
+  /**
+   * The list of collaborators.
+   * @type Array.<Collaborator>
+   * @private
+   */
+  this.collaborators_ = [
+      new rdm.Collaborator(
+        'blue',
+        'Collaborator 0',
+        false,
+        true,
+        null,
+        null,
+        '0')];
+
   // record that the document is open
   rdm.Document.openRootIDs_[model.root_.id_] = true;
 };
@@ -96,9 +111,10 @@ rdm.Document.prototype.close = function() {
  * isAnonymous.
  * @return {Array.<rdm.Collaborator>} A jsArray of collaborators.
  */
+// TODO this documentation is weird
 rdm.Document.prototype.getCollaborators = function() {
   rdm.Document.verifyDocument_(this.model_);
-  return [new rdm.Collaborator()];
+  return this.collaborators_;
 };
 
 // TODO event add/removeEventListener methods are documented in rt
