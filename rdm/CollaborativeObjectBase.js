@@ -48,6 +48,7 @@ goog.inherits(rdm.CollaborativeObjectBase, rdm.EventTarget);
  * Source of new id values for collaborative objects.
  *
  * @type {number}
+ * @private
  */
 rdm.CollaborativeObjectBase.idNum_ = 0;
 

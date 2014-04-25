@@ -32,6 +32,7 @@ goog.inherits(rdm.GoogleDocProvider, rdm.DocumentProvider);
 /**
  * The client ID of the application. Must be set before loading a document.
  */
+// TODO this should probably be a function
 rdm.GoogleDocProvider.clientId = null;
 
 rdm.GoogleDocProvider.globallySetup_ = false;
