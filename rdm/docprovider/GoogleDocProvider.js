@@ -155,13 +155,14 @@ rdm.GoogleDocProvider.authenticate = function(callback, immediate) {
 
 rdm.GoogleDocProvider.prototype.exportDocument = function(onExported) {
   // use drive.realtime.get to get document export
-  // drive.realtime.get({'fileId': this.fileId}).execute(onExported);
+  // gapi.drive.realtime.get({'fileId': this.fileId}).execute(onExported);
 
   // TODO workaround for bug in client library
   // http://stackoverflow.com/questions/18001043/why-is-the-response-to-gapi-client-drive-realtime-get-empty
   var accessToken = gapi.auth.getToken()['access_token'];
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'https://www.googleapis.com/drive/v2/files/' + this.fileId + '/realtime?access_token=' + accessToken);
+  xhr.open('GET', 'https://www.googleapis.com/drive/v2/files/' + this.fileId + '/realtime', true);
+  xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
   xhr.onload = function() {
     onExported(xhr.responseText);
   };
