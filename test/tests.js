@@ -867,6 +867,44 @@ onFileLoaded = function(doc) {
     equal(collaborators[0].isAnonymous, false);
   });
 
+  module('Export');
+  test('root.toString', function() {
+    // get string version
+    var stringified = doc.getModel().getRoot().toString();
+    // strip ref ids
+    stringified = stringified.replace(/<(EditableString|Map|List>): [^>]+>/g, '<$1: ID>');
+    // correct value
+    var correct = '{text: xxxaaaaaaaaa, filled-map: {key1: , key2: [JsonValue 4]}, map: {string: [JsonValue 1], duplicate1: dupwhatever, duplicate2: <EditableString: ID>, dupmap1: {str: duphello}, dupmap2: {str: <EditableString: ID>}, mapwithsub: {submap: {subsubmap: {str: dupsomething}}, str: <EditableString: ID>}, loop: {map2: {map1: <Map: ID>}, map2b: <Map: ID>, text: [JsonValue "text value"]}}, book: {title: [JsonValue "title"]}, list: [[JsonValue 3], [JsonValue 4], [JsonValue 7], [JsonValue 8], [JsonValue 10], [JsonValue 11], [JsonValue 12]], self: <Map: ID>, filled-list: [, [JsonValue 4]], key: [JsonValue "val"], filled-string: content}';
+    equal(stringified, correct);
+  });
+  asyncTest('export', function(assert) {
+    expect(1);
+    docProvider.exportDocument(function(result) {
+      // correct value
+      jsonValue = {"appId":"1066816720974","revision":4045,"data":{"id":"root","type":"Map","value":{"book":{"id":"EQTmD5lY0UiT","type":"Book","value":{"title":{"json":"title"}}},"filled-list":{"id":"GSPSioaiTXBK","type":"List","value":[{"id":"wYfF8lXpTXBK","type":"EditableString","value":""},{"json":4.0}]},"filled-map":{"id":"5SK6ZbRSTXBH","type":"Map","value":{"key1":{"id":"B3e6fNI-TXBH","type":"EditableString","value":""},"key2":{"json":4.0}}},"filled-string":{"id":"KUoE6Z8OTXBN","type":"EditableString","value":"content"},"key":{"json":"val"},"list":{"id":"dUTjgL3r0UiR","type":"List","value":[{"json":3.0},{"json":4.0},{"json":7.0},{"json":8.0},{"json":10.0},{"json":11.0},{"json":12.0}]},"map":{"id":"FGCQnkLP0UiS","type":"Map","value":{"duplicate1":{"id":"SvIktlx0TXBk","type":"EditableString","value":"dupwhatever"},"duplicate2":{"ref":"SvIktlx0TXBk"},"dupmap1":{"id":"9DnyKe4CTXBo","type":"Map","value":{"str":{"id":"bMu5FlU4TXBo","type":"EditableString","value":"duphello"}}},"dupmap2":{"id":"d4HcN4GkTXBp","type":"Map","value":{"str":{"ref":"bMu5FlU4TXBo"}}},"loop":{"id":"capYDzJGTXBz","type":"Map","value":{"map2":{"id":"QCyohlgYTXBz","type":"Map","value":{"map1":{"ref":"capYDzJGTXBz"}}},"map2b":{"ref":"QCyohlgYTXBz"},"text":{"json":"text value"}}},"mapwithsub":{"id":"lTXGjDiWTXBu","type":"Map","value":{"str":{"id":"FD_wVMqaTXBu","type":"EditableString","value":"dupsomething"},"submap":{"id":"hEfchbubTXBu","type":"Map","value":{"subsubmap":{"id":"VV3GUjO0TXBu","type":"Map","value":{"str":{"ref":"FD_wVMqaTXBu"}}}}}}},"string":{"json":1.0}}},"self":{"ref":"root"},"text":{"id":"MQeTZ0bf0UiL","type":"EditableString","value":"xxxaaaaaaaaa"}}}};
+      // set revision to 0
+      jsonValue["revision"] = 0;
+      // stringify value
+      jsonValue = JSON.stringify(jsonValue);
+      // strip ids and refs
+      jsonValue = jsonValue.replace(/"(id|ref)":"[^"]+/g, '"$1":"ID"');
+
+      // set revision to 0
+      result["revision"] = 0;
+      // stringify export
+      var stringified = JSON.stringify(result);
+      // strip ids
+      stringified = stringified.replace(/"(id|ref)":"[^"]+/g, '"$1":"ID"');
+      console.log(stringified);
+
+      // do test
+      assert.equal(stringified, jsonValue);
+
+      // restart tests
+      start();
+    });
+  });
+
   module('Constants');
   test('EventType', function() {
     // TODO this doesn't check for values on gapi side that are missing on our side
