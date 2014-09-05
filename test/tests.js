@@ -895,7 +895,6 @@ onFileLoaded = function(doc) {
       var stringified = JSON.stringify(result);
       // strip ids
       stringified = stringified.replace(/"(id|ref)":"[^"]+/g, '"$1":"ID"');
-      console.log(stringified);
 
       // do test
       assert.equal(stringified, jsonValue);
