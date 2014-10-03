@@ -272,7 +272,7 @@ rdm.CollaborativeString.prototype.toStringHelper_ = function(ids) {
  * @return {Object} A js representation of this collaborative map.
  * @private
  */
-rdm.CollaborativeMap.prototype.export = function(ids) {
+rdm.CollaborativeString.prototype.export = function(ids) {
   rdm.Document.verifyDocument_(this);
 
   // check if this object has already been added,
