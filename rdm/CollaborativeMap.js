@@ -221,15 +221,85 @@ rdm.CollaborativeMap.prototype.executeEvent_ = function(event) {
  */
 rdm.CollaborativeMap.prototype.toString = function() {
   rdm.Document.verifyDocument_(this);
+  return this.toStringHelper_({});
+};
+
+
+/**
+ * Returns a string representation of this collaborative object.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have alredy been added to the exported object.
+ *
+ * @return {string} A string representation.
+ */
+rdm.CollaborativeMap.prototype.toStringHelper_ = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if our id is already in the map
+  if(ids[this.id]) {
+    return '<Map: ' + this.id + '>';
+  }
+
+  // add id to map
+  ids[this.id] = true;
+
   var valList = [];
   for (var key in this.map_) {
     var valString;
     if (this.map_[key] instanceof rdm.CollaborativeObject) {
-      valString = this.map_[key].toString();
+      valString = this.map_[key].toStringHelper_(ids);
+    } else if (rdm.custom.isCustomObject(this.map_[key])) {
+      valString = this.map_[key].toStringHelper_(ids);
     } else {
       valString = '[JsonValue ' + JSON.stringify(this.map_[key]) + ']';
     }
     valList.push(key + ': ' + valString);
   }
   return '{' + valList.join(', ') + '}';
+};
+
+/**
+ * Returns a js representation of this collaborative map for export.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have already been added to the exported object.
+ *
+ * @return {Object} A js representation of this collaborative map.
+ * @private
+ */
+// TODO keys in alphabetical order, but not in toString
+rdm.CollaborativeMap.prototype.export = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if this object has already been added,
+  // and return a ref if so
+  if(ids[this.id]) {
+    return {'ref': this.id};
+  }
+
+  // TODO need to make root map's id "root"
+  // initialize result map
+  var result = {
+    'id': this.id,
+    'type': "Map",
+    'value': {}
+  };
+
+  // add id to map
+  ids[this.id] = true;
+
+  // add values
+  var keys = this.keys();
+  for(var i = 0; i < keys.length; i++) {
+    if(this.get(keys[i]) instanceof rdm.CollaborativeObject) {
+      // if value is a collaborative object, call export
+      result['value'][keys[i]] = this.get(keys[i]).export(ids);
+    } else {
+      // otherwise set json value
+      result['value'][keys[i]] = {'json': JSON.stringify(this.get(keys[i]))};
+    }
+  }
+
+  return result;
 };

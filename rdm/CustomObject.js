@@ -73,3 +73,39 @@ rdm.CustomObject.prototype.getChildren_ = function() {
   }
   return values;
 };
+
+/**
+ * Returns a string representation of this collaborative object.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have alredy been added to the exported object.
+ *
+ * @return {string} A string representation.
+ */
+rdm.CustomObject.prototype.toStringHelper_ = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if our id is already in the map
+  if(ids[rdm.custom.getId(this)]) {
+    // TODO what to put here for collaborative objects?
+    return '<Map: ' + this.id + '>';
+  }
+
+  // add id to map
+  ids[rdm.custom.getId(this)] = true;
+
+  // TODO can custom objects contain collaborative objects?
+  var valList = [];
+  for (var key in this.backingFields_) {
+    var valString;
+    if (this.backingFields_[key] instanceof rdm.CollaborativeObject) {
+      valString = this.backingFields_[key].toStringHelper_(ids);
+    } else if(rdm.custom.isCustomObject(this.backingFields_[key])) {
+      return this.backingFields_[key].toStringHelper_(ids);
+    } else {
+      valString = '[JsonValue ' + JSON.stringify(this.backingFields_[key]) + ']';
+    }
+    valList.push(key + ': ' + valString);
+  }
+  return '{' + valList.join(', ') + '}';
+};

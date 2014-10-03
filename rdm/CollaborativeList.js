@@ -349,12 +349,81 @@ rdm.CollaborativeList.prototype.executeEvent_ = function(event) {
  */
 rdm.CollaborativeList.prototype.toString = function() {
   rdm.Document.verifyDocument_(this);
+
+  return this.toStringHelper_({});
+};
+
+/**
+ * Returns a string representation of this collaborative object.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have alredy been added to the exported object.
+ *
+ * @return {string} A string representation.
+ */
+rdm.CollaborativeList.prototype.toStringHelper_ = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if our id is already in the map
+  if(ids[this.id]) {
+    return '<List: ' + this.id + '>';
+  }
+
+  // add id to map
+  ids[this.id] = true;
+
   var renderedList = this.list_.map(function(element) {
     if (element instanceof rdm.CollaborativeObject) {
-      return element.toString();
+      return element.toStringHelper_(ids);
+    } else if(rdm.custom.isCustomObject(element)) {
+      return element.toStringHelper_(ids);
     } else {
       return '[JsonValue ' + JSON.stringify(element) + ']';
     }
   });
   return '[' + renderedList.join(', ') + ']';
+};
+
+/**
+ * Returns a js representation of this collaborative list for export.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have already been added to the exported object.
+ *
+ * @return {Object} A js representation of this collaborative list.
+ * @private
+ */
+rdm.CollaborativeList.prototype.export = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if this object has already been added,
+  // and return a ref if so
+  if(ids[this.id]) {
+    return {'ref': this.id};
+  }
+
+  // TODO need to make root map's id "root"
+  // initialize result map
+  var result = {
+    'id': this.id,
+    'type': 'List',
+    'value': []
+  };
+
+  // add id to map
+  ids[this.id] = true;
+
+  // add values
+  var values = this.asArray();
+  for(var i = 0; i < values.length; i++) {
+    if(values[i] instanceof rdm.CollaborativeObject) {
+      // if value is a collaborative object, call export
+      result['value'].push(values[i].export(ids));
+    } else {
+      // otherwise set json value
+      result['value'].push({'json': JSON.stringify(values[i])});
+    }
+  }
+
+  return result;
 };

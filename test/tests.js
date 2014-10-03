@@ -871,11 +871,21 @@ onFileLoaded = function(doc) {
   test('root.toString', function() {
     // get string version
     var stringified = doc.getModel().getRoot().toString();
+    console.log(stringified);
     // strip ref ids
     stringified = stringified.replace(/<(EditableString|Map|List>): [^>]+>/g, '<$1: ID>');
     // correct value
-    var correct = '{text: xxxaaaaaaaaa, filled-map: {key1: , key2: [JsonValue 4]}, map: {string: [JsonValue 1], duplicate1: dupwhatever, duplicate2: <EditableString: ID>, dupmap1: {str: duphello}, dupmap2: {str: <EditableString: ID>}, mapwithsub: {submap: {subsubmap: {str: dupsomething}}, str: <EditableString: ID>}, loop: {map2: {map1: <Map: ID>}, map2b: <Map: ID>, text: [JsonValue "text value"]}}, book: {title: [JsonValue "title"]}, list: [[JsonValue 3], [JsonValue 4], [JsonValue 7], [JsonValue 8], [JsonValue 10], [JsonValue 11], [JsonValue 12]], self: <Map: ID>, filled-list: [, [JsonValue 4]], key: [JsonValue "val"], filled-string: content}';
+    // var correct = '{text: xxxaaaaaaaaa, filled-map: {key1: , key2: [JsonValue 4]}, map: {duplicate1: dupwhatever, mapwithsub: {submap: {subsubmap: {str: dupsomething}}, str: <EditableString: ID>}, string: [JsonValue 1], dupmap1: {str: duphello}, duplicate2: <EditableString: ID>, loop: {map2: {map1: <Map: ID>}, map2b: <Map: ID>, text: [JsonValue "text value"]}, dupmap2: {str: <EditableString: ID>}}, book: {title: [JsonValue "title"]}, list: [[JsonValue 3], [JsonValue 4], [JsonValue 7], [JsonValue 8], [JsonValue 10], [JsonValue 11], [JsonValue 12]], self: <Map: ID>, filled-list: [, [JsonValue 4]], key: [JsonValue "val"], filled-string: content}';
+    var correct = '{text: xxxaaaaaaaaa, list: [[JsonValue 3], [JsonValue 4], [JsonValue 7], [JsonValue 8], [JsonValue 10], [JsonValue 11], [JsonValue 12]], map: {duplicate1: dupwhatever, mapwithsub: {submap: {subsubmap: {str: dupsomething}}, str: <EditableString: ID>}, string: [JsonValue 1], dupmap1: {str: duphello}, duplicate2: <EditableString: ID>, loop: {map2: {map1: <Map: ID>}, map2b: <Map: ID>, text: [JsonValue "text value"]}, dupmap2: {str: <EditableString: ID>}}, book: {title: [JsonValue "title"]}, filled-map: {key1: , key2: [JsonValue 4]}, filled-list: [, [JsonValue 4]], filled-string: content, self: <Map: ID>, key: [JsonValue "val"]}'
     equal(stringified, correct);
+  });
+  test('root.toString duplicate scoped', function() {
+    // get string version
+    var stringified = doc.getModel().getRoot().get('self').toString();
+    var s2 = doc.getModel().getRoot().toString();
+    equal(stringified, s2);
+    // console.log(stringified);
+    // ok(true);
   });
   asyncTest('export', function(assert) {
     expect(1);

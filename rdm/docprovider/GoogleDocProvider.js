@@ -164,7 +164,8 @@ rdm.GoogleDocProvider.prototype.exportDocument = function(onExported) {
   xhr.open('GET', 'https://www.googleapis.com/drive/v2/files/' + this.fileId + '/realtime', true);
   xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
   xhr.onload = function() {
-    onExported(xhr.responseText);
+    // onExported(xhr.responseText);
+    onExported(JSON.parse(xhr.responseText));
   };
   xhr.onerror = function() {
     // TODO handle error
