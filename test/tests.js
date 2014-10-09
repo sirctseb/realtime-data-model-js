@@ -135,7 +135,7 @@ onFileLoaded = function(doc) {
     equal(map.keys().indexOf('compound2'), -1);
   });
   test('Compound events', function() {
-    expect(10);
+    expect(8);
     map.clear();
     var rootOC = function(e) {
       equal(e.type, 'object_changed');
@@ -154,7 +154,6 @@ onFileLoaded = function(doc) {
     map.set('compound2', 'val2');
     doc.getModel().endCompoundOperation();
     doc.getModel().undo();
-    // doc.getModel().redo();
     doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
     map.removeEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
