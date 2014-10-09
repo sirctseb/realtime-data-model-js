@@ -468,6 +468,15 @@ onFileLoaded = function(doc) {
     map.clear();
     equal(map.size, 0);
   });
+  test('keys', function() {
+    map.clear();
+    map.set('a', 'a');
+    map.set('b', 'b');
+    map.set('c', 'c');
+    map.set('d', 'd');
+    map.set('e', 'e');
+    deepEqual(map.keys(), ['e', 'a', 'c', 'd', 'b']);
+  });
   test('onValueChanged', function() {
     expect(3);
     var ssChanged = function(event) {
@@ -883,30 +892,36 @@ onFileLoaded = function(doc) {
     var stringified = doc.getModel().getRoot().get('self').toString();
     var s2 = doc.getModel().getRoot().toString();
     equal(stringified, s2);
-    // console.log(stringified);
-    // ok(true);
   });
   asyncTest('export', function(assert) {
     expect(1);
     docProvider.exportDocument(function(result) {
       // correct value
-      jsonValue = {"appId":"1066816720974","revision":4045,"data":{"id":"root","type":"Map","value":{"book":{"id":"EQTmD5lY0UiT","type":"Book","value":{"title":{"json":"title"}}},"filled-list":{"id":"GSPSioaiTXBK","type":"List","value":[{"id":"wYfF8lXpTXBK","type":"EditableString","value":""},{"json":4.0}]},"filled-map":{"id":"5SK6ZbRSTXBH","type":"Map","value":{"key1":{"id":"B3e6fNI-TXBH","type":"EditableString","value":""},"key2":{"json":4.0}}},"filled-string":{"id":"KUoE6Z8OTXBN","type":"EditableString","value":"content"},"key":{"json":"val"},"list":{"id":"dUTjgL3r0UiR","type":"List","value":[{"json":3.0},{"json":4.0},{"json":7.0},{"json":8.0},{"json":10.0},{"json":11.0},{"json":12.0}]},"map":{"id":"FGCQnkLP0UiS","type":"Map","value":{"duplicate1":{"id":"SvIktlx0TXBk","type":"EditableString","value":"dupwhatever"},"duplicate2":{"ref":"SvIktlx0TXBk"},"dupmap1":{"id":"9DnyKe4CTXBo","type":"Map","value":{"str":{"id":"bMu5FlU4TXBo","type":"EditableString","value":"duphello"}}},"dupmap2":{"id":"d4HcN4GkTXBp","type":"Map","value":{"str":{"ref":"bMu5FlU4TXBo"}}},"loop":{"id":"capYDzJGTXBz","type":"Map","value":{"map2":{"id":"QCyohlgYTXBz","type":"Map","value":{"map1":{"ref":"capYDzJGTXBz"}}},"map2b":{"ref":"QCyohlgYTXBz"},"text":{"json":"text value"}}},"mapwithsub":{"id":"lTXGjDiWTXBu","type":"Map","value":{"str":{"id":"FD_wVMqaTXBu","type":"EditableString","value":"dupsomething"},"submap":{"id":"hEfchbubTXBu","type":"Map","value":{"subsubmap":{"id":"VV3GUjO0TXBu","type":"Map","value":{"str":{"ref":"FD_wVMqaTXBu"}}}}}}},"string":{"json":1.0}}},"self":{"ref":"root"},"text":{"id":"MQeTZ0bf0UiL","type":"EditableString","value":"xxxaaaaaaaaa"}}}};
+      var jsonValue = {"appId":"1066816720974","revision":243,"data":{"id":"root","type":"Map","value":{"book":{"id":"XlvCsSlXfioK","type":"Book","value":{"title":{"json":"title"}}},"filled-list":{"id":"KbY54ouZfjDj","type":"List","value":[{"id":"5ojDCWtyfjDj","type":"EditableString","value":""},{"json":4}]},"filled-map":{"id":"u162QBQRfjDg","type":"Map","value":{"key1":{"id":"h8YUGMm-fjDg","type":"EditableString","value":""},"key2":{"json":4}}},"filled-string":{"id":"sHwruTA4fjDo","type":"EditableString","value":"content"},"key":{"json":"val"},"list":{"id":"lDoU1aUnfioJ","type":"List","value":[{"json":3},{"json":4},{"json":7},{"json":8},{"json":10},{"json":11},{"json":12}]},"map":{"id":"yxOq4amKfioJ","type":"Map","value":{"duplicate1":{"id":"Ffz9b8VifjEC","type":"EditableString","value":"dupwhatever"},"duplicate2":{"ref":"Ffz9b8VifjEC"},"dupmap1":{"id":"jYbvf3qufjEI","type":"Map","value":{"str":{"id":"mdsF6PUlfjEH","type":"EditableString","value":"duphello"}}},"dupmap2":{"id":"3zTkGJRnfjEI","type":"Map","value":{"str":{"ref":"mdsF6PUlfjEH"}}},"loop":{"id":"3oQwUdslfjET","type":"Map","value":{"map2":{"id":"PBG2cdrhfjET","type":"Map","value":{"map1":{"ref":"3oQwUdslfjET"}}},"map2b":{"ref":"PBG2cdrhfjET"},"text":{"json":"text value"}}},"mapwithsub":{"id":"Q7VHKEdkfjEO","type":"Map","value":{"str":{"id":"3Ozrz4-afjEO","type":"EditableString","value":"dupsomething"},"submap":{"id":"sNZxu4TdfjEO","type":"Map","value":{"subsubmap":{"id":"09j9Bti4fjEO","type":"Map","value":{"str":{"ref":"3Ozrz4-afjEO"}}}}}}},"string":{"json":1}}},"self":{"ref":"root"},"text":{"id":"eUO6WzdGfioE","type":"EditableString","value":"xxxaaaaaaaaa"}}}};
       // set revision to 0
       jsonValue["revision"] = 0;
+      // set appid to 0
+      jsonValue["appId"] = 0;
       // stringify value
       jsonValue = JSON.stringify(jsonValue);
       // strip ids and refs
-      jsonValue = jsonValue.replace(/"(id|ref)":"[^"]+/g, '"$1":"ID"');
+      jsonValue = jsonValue.replace(/"(id|ref)":"[^"]+"/g, '"$1":"ID"');
+      // back into a real object
+      jsonValue = JSON.parse(jsonValue);
 
       // set revision to 0
       result["revision"] = 0;
+      // set appid to 0
+      result["appId"] = 0;
       // stringify export
       var stringified = JSON.stringify(result);
       // strip ids
-      stringified = stringified.replace(/"(id|ref)":"[^"]+/g, '"$1":"ID"');
+      stringified = stringified.replace(/"(id|ref)":"[^"]+"/g, '"$1":"ID"');
+      // back into a real object
+      result = JSON.parse(stringified);
 
       // do test
-      assert.equal(stringified, jsonValue);
+      assert.deepEqual(result, jsonValue);
 
       // restart tests
       start();
