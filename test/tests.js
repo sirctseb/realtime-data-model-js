@@ -468,6 +468,15 @@ onFileLoaded = function(doc) {
     map.clear();
     equal(map.size, 0);
   });
+  test('keys', function() {
+    map.clear();
+    map.set('a', 'a');
+    map.set('b', 'b');
+    map.set('c', 'c');
+    map.set('d', 'd');
+    map.set('e', 'e');
+    deepEqual(map.keys(), ['e', 'a', 'c', 'd', 'b']);
+  });
   test('onValueChanged', function() {
     expect(3);
     var ssChanged = function(event) {
@@ -865,6 +874,58 @@ onFileLoaded = function(doc) {
     equal(collaborators.length, 1);
     equal(collaborators[0].isMe, true);
     equal(collaborators[0].isAnonymous, false);
+  });
+
+  module('Export');
+  test('root.toString', function() {
+    // get string version
+    var stringified = doc.getModel().getRoot().toString();
+    // strip ref ids
+    stringified = stringified.replace(/<(EditableString|Map|List>): [^>]+>/g, '<$1: ID>');
+    // correct value
+    // var correct = '{text: xxxaaaaaaaaa, filled-map: {key1: , key2: [JsonValue 4]}, map: {duplicate1: dupwhatever, mapwithsub: {submap: {subsubmap: {str: dupsomething}}, str: <EditableString: ID>}, string: [JsonValue 1], dupmap1: {str: duphello}, duplicate2: <EditableString: ID>, loop: {map2: {map1: <Map: ID>}, map2b: <Map: ID>, text: [JsonValue "text value"]}, dupmap2: {str: <EditableString: ID>}}, book: {title: [JsonValue "title"]}, list: [[JsonValue 3], [JsonValue 4], [JsonValue 7], [JsonValue 8], [JsonValue 10], [JsonValue 11], [JsonValue 12]], self: <Map: ID>, filled-list: [, [JsonValue 4]], key: [JsonValue "val"], filled-string: content}';
+    var correct = '{text: xxxaaaaaaaaa, list: [[JsonValue 3], [JsonValue 4], [JsonValue 7], [JsonValue 8], [JsonValue 10], [JsonValue 11], [JsonValue 12]], map: {duplicate1: dupwhatever, mapwithsub: {submap: {subsubmap: {str: dupsomething}}, str: <EditableString: ID>}, string: [JsonValue 1], dupmap1: {str: duphello}, duplicate2: <EditableString: ID>, loop: {map2: {map1: <Map: ID>}, map2b: <Map: ID>, text: [JsonValue "text value"]}, dupmap2: {str: <EditableString: ID>}}, book: {title: [JsonValue "title"]}, filled-map: {key1: , key2: [JsonValue 4]}, filled-list: [, [JsonValue 4]], filled-string: content, self: <Map: ID>, key: [JsonValue "val"]}'
+    equal(stringified, correct);
+  });
+  test('root.toString duplicate scoped', function() {
+    // get string version
+    var stringified = doc.getModel().getRoot().get('self').toString();
+    var s2 = doc.getModel().getRoot().toString();
+    equal(stringified, s2);
+  });
+  asyncTest('export', function(assert) {
+    expect(1);
+    docProvider.exportDocument(function(result) {
+      // correct value
+      var jsonValue = {"appId":"1066816720974","revision":243,"data":{"id":"root","type":"Map","value":{"book":{"id":"XlvCsSlXfioK","type":"Book","value":{"title":{"json":"title"}}},"filled-list":{"id":"KbY54ouZfjDj","type":"List","value":[{"id":"5ojDCWtyfjDj","type":"EditableString","value":""},{"json":4}]},"filled-map":{"id":"u162QBQRfjDg","type":"Map","value":{"key1":{"id":"h8YUGMm-fjDg","type":"EditableString","value":""},"key2":{"json":4}}},"filled-string":{"id":"sHwruTA4fjDo","type":"EditableString","value":"content"},"key":{"json":"val"},"list":{"id":"lDoU1aUnfioJ","type":"List","value":[{"json":3},{"json":4},{"json":7},{"json":8},{"json":10},{"json":11},{"json":12}]},"map":{"id":"yxOq4amKfioJ","type":"Map","value":{"duplicate1":{"id":"Ffz9b8VifjEC","type":"EditableString","value":"dupwhatever"},"duplicate2":{"ref":"Ffz9b8VifjEC"},"dupmap1":{"id":"jYbvf3qufjEI","type":"Map","value":{"str":{"id":"mdsF6PUlfjEH","type":"EditableString","value":"duphello"}}},"dupmap2":{"id":"3zTkGJRnfjEI","type":"Map","value":{"str":{"ref":"mdsF6PUlfjEH"}}},"loop":{"id":"3oQwUdslfjET","type":"Map","value":{"map2":{"id":"PBG2cdrhfjET","type":"Map","value":{"map1":{"ref":"3oQwUdslfjET"}}},"map2b":{"ref":"PBG2cdrhfjET"},"text":{"json":"text value"}}},"mapwithsub":{"id":"Q7VHKEdkfjEO","type":"Map","value":{"str":{"id":"3Ozrz4-afjEO","type":"EditableString","value":"dupsomething"},"submap":{"id":"sNZxu4TdfjEO","type":"Map","value":{"subsubmap":{"id":"09j9Bti4fjEO","type":"Map","value":{"str":{"ref":"3Ozrz4-afjEO"}}}}}}},"string":{"json":1}}},"self":{"ref":"root"},"text":{"id":"eUO6WzdGfioE","type":"EditableString","value":"xxxaaaaaaaaa"}}}};
+      // set revision to 0
+      jsonValue["revision"] = 0;
+      // set appid to 0
+      jsonValue["appId"] = 0;
+      // stringify value
+      jsonValue = JSON.stringify(jsonValue);
+      // strip ids and refs
+      jsonValue = jsonValue.replace(/"(id|ref)":"[^"]+"/g, '"$1":"ID"');
+      // back into a real object
+      jsonValue = JSON.parse(jsonValue);
+
+      // set revision to 0
+      result["revision"] = 0;
+      // set appid to 0
+      result["appId"] = 0;
+      // stringify export
+      var stringified = JSON.stringify(result);
+      // strip ids
+      stringified = stringified.replace(/"(id|ref)":"[^"]+"/g, '"$1":"ID"');
+      // back into a real object
+      result = JSON.parse(stringified);
+
+      // do test
+      assert.deepEqual(result, jsonValue);
+
+      // restart tests
+      start();
+    });
   });
 
   module('Constants');

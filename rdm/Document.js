@@ -62,7 +62,17 @@ rdm.Document.openRootIDs_ = {};
  */
 rdm.Document.verifyDocument_ = function(object) {
   // check that associated document is open
-  var model = object instanceof rdm.CollaborativeObjectBase ? object.model_ : object;
+  var model;
+  // if object is derived from collaborative object, it is a map, string, or list
+  if(object instanceof rdm.CollaborativeObjectBase) {
+    model = object.model_;
+  } else if(rdm.custom.isCustomObject(object)) {
+    // otherwise test if it is a custom object
+    model = rdm.custom.getModel(object);
+  } else {
+    // otherwise, object should be the model
+    model = object;
+  }
   if(!rdm.Document.openRootIDs_[model.root_.id_]) {
     throw new rdm.DocumentClosedError();
   }

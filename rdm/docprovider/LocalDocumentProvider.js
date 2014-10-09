@@ -38,6 +38,16 @@ rdm.LocalDocumentProvider.prototype.loadDocument = function(onLoaded, opt_initia
   onLoaded(this.document);
 };
 
-rdm.LocalDocumentProvider.exportDocument = function(onExported) {
-  onExported(this.document.getModel().toJSON());
+rdm.LocalDocumentProvider.prototype.exportDocument = function(onExported) {
+  var result = {
+    // TODO what to put in appId?
+    'appId':'local',
+    // TODO what to put in revision?
+    'revision':1,
+    'data': {
+    }
+  };
+  var ids = {};
+  result['data'] = this.document.getModel().getRoot().export(ids);
+  onExported(result);
 };

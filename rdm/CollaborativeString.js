@@ -237,5 +237,60 @@ rdm.CollaborativeString.prototype.executeEvent_ = function(event) {
  */
 rdm.CollaborativeString.prototype.toString = function() {
   rdm.Document.verifyDocument_(this);
+
   return this.string_;
+};
+
+/**
+ * Returns a string representation of this collaborative object.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have alredy been added to the exported object.
+ *
+ * @return {string} A string representation.
+ */
+rdm.CollaborativeString.prototype.toStringHelper_ = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if our id is already in the map
+  if(ids[this.id]) {
+    return '<EditableString: ' + this.id + '>';
+  }
+
+  // add id to map
+  ids[this.id] = true;
+
+  return this.string_;
+};
+
+/**
+ * Returns a js representation of this collaborative map for export.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have already been added to the exported object.
+ *
+ * @return {Object} A js representation of this collaborative map.
+ * @private
+ */
+rdm.CollaborativeString.prototype.export = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if this object has already been added,
+  // and return a ref if so
+  if(ids[this.id]) {
+    return {'ref': this.id};
+  }
+
+  // TODO need to make root map's id "root"
+  // initialize result map
+  var result = {
+    'id': this.id,
+    'type': 'EditableString',
+    'value': this.getText()
+  };
+
+  // add id to map
+  ids[this.id] = true;
+
+  return result;
 };
