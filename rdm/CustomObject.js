@@ -147,7 +147,6 @@ rdm.CustomObject.prototype.export = function(ids) {
       result['value'][key] = this[key].export(ids);
     } else {
       // otherwise set json value
-      console.log(this[key]);
       result['value'][key] = {'json': this[key]};
     }
   }
