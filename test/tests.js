@@ -871,7 +871,6 @@ onFileLoaded = function(doc) {
   test('root.toString', function() {
     // get string version
     var stringified = doc.getModel().getRoot().toString();
-    console.log(stringified);
     // strip ref ids
     stringified = stringified.replace(/<(EditableString|Map|List>): [^>]+>/g, '<$1: ID>');
     // correct value

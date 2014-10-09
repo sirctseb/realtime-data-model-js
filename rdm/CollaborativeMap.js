@@ -283,7 +283,7 @@ rdm.CollaborativeMap.prototype.export = function(ids) {
   // initialize result map
   var result = {
     'id': this.id,
-    'type': "Map",
+    'type': 'Map',
     'value': {}
   };
 
