@@ -245,16 +245,17 @@ rdm.CollaborativeMap.prototype.toStringHelper_ = function(ids) {
   ids[this.id] = true;
 
   var valList = [];
-  for (var key in this.map_) {
+  var keys = this.keys();
+  for (var key in keys) {
     var valString;
-    if (this.map_[key] instanceof rdm.CollaborativeObject) {
-      valString = this.map_[key].toStringHelper_(ids);
-    } else if (rdm.custom.isCustomObject(this.map_[key])) {
-      valString = this.map_[key].toStringHelper_(ids);
+    if (this.get(keys[key]) instanceof rdm.CollaborativeObject) {
+      valString = this.get(keys[key]).toStringHelper_(ids);
+    } else if (rdm.custom.isCustomObject(this.get(keys[key]))) {
+      valString = this.get(keys[key]).toStringHelper_(ids);
     } else {
-      valString = '[JsonValue ' + JSON.stringify(this.map_[key]) + ']';
+      valString = '[JsonValue ' + JSON.stringify(this.get(keys[key])) + ']';
     }
-    valList.push(key + ': ' + valString);
+    valList.push(keys[key] + ': ' + valString);
   }
   return '{' + valList.join(', ') + '}';
 };
