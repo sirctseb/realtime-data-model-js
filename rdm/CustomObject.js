@@ -109,3 +109,48 @@ rdm.CustomObject.prototype.toStringHelper_ = function(ids) {
   }
   return '{' + valList.join(', ') + '}';
 };
+
+/**
+ * Returns a js representation of this custom object for export.
+ *
+ * @param {Object} ids A map whose keys are the collaborative object ids
+ * that have already been added to the exported object.
+ *
+ * @return {Object} A js representation of this custom object.
+ * @private
+ */
+rdm.CustomObject.prototype.export = function(ids) {
+  rdm.Document.verifyDocument_(this);
+
+  // check if this object has already been added,
+  // and return a ref if so
+  if(ids[rdm.custom.getId(this)]) {
+    return {'ref': rdm.custom.getId(this)};
+  }
+
+  // initialize result map
+  var result = {
+    'id': rdm.custom.getId(this),
+    // TODO need to get type
+    // 'type': ?
+    'value': {}
+  };
+
+  // add id to map
+  ids[rdm.custom.getId(this)] = true;
+
+  // add values
+  for(var key in this.backingFields_) {
+    if(this.backingFields_[key] instanceof rdm.CollaborativeObject ||
+      rdm.custom.isCustomObject(this.backingFields_[key])) {
+      // if value is a collaborative object, call export
+      result['value'][key] = this[key].export(ids);
+    } else {
+      // otherwise set json value
+      console.log(this[key]);
+      result['value'][key] = {'json': this[key]};
+    }
+  }
+
+  return result;
+};

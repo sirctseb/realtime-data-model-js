@@ -293,7 +293,8 @@ rdm.CollaborativeMap.prototype.export = function(ids) {
   // add values
   var keys = this.keys();
   for(var i = 0; i < keys.length; i++) {
-    if(this.get(keys[i]) instanceof rdm.CollaborativeObject) {
+    if(this.get(keys[i]) instanceof rdm.CollaborativeObject ||
+      rdm.custom.isCustomObject(this.get(keys[i]))) {
       // if value is a collaborative object, call export
       result['value'][keys[i]] = this.get(keys[i]).export(ids);
     } else {
