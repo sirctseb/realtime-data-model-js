@@ -456,7 +456,7 @@ onFileLoaded = function(doc) {
     equal(map.size, 1);
   });
   test('set(key, value)', function() {
-    strictEqual(map.set('key2',5), undefined);
+    strictEqual(map.set('key2',5), null);
     equal(map.get('key2'), 5);
   });
   test('delete', function() {
