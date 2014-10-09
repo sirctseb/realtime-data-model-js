@@ -421,7 +421,7 @@ rdm.CollaborativeList.prototype.export = function(ids) {
       result['value'].push(values[i].export(ids));
     } else {
       // otherwise set json value
-      result['value'].push({'json': JSON.stringify(values[i])});
+      result['value'].push({'json': values[i]});
     }
   }
 

@@ -297,7 +297,7 @@ rdm.CollaborativeMap.prototype.export = function(ids) {
       result['value'][keys[i]] = this.get(keys[i]).export(ids);
     } else {
       // otherwise set json value
-      result['value'][keys[i]] = {'json': JSON.stringify(this.get(keys[i]))};
+      result['value'][keys[i]] = {'json': this.get(keys[i])};
     }
   }
 
