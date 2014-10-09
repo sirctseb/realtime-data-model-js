@@ -107,11 +107,11 @@ onFileLoaded = function(doc) {
     orderString = '';
     doc.getModel().undo();
     equal(list.get(0), 1);
-    equal(orderString, 'listVS1mapVC');
+    equal(orderString, 'listVS1');
     orderString = '';
     doc.getModel().redo();
     equal(list.get(0), 2);
-    equal(orderString, 'mapVClistVS2');
+    equal(orderString, 'listVS2');
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
     list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
   });
