@@ -850,7 +850,7 @@ onFileLoaded = function(doc) {
 
     map1.set('text', 'text value');
 
-    doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
+    doc.getModel().getRoot().get('map').removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
     map1.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap1);
     map2.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap2);
   });
