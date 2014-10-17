@@ -477,6 +477,10 @@ onFileLoaded = function(doc) {
     map.set('e', 'e');
     deepEqual(map.keys(), ['e', 'a', 'c', 'd', 'b']);
   });
+  test('set same value', function() {
+    map.set('key1', 'val1');
+    equal(map.set('key1', 'val1'), 'val1');
+  });
   test('onValueChanged', function() {
     expect(3);
     var ssChanged = function(event) {
