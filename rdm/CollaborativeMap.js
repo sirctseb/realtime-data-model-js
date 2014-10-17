@@ -168,8 +168,6 @@ rdm.CollaborativeMap.prototype.keys = function() {
  */
 rdm.CollaborativeMap.prototype.set = function(key, value) {
   rdm.Document.verifyDocument_(this);
-  // TODO check what is returned by rt when they fix
-  // http://stackoverflow.com/questions/21563791/why-doesnt-collaborativemap-set-return-the-old-map-value
   // don't do anything if current value is already new value
   if (this.map_[key] === value) return value;
   // save the current value for return
@@ -178,7 +176,8 @@ rdm.CollaborativeMap.prototype.set = function(key, value) {
   var event = new rdm.ValueChangedEvent(
       this, key, value, this.map_[key] === undefined ? null : this.map_[key]);
   this.emitEventsAndChanged_([event]);
-  return ret;
+  // return the value or null if it was undefined
+  return ret === undefined ? null : ret;
 };
 
 
