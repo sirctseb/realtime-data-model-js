@@ -107,11 +107,11 @@ onFileLoaded = function(doc) {
     orderString = '';
     doc.getModel().undo();
     equal(list.get(0), 1);
-    equal(orderString, 'listVS1mapVC');
+    equal(orderString, 'listVS1');
     orderString = '';
     doc.getModel().redo();
     equal(list.get(0), 2);
-    equal(orderString, 'mapVClistVS2');
+    equal(orderString, 'listVS2');
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
     list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
   });
@@ -135,7 +135,7 @@ onFileLoaded = function(doc) {
     equal(map.keys().indexOf('compound2'), -1);
   });
   test('Compound events', function() {
-    expect(10);
+    expect(8);
     map.clear();
     var rootOC = function(e) {
       equal(e.type, 'object_changed');
@@ -154,7 +154,6 @@ onFileLoaded = function(doc) {
     map.set('compound2', 'val2');
     doc.getModel().endCompoundOperation();
     doc.getModel().undo();
-    // doc.getModel().redo();
     doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
     map.removeEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
@@ -456,8 +455,9 @@ onFileLoaded = function(doc) {
     equal(map.size, 1);
   });
   test('set(key, value)', function() {
-    strictEqual(map.set('key2',5), undefined);
+    strictEqual(map.set('key2',5), null);
     equal(map.get('key2'), 5);
+    equal(map.set('key2', 4), 5);
   });
   test('delete', function() {
     map.delete('key1');
@@ -850,7 +850,7 @@ onFileLoaded = function(doc) {
 
     map1.set('text', 'text value');
 
-    doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
+    doc.getModel().getRoot().get('map').removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
     map1.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap1);
     map2.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap2);
   });

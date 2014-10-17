@@ -66,6 +66,9 @@ rdm.UndoHistory.prototype.beginCompoundOperation = function(scope) {
 rdm.UndoHistory.prototype.endCompoundOperation = function() {
   var scope = this.COScopes_.pop();
   if(this.COScopes_.length == 0) {
+
+    var currentCO = goog.array.clone(this.currentCO_);
+
     // invert the operations and reverse the order
     var inverseCO = this.currentCO_.map(function(op) {
       return op.getInverse_();
@@ -83,6 +86,21 @@ rdm.UndoHistory.prototype.endCompoundOperation = function() {
       this.history_.splice(this.index_, this.history_.length, inverseCO);
       // update index
       this.index_++;
+    }
+
+    // fire events
+    for(var event in currentCO) {
+      currentCO[event].target.dispatchEvent(currentCO[event]);
+    }
+    // group by target
+    var bucketed = goog.array.bucket(currentCO, function(el, index) {
+      return rdm.custom.isCustomObject(el.target_) ?
+        rdm.custom.getId(el.target_) : el.target_.id;
+    });
+    // do object changed events
+    for(var id in bucketed) {
+      var event = new rdm.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
+      bucketed[id][0].target_.dispatchEvent(event);
     }
   }
 };
@@ -126,13 +144,6 @@ rdm.UndoHistory.prototype.undo = function() {
     e.updateState_();
     e.target_.executeAndEmitEvent_(e);
   });
-  // group by target
-  var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
-  // do object changed events
-  for(var id in bucketed) {
-    var event = new rdm.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
-    bucketed[id][0].target_.dispatchEvent(event);
-  }
 
   // unset undo scope flag
   this.endCompoundOperation();
@@ -157,13 +168,6 @@ rdm.UndoHistory.prototype.redo = function() {
     e.updateState_();
     e.target_.executeAndEmitEvent_(e);
   });
-  // group by target
-  var bucketed = goog.array.bucket(this.history_[this.index_], function(el, index) { return el.target_.id; })
-  // do object changed events
-  for(var id in bucketed) {
-    var event = new rdm.ObjectChangedEvent(bucketed[id][0].target_, bucketed[id]);
-    bucketed[id][0].target_.dispatchEvent(event);
-  }
 
   this.endCompoundOperation();
 

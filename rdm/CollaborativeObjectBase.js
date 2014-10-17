@@ -57,21 +57,19 @@ rdm.CollaborativeObjectBase.idNum_ = 0;
  * @private
  * @param {Array.<rdm.BaseModelEvent>} events The events to fire.
  */
+// TODO rename these methods
 rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
   this.model_.beginCompoundOperation();
   // add events to undo history
+  // TODO should put logic in addUndoEvents_ that checks for non-existant CO and makes a one-off
   this.model_.undoHistory_.addUndoEvents_(events);
+  this.model_.endCompoundOperation();
+
   // construct change event
-  var event = new rdm.ObjectChangedEvent(this, events);
   for (var i = 0; i < events.length; i++) {
     // execute events
     this.executeEvent_(events[i]);
-    // fire actual events
-    this.dispatchEvent(events[i]);
   }
-  // fire change event on normal stream
-  this.dispatchEvent(event);
-  this.model_.endCompoundOperation();
 };
 
 
@@ -82,17 +80,11 @@ rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
  * @param {rdm.BaseModelEvent} event The event to execute and fire.
  */
 rdm.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(event) {
-  this.model_.beginCompoundOperation();
-
   // add events to undo history
   this.model_.undoHistory_.addUndoEvents_([event]);
 
   // make change
   this.executeEvent_(event);
-  // emit event
-  this.dispatchEvent(event);
-
-  this.model_.endCompoundOperation();
 };
 
 
