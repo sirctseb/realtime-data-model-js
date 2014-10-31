@@ -937,6 +937,11 @@ onFileLoaded = function(doc) {
       // do test
       assert.deepEqual(result, jsonValue);
 
+      map.clear();
+      list.clear();
+      string.setText('');
+      doc.getModel().getRoot().set('book', doc.getModel().create('Book'));
+
       // restart tests
       start();
     });
