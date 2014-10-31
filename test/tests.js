@@ -880,6 +880,16 @@ onFileLoaded = function(doc) {
     equal(collaborators[0].isAnonymous, false);
   });
 
+  module('Identical objects');
+  test('In Map', function() {
+    var obj = {'a': 'a'};
+    map.set('dup1', obj);
+    map.set('dup2', obj);
+    notEqual(map.get('dup1'), map.get('dup2'));
+    obj['a'] = 'b';
+    equal(map.get('dup1')['a'], 'a');
+  });
+
   module('Export');
   test('root.toString', function() {
     // get string version
