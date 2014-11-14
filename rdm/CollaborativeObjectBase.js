@@ -95,3 +95,19 @@ rdm.CollaborativeObjectBase.prototype.executeAndEmitEvent_ = function(event) {
  *     applied to the object
  */
 rdm.CollaborativeObjectBase.prototype.executeEvent_ = function(event) {};
+
+/**
+ * Clone a non-collaborative object to add to a collaborative container (map or list).
+ *
+ * @param {Object} object The object to clone
+ */
+rdm.CollaborativeObjectBase.prototype.cloneNativeObject_ = function(object) {
+  // if object is not a collaborative object, return a clone
+  if(!(object instanceof rdm.CollaborativeObject) &&
+    // TODO rename to isLocalCustomObject_
+    !rdm.custom.isCustomObject_(object)) {
+    return JSON.parse(JSON.stringify(object));
+  }
+  // otherwise return the object
+  return object;
+};
