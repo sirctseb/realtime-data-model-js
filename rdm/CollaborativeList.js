@@ -312,34 +312,41 @@ rdm.CollaborativeList.prototype.stopPropagatingChanges_ = function(element) {
 rdm.CollaborativeList.prototype.executeEvent_ = function(event) {
   rdm.Document.verifyDocument_(this);
   if (event.type == rdm.EventType.VALUES_SET) {
-      Array.prototype.splice.apply(this.list_,
-          [event.index, event.newValues.length].concat(event.newValues));
-      // update event parents
-      for (var i = 0; i < event.oldValues.length; i++) {
-        this.stopPropagatingChanges_(event.oldValues[i]);
-      }
-      for (var i = 0; i < event.newValues.length; i++) {
-        this.propagateChanges_(event.newValues[i]);
-      }
+    // TODO parameterize on index and combine with VALUES_ADDED
+    // clone new values
+    var this_ = this;
+    var newValues = event.newValues.map(function(value) { return this_.cloneNativeObject_(value); });
+    Array.prototype.splice.apply(this.list_,
+      [event.index, event.newValues.length].concat(newValues));
+    // update event parents
+    for (var i = 0; i < event.oldValues.length; i++) {
+      this.stopPropagatingChanges_(event.oldValues[i]);
+    }
+    for (var i = 0; i < event.newValues.length; i++) {
+      this.propagateChanges_(event.newValues[i]);
+    }
   } else if (event.type == rdm.EventType.VALUES_REMOVED) {
-      // update list
-      this.list_.splice(event.index, event.values.length);
-      // update event parents
-      for (var i = 0; i < event.values.length; i++) {
-        this.stopPropagatingChanges_(event.values[i]);
-      }
-      // update references
-      this.shiftReferencesOnDelete_(event.index, event.values.length);
+    // update list
+    this.list_.splice(event.index, event.values.length);
+    // update event parents
+    for (var i = 0; i < event.values.length; i++) {
+      this.stopPropagatingChanges_(event.values[i]);
+    }
+    // update references
+    this.shiftReferencesOnDelete_(event.index, event.values.length);
   } else if (event.type == rdm.EventType.VALUES_ADDED) {
-      // update list
-      Array.prototype.splice.apply(
-        this.list_, [event.index, 0].concat(event.values));
-      // update event parents
-      for (var i = 0; i < event.values.length; i++) {
-        this.propagateChanges_(event.values[i]);
-      }
-      // update references
-      this.shiftReferencesOnInsert_(event.index, event.values.length);
+    // clone new values
+    var this_ = this;
+    var values = event.values.map(function(value) { return this_.cloneNativeObject_(value); });
+    // update list
+    Array.prototype.splice.apply(
+      this.list_, [event.index, 0].concat(values));
+    // update event parents
+    for (var i = 0; i < event.values.length; i++) {
+      this.propagateChanges_(event.values[i]);
+    }
+    // update references
+    this.shiftReferencesOnInsert_(event.index, event.values.length);
   }
 };
 

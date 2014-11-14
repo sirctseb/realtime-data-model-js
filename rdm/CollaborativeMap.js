@@ -196,7 +196,7 @@ rdm.CollaborativeMap.prototype.values = function() {
 rdm.CollaborativeMap.prototype.executeEvent_ = function(event) {
   rdm.Document.verifyDocument_(this);
   if (event.type == rdm.EventType.VALUE_CHANGED) {
-    this.map_[event.property] = event.newValue;
+    this.map_[event.property] = this.cloneNativeObject_(event.newValue);
     if (this.map_[event.property] === null) {
       delete this.map_[event.property];
     }
