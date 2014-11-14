@@ -230,6 +230,12 @@ onFileLoaded = function(doc) {
     equal(list.get(0), 0);
     equal(string.getText(), '0');
   });
+  test('unmatched endCompoundOperation', function() {
+    throws(function() {doc.getModel().endCompoundOperation();},
+      /Not in a compound operation./,
+      'Throw "Not in a compound operation." error'
+    );
+  });
 
   module('CollaborativeString', {
     setup: function() {

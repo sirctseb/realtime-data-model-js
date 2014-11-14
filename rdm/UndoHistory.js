@@ -62,8 +62,19 @@ rdm.UndoHistory.prototype.beginCompoundOperation = function(scope) {
   }
   this.COScopes_.push(scope);
 };
-// Complete the compound operation and add to the undo history
+
+// Check for current compound operation then end it.
 rdm.UndoHistory.prototype.endCompoundOperation = function() {
+  // check that we are in a compound operation
+  if(this.COScopes_[this.COScopes_.length - 1] != rdm.UndoHistory.Scope.EXPLICIT_CO) {
+    throw 'Not in a compound operation.';
+  }
+
+  this.endCompoundOperationInternal_();
+};
+
+// Complete the compound operation and add to the undo history
+rdm.UndoHistory.prototype.endCompoundOperationInternal_ = function() {
   var scope = this.COScopes_.pop();
   if(this.COScopes_.length == 0) {
 
@@ -126,7 +137,7 @@ rdm.UndoHistory.prototype.initializeModel = function(initialize) {
   // call initialization callback with scope set to INIT
   this.beginCompoundOperation(rdm.UndoHistory.Scope.INIT);
   initialize(this.model);
-  this.endCompoundOperation();
+  this.endCompoundOperationInternal_();
 };
 
 rdm.UndoHistory.prototype.undo = function() {
@@ -145,8 +156,8 @@ rdm.UndoHistory.prototype.undo = function() {
     e.target_.executeAndEmitEvent_(e);
   });
 
-  // unset undo scope flag
-  this.endCompoundOperation();
+  // end compound operation
+  this.endCompoundOperationInternal_();
 
   // if undo/redo state changed, send event
   if(canUndo_ != this.canUndo || canRedo_ != this.canRedo) {
@@ -169,7 +180,8 @@ rdm.UndoHistory.prototype.redo = function() {
     e.target_.executeAndEmitEvent_(e);
   });
 
-  this.endCompoundOperation();
+  // end compound operation
+  this.endCompoundOperationInternal_();
 
   // increment index
   this.index_++;
