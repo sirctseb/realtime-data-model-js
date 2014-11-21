@@ -91,6 +91,13 @@ rdm.Model = function() {
    * @private
    */
   this.isInitialized_ = false;
+  /**
+   * The undo history of the model
+   *
+   * @type rdm.UndoHistory
+   * @private
+   */
+  this.undoHistory_ = new rdm.UndoHistory(this);
 };
 goog.inherits(rdm.Model, goog.events.EventTarget);
 
@@ -103,7 +110,6 @@ goog.inherits(rdm.Model, goog.events.EventTarget);
  *     is loaded. The document's model object will be passed to this function.
  */
 rdm.Model.prototype.initialize_ = function(opt_initializerFn) {
-  this.undoHistory_ = new rdm.UndoHistory(this);
   if (opt_initializerFn != null) {
     this.undoHistory_.initializeModel(opt_initializerFn);
   }
