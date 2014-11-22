@@ -20,10 +20,18 @@ goog.require('rdm.Document');
 
 /**
  * A class to create local documents with no persistence
+ * @param {String} [data] Json export of the document data
  * @constructor
  */
-rdm.LocalDocumentProvider = function() {
+rdm.LocalDocumentProvider = function(data) {
   rdm.DocumentProvider.call(this);
+  /**
+   * The data from which the document is initialized
+   *
+   * @type String
+   * @private
+   */
+  this.initData_ = data;
 };
 goog.inherits(rdm.LocalDocumentProvider, rdm.DocumentProvider);
 
@@ -32,8 +40,13 @@ rdm.LocalDocumentProvider.prototype.loadDocument = function(onLoaded, opt_initia
   var model = new rdm.Model();
   // create the document
   this.document = new rdm.Document(model);
-  // initialize the model with callback
-  model.initialize_(opt_initializerFn);
+  // initialize with data if provided
+  if(this.initData_) {
+    model.initializeFromJson_(this.initData_);
+  } else {
+    // otherwise initialize the empty model with callback
+    model.initialize_(opt_initializerFn);
+  }
   // call the loaded callback
   onLoaded(this.document);
 };
