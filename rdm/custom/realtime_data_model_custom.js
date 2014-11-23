@@ -107,7 +107,7 @@ rdm.custom = {
     }
 
     // store loaded function in local custom object info
-    for(var name in rdm.CustomObjectustomTypes_) {
+    for(var name in rdm.CustomObject.customTypes_) {
       if(rdm.CustomObject.customTypes_[name].type === type) {
         rdm.CustomObject.customTypes_[name].onLoadedFn = opt_onLoadedFn;
         return;

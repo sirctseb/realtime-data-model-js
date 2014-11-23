@@ -91,6 +91,13 @@ rdm.Model = function() {
    * @private
    */
   this.isInitialized_ = false;
+  /**
+   * The undo history of the model
+   *
+   * @type rdm.UndoHistory
+   * @private
+   */
+  this.undoHistory_ = new rdm.UndoHistory(this);
 };
 goog.inherits(rdm.Model, goog.events.EventTarget);
 
@@ -103,11 +110,105 @@ goog.inherits(rdm.Model, goog.events.EventTarget);
  *     is loaded. The document's model object will be passed to this function.
  */
 rdm.Model.prototype.initialize_ = function(opt_initializerFn) {
-  this.undoHistory_ = new rdm.UndoHistory(this);
   if (opt_initializerFn != null) {
     this.undoHistory_.initializeModel(opt_initializerFn);
   }
   this.isInitialized_ = true;
+};
+
+/**
+ * Initialize the model from existing data.
+ *
+ * @private
+ * @param {String} Json export representation of the model data
+ */
+rdm.Model.prototype.initializeFromJson_ = function(data) {
+  this.undoHistory_.initializeModel(rdm.Model.createInitializationFunction_(data));
+};
+
+/**
+ * Create an initialization function to initialize a model from existing data
+ *
+ * @private
+ * @static
+ * @param {String} data The Json export representation of the model data
+ */
+rdm.Model.createInitializationFunction_ = function(data) {
+  return function(model) {
+    var json = JSON.parse(data);
+    var root = json['data']['value'];
+    // initialize refs map with the root entry
+    var refs = {'root': model.getRoot()};
+    for(var key in root) {
+      model.getRoot().set(key, model.reviveExportedObject_(root[key], refs));
+    }
+  };
+};
+
+/**
+ * Recursively revive an object from exported data
+ * @private
+ * @param {Object.<*>} object The exported object to revive
+ * @param {Object.<*>} refs A map of references to collaborative objects already revived
+ */
+rdm.Model.prototype.reviveExportedObject_ = function(object, refs) {
+  if(object['type'] === 'List') {
+    // create collaborative list
+    var list = this.createList();
+    // add to refs
+    refs[object['id']] = list;
+    // revive data in list
+    for(var index in object['value']) {
+      list.push(this.reviveExportedObject_(object['value'][index], refs));
+    }
+    return list;
+  } else if(object['type'] === 'Map') {
+    // create collaborative map
+    var map = this.createMap();
+    // add to refs
+    refs[object['id']] = map;
+    // revive data in map
+    for(var key in object['value']) {
+      map.set(key, this.reviveExportedObject_(object['value'][key], refs));
+    }
+    return map;
+  } else if(object['type'] === 'EditableString') {
+    // create string
+    var string = this.createString(object['value']);
+    // add to refs
+    refs[object['id']] = string;
+    return string;
+  } else if(object['json'] !== undefined) {
+    // return native object
+    return object['json'];
+  } else if(rdm.CustomObject.customTypes_[object['type']]) {
+    // revive custom object
+    var type = object['type'];
+    // create custom object
+    var customObject = this.create(type);
+    // add to refs
+    refs[object['id']] = customObject;
+    // set properties
+    for(var key in object['value']) {
+      customObject[key] = this.reviveExportedObject_(object['value'][key]);
+    }
+    // check for onLoadedFn function
+    if(rdm.CustomObject.customTypes_[type].onLoadedFn) {
+      // call onLoadedFn with object as this
+      rdm.CustomObject.customTypes_[type].onLoadedFn.call(customObject);
+    }
+    return customObject;
+  } else if(object['ref']) {
+    // return referenced object
+    return refs[object['ref']];
+    // TODO throw error on undefined reference?
+  } else if(object['type']) {
+    // if there is a type but it is not registered, throw an error
+    throw 'Cannot create collaborative object with unregistered type: ' + object['type'];
+  } else {
+    // throw an error if object is not structured correctly
+    throw 'Object ' + JSON.stringify(object) + ' is not a valid exported object';
+  }
 };
 
 /**
