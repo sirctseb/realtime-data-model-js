@@ -201,7 +201,12 @@ rdm.Model.prototype.reviveExportedObject_ = function(object, refs) {
   } else if(object['ref']) {
     // return referenced object
     return refs[object['ref']];
+    // TODO throw error on undefined reference?
+  } else if(object['type']) {
+    // if there is a type but it is not registered, throw an error
+    throw 'Cannot create collaborative object with unregistered type: ' + object['type'];
   } else {
+    // throw an error if object is not structured correctly
     throw 'Object ' + JSON.stringify(object) + ' is not a valid exported object';
   }
 };
