@@ -43,8 +43,12 @@
 
         rdm.custom.registerType(book, 'Book');
         rdm.custom.collaborativeField(book, 'title');
+        rdm.custom.collaborativeField(book, 'author');
         rdm.custom.setInitializer(book, function() {
           this.title = 'Foundation';
+        });
+        rdm.custom.setOnLoaded(book, function() {
+          this.author = 'Isaac Asimov';
         });
 
         // docProvider.exportDocument(function(content) {console.log(content)});
