@@ -197,6 +197,8 @@ rdm.Model.prototype.reviveExportedObject_ = function(object, refs) {
       // call onLoadedFn with object as this
       rdm.CustomObject.customTypes_[type].onLoadedFn.call(customObject);
     }
+    // store id in type map
+    rdm.CustomObject.customTypes_[type].ids.push(rdm.custom.getId(customObject));
     return customObject;
   } else if(object['ref']) {
     // return referenced object
@@ -300,6 +302,8 @@ rdm.Model.prototype.create = function(ref, var_args) {
   if (rdm.CustomObject.customTypes_[name].initializerFn) {
     rdm.CustomObject.customTypes_[name].initializerFn.apply(instance, var_args);
   }
+  // store id in type map
+  rdm.CustomObject.customTypes_[name].ids.push(rdm.custom.getId(instance));
   return instance;
 };
 

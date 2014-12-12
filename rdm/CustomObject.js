@@ -31,7 +31,7 @@ goog.inherits(rdm.CustomObject, rdm.CollaborativeObjectBase);
 rdm.CustomObject.instances_ = [];
 
 /**
- * Maps from names to {type, initializerFn, onLoadedFn, fields} as registered by
+ * Maps from names to {type, initializerFn, onLoadedFn, fields, ids} as registered by
  * rdm.LocalDocumentProvider.registerType, rdm.LocalDocumentProvider.setInitializer, and
  * rdm.LocalDocumentProvider.setOnLoaded
  * @private
@@ -45,6 +45,16 @@ rdm.CustomObject.customTypes_ = {};
 rdm.CustomObject.customTypeName_ = function(ref) {
   for(var name in rdm.CustomObject.customTypes_) {
     if(rdm.CustomObject.customTypes_[name].type === ref) {
+      return name;
+    }
+  }
+  throw ref + ' is not a registered custom object type';
+};
+
+rdm.CustomObject.customObjectName_ = function(obj) {
+  var id = rdm.custom.getId(obj);
+  for(var name in rdm.CustomObject.customTypes_) {
+    if(rdm.CustomObject.customTypes_[name].ids.indexOf(id) !== -1) {
       return name;
     }
   }
@@ -132,6 +142,7 @@ rdm.CustomObject.prototype.export = function(ids) {
   var result = {
     'id': rdm.custom.getId(this),
     // TODO need to get type
+    'type': rdm.CustomObject.customObjectName_(this),
     // 'type': ?
     'value': {}
   };

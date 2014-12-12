@@ -23,7 +23,7 @@ rdm.custom = {
    */
   registerType: function(type, name) {
     // store local type info
-    rdm.CustomObject.customTypes_[name] = {type: type, fields: {}};
+    rdm.CustomObject.customTypes_[name] = {type: type, fields: {}, ids: []};
     // do realtime registration
     if(rdm.GoogleDocProvider.globallySetup_) {
       gapi.drive.realtime.custom.registerType(type, name);
