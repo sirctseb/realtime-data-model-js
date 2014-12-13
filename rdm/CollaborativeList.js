@@ -156,6 +156,9 @@ rdm.CollaborativeList.prototype.lastIndexOf = function(
  */
 rdm.CollaborativeList.prototype.get = function(index) {
   rdm.Document.verifyDocument_(this);
+  if (index < 0 || index >= this.length) {
+    throw 'Index: ' + index + ', Size: 1';
+  }
   return this.list_[index];
 };
 
