@@ -274,6 +274,10 @@ rdm.CollaborativeList.prototype.replaceRange = function(index, values) {
   if (index + values.length >= this.length) {
     throw 'Index: ' + this.length + ', Size: ' + this.length;
   }
+  // match rt error for negative values
+  if (index < 0) {
+    throw 'Index: ' + index + ', Size: ' + this.length;
+  }
 
   var event = new rdm.ValuesSetEvent(
     this, index, this.list_.slice(index, index + values.length), values);
