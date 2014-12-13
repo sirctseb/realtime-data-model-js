@@ -421,7 +421,7 @@ onFileLoaded = function(doc) {
     deepEqual(list.asArray(), [1,3]);
   });
   test('replaceRange(index, values)', function() {
-    expect(5);
+    expect(6);
     var added = function(event) {
       ok(true);
     };
@@ -443,6 +443,9 @@ onFileLoaded = function(doc) {
       list.replaceRange(3, [6,7]);
     }, /Index: 4, Size: 4/);
     deepEqual(list.asArray(), [0,4,5,3]);
+    throws(function() {
+      list.replaceRange(-1, [1,2]);
+    }, /Index: -1, Size: 4/);
     list.removeEventListener(rdm.EventType.VALUES_ADDED, added);
     list.removeEventListener(rdm.EventType.VALUES_REMOVED, removed);
     list.removeEventListener(rdm.EventType.VALUES_SET, set);
