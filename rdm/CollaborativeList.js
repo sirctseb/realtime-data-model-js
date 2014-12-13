@@ -269,7 +269,12 @@ rdm.CollaborativeList.prototype.removeValue = function(value) {
  */
 rdm.CollaborativeList.prototype.replaceRange = function(index, values) {
   rdm.Document.verifyDocument_(this);
-  // add event to stream
+
+  // match rt error when values is longer than available space
+  if (index + values.length >= this.length) {
+    throw 'Index: ' + this.length + ', Size: ' + this.length;
+  }
+
   var event = new rdm.ValuesSetEvent(
     this, index, this.list_.slice(index, index + values.length), values);
   this.emitEventsAndChanged_([event]);
