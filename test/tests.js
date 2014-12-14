@@ -373,14 +373,35 @@ onFileLoaded = function(doc) {
     strictEqual(list.lastIndexOf(0), -1);
   });
   test('move(index, destinationIndex)', function() {
+    expect(15);
     list.clear();
     list.pushAll([0,1,2]);
+    var set = function(event) {
+      ok(false, 'Set event should not occur');
+    };
+    var iter = 0;
+    var added = function(event) {
+      deepEqual(event.values, [0]);
+      // TODO i think these values are wrong but that's a problem on the rt side
+      strictEqual(event.index, [0,1,2][iter]);
+      iter = iter + 1;
+    };
+    var removed = function(event) {
+      deepEqual(event.values, [0]);
+      strictEqual(event.index, 0);
+    };
+    list.addEventListener(rdm.EventType.VALUES_SET, set);
+    list.addEventListener(rdm.EventType.VALUES_ADDED, added);
+    list.addEventListener(rdm.EventType.VALUES_REMOVED, removed);
     list.move(0,0);
     deepEqual(list.asArray(), [0,1,2]);
     list.move(0,1);
     deepEqual(list.asArray(), [0,1,2]);
     list.move(0,2);
     deepEqual(list.asArray(), [1,0,2]);
+    list.removeEventListener(rdm.EventType.VALUES_SET, set);
+    list.removeEventListener(rdm.EventType.VALUES_ADDED, added);
+    list.removeEventListener(rdm.EventType.VALUES_REMOVED, removed);
   });
   test('moveToList(index, destination, destinationIndex)', function() {
     list.clear();
