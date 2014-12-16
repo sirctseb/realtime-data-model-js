@@ -382,7 +382,6 @@ onFileLoaded = function(doc) {
     var iter = 0;
     var added = function(event) {
       deepEqual(event.values, [0]);
-      // TODO i think these values are wrong but that's a problem on the rt side
       strictEqual(event.index, [0,1,2][iter]);
       iter = iter + 1;
     };
@@ -393,6 +392,11 @@ onFileLoaded = function(doc) {
     list.addEventListener(rdm.EventType.VALUES_SET, set);
     list.addEventListener(rdm.EventType.VALUES_ADDED, added);
     list.addEventListener(rdm.EventType.VALUES_REMOVED, removed);
+    // TODO rt implementation hangs on index = -1
+    // list.move(-1, 0);
+    // throws(function() {
+    //   list.move(-1, 0);
+    // }, /Index: -1, Size: 1/);
     list.move(0,0);
     deepEqual(list.asArray(), [0,1,2]);
     list.move(0,1);
