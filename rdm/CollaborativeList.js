@@ -150,12 +150,72 @@ rdm.CollaborativeList.prototype.lastIndexOf = function(
 };
 
 /**
+ * Moves an element of the list from one index to another within the list.
+ * Both indices are with respecdt to the position of elements before the move.
+ * For example, given the list ['A', 'B', 'C']:
+ * <ul>
+ *   <li> move(0, 0) is a no-op
+ *   <li> move(0, 1) is a no-op
+ *   <li> move(0, 2) yields ['B', 'A', 'C'] ('A' is moved to immediately before
+ * 'C')
+ *   <li> move(0, 3) yeilds ['B', 'C', 'A'] ('A' is moved to immediately before
+ * an imaginary element after the list end)
+ *   <li> move(1, 0) yields ['B', 'A', 'C'] ('B' is moved to immediately before
+ * 'A')
+ *   <li> move(1, 1) is a no-op
+ *   <li> move(1, 2) is a no-op
+ *   <li> move(1, 3) yields ['A', 'C', 'B'] ('B' is moved to immediately before
+ * an imaginary element after the list end)
+ * </ul>
+ * @param {number} index The index of the element to move.
+ * @param {number} destinationIndex The index to move the element to.
+ * The element will be inserted immediately before this index.
+ */
+rdm.CollaborativeList.prototype.move = function(index, destinationIndex) {
+  rdm.Document.verifyDocument_(this);
+
+  // TODO error-check index once rt does
+
+  var value = this.get(index);
+  var addEvent = new rdm.ValuesAddedEvent(this, destinationIndex, [value]);
+  var removeEvent = new rdm.ValuesRemovedEvent(this, index, [value]);
+  this.emitEventsAndChanged_([addEvent, removeEvent]);
+};
+
+/**
+ * Moves a single element in this list (at index) to immediately before
+ * destinationIndex in the list destination. Both indices are with respect to
+ * the position of elements before the move. If the provided destination is this
+ * list, this function is identical to move(index, destinationIndex).
+ * @param {number} index The index of the element to move.
+ * @param {rdm.CollaborativeList} destination The list to move the element to.
+ * @param {number} destinationIndex The index to move the element to. The
+ * element will be inserted immediately before this index.
+ */
+rdm.CollaborativeList.prototype.moveToList = function(index, destination,
+  destinationIndex) {
+  rdm.Document.verifyDocument_(this);
+
+  // TODO error-check index and destinationIndex once rt does
+
+  var value = this.get(index);
+  var addEvent = new rdm.ValuesAddedEvent(destination, destinationIndex,
+    [value]);
+  var removeEvent = new rdm.ValuesRemovedEvent(this, index, [value]);
+  destination.emitEventsAndChanged_([addEvent]);
+  this.emitEventsAndChanged_([removeEvent]);
+};
+
+/**
  * Gets the value at the given index.
  * @param {number} index The index.
  * @return {*} The value at the given index.
  */
 rdm.CollaborativeList.prototype.get = function(index) {
   rdm.Document.verifyDocument_(this);
+  if (index < 0 || index >= this.length) {
+    throw 'Index: ' + index + ', Size: 1';
+  }
   return this.list_[index];
 };
 
@@ -269,7 +329,16 @@ rdm.CollaborativeList.prototype.removeValue = function(value) {
  */
 rdm.CollaborativeList.prototype.replaceRange = function(index, values) {
   rdm.Document.verifyDocument_(this);
-  // add event to stream
+
+  // match rt error when values is longer than available space
+  if (index + values.length >= this.length) {
+    throw 'Index: ' + this.length + ', Size: ' + this.length;
+  }
+  // match rt error for negative values
+  if (index < 0) {
+    throw 'Index: ' + index + ', Size: ' + this.length;
+  }
+
   var event = new rdm.ValuesSetEvent(
     this, index, this.list_.slice(index, index + values.length), values);
   this.emitEventsAndChanged_([event]);
