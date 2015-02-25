@@ -115,6 +115,18 @@ onFileLoaded = function(doc) {
     map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
     list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
   });
+  test('Undo outside root graph', function() {
+    expect(2);
+    var str = doc.getModel().createString('string');
+    var deleted = function(event) {
+      strictEqual(event.type, rdm.EventType.TEXT_DELETED);
+      strictEqual(event.text, 'added');
+    };
+    str.append('added');
+    str.addEventListener(rdm.EventType.TEXT_DELETED, deleted);
+    doc.getModel().undo();
+    str.removeEventListener(rdm.EventType.TEXT_DELETED, deleted);
+  });
 
   module('Compound Operations');
   test('Compound map additions', function() {
