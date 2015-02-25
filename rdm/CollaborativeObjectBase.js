@@ -59,17 +59,18 @@ rdm.CollaborativeObjectBase.idNum_ = 0;
  */
 // TODO rename these methods
 rdm.CollaborativeObjectBase.prototype.emitEventsAndChanged_ = function(events) {
+  // construct change event
+  for (var i = 0; i < events.length; i++) {
+    // execute events
+    this.executeEvent_(events[i]);
+  }
+
   this.model_.beginCompoundOperation();
   // add events to undo history
   // TODO should put logic in addUndoEvents_ that checks for non-existant CO and makes a one-off
   this.model_.undoHistory_.addUndoEvents_(events);
   this.model_.endCompoundOperation();
 
-  // construct change event
-  for (var i = 0; i < events.length; i++) {
-    // execute events
-    this.executeEvent_(events[i]);
-  }
 };
 
 

@@ -816,6 +816,15 @@ onFileLoaded = function(doc) {
     string.insertString(0, 'x');
     strictEqual(order, 'rootCapturestringEventrootBubble');
   });
+  test('Execution order', function() {
+    string.setText('abc');
+    var handler = function(e) {
+      strictEqual(string.getText(), 'def');
+    };
+    string.addEventListener(rdm.EventType.TEXT_DELETED, handler);
+    string.setText('def');
+    string.removeEventListener(rdm.EventType.TEXT_DELETED, handler);
+  });
 
   module('Custom');
   test('Book is custom object', function() {
