@@ -248,6 +248,21 @@ onFileLoaded = function(doc) {
       'Throw "Not in a compound operation." error'
     );
   });
+  test('Empty Compound Operation', function() {
+    expect(1);
+    string.append('append');
+    var deleted = function(event) {
+      strictEqual(event.text, 'append');
+    };
+    string.addEventListener(rdm.EventType.TEXT_DELETED, deleted);
+
+    doc.getModel().beginCompoundOperation();
+    doc.getModel().endCompoundOperation();
+
+    doc.getModel().undo();
+
+    string.removeEventListener(rdm.EventType.TEXT_DELETED, deleted);
+  });
 
   module('CollaborativeString', {
     setup: function() {
