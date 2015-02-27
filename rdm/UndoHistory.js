@@ -80,6 +80,11 @@ rdm.UndoHistory.prototype.endCompoundOperationInternal_ = function() {
 
     var currentCO = goog.array.clone(this.currentCO_);
 
+    if(currentCO.length === 0) {
+      // if the compound operation is empty, noop
+      return;
+    }
+
     // invert the operations and reverse the order
     var inverseCO = this.currentCO_.map(function(op) {
       return op.getInverse_();
