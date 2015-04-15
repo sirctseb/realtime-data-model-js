@@ -14,7 +14,6 @@
 
 goog.provide('rdm.custom');
 goog.require('rdm.GoogleDocProvider');
-goog.require('rdm.CustomObject');
 
 rdm.custom = {
 
@@ -22,8 +21,6 @@ rdm.custom = {
    * Registers a user-defined type as a collaborative type. This must be called before {@code rdm.DocumentProvider.loadDocument}.
    */
   registerType: function(type, name) {
-    // store local type info
-    rdm.CustomObject.customTypes_[name] = {type: type, fields: {}, ids: []};
     // do realtime registration
     if(rdm.GoogleDocProvider.globallySetup_) {
       gapi.drive.realtime.custom.registerType(type, name);
@@ -41,41 +38,7 @@ rdm.custom = {
       // add realtime collaborative field to type prototype
       type.prototype[name] = gapi.drive.realtime.custom.collaborativeField(name);
     }
-
-    // store field on local custom object info to be added when local model creates object
-    rdm.CustomObject.customTypes_[rdm.CustomObject.customTypeName_(type)].fields[name] = 
-      rdm.custom.localCollaborativeField_(name);
   },
-
-  localCollaborativeField_: function(name) {
-    // stores the actual value of the property
-    return {
-      configurable: false,
-      enumerable: true,
-      get: function () {
-        return this.backingFields_[name];
-        // this.H();
-        // var b=mx(this),c=b.b,e=oe(b,this);
-        // if(null==e)
-        //   throw Error();
-        // return de(b,c.get(e,a))
-      },
-      set: function (b) {
-        // create event
-        var event = new rdm.ValueChangedEvent(this, name, b, this.backingFields_[name] || null);
-        // emit event
-        this.emitEventsAndChanged_([event]);
-
-        // this.H();
-        // var c=mx(this),e=c.b,f=oe(c,this);
-        // if(null==f)
-        //   throw Error();
-        // b=oe(c,b);
-        // e.put(f,a,b);
-      }
-    };
-  },
-
 
   /**
    * Sets the initializer function for the given type.
@@ -85,14 +48,6 @@ rdm.custom = {
     // set realtime initializer
     if(rdm.GoogleDocProvider.globallySetup_) {
       gapi.drive.realtime.custom.setInitializer(type, initializerFn);
-    }
-
-    // store initializer in local custom object info
-    for(var name in rdm.CustomObject.customTypes_) {
-      if(rdm.CustomObject.customTypes_[name].type === type) {
-        rdm.CustomObject.customTypes_[name].initializerFn = initializerFn;
-        return;
-      }
     }
   },
 
@@ -105,70 +60,33 @@ rdm.custom = {
     if(rdm.GoogleDocProvider.globallySetup_) {
       gapi.drive.realtime.custom.setOnLoaded(type, opt_onLoadedFn);
     }
-
-    // store loaded function in local custom object info
-    for(var name in rdm.CustomObject.customTypes_) {
-      if(rdm.CustomObject.customTypes_[name].type === type) {
-        rdm.CustomObject.customTypes_[name].onLoadedFn = opt_onLoadedFn;
-        return;
-      }
-    }
   },
 
   /**
    * Returns true if obj is a custom collaborative object, otherwise false.
    */
   isCustomObject: function(obj) {
-    return (rdm.custom.isCustomObject_(obj) ||
-      (rdm.GoogleDocProvider.globallySetup_ &&
-      gapi.drive.realtime.custom.isCustomObject(obj)));
-  },
-
-  isCustomObject_: function(obj) {
-    // return obj instanceof rdm.CustomObject;
-    return goog.array.contains(rdm.CustomObject.instances_, obj);
+    return rdm.GoogleDocProvider.globallySetup_ &&
+      gapi.drive.realtime.custom.isCustomObject(obj);
   },
 
   /**
    * Returns the id of the given custom object.
    */
   getId: function(obj) {
-    if(rdm.custom.isCustomObject_(obj)) {
-      return rdm.custom.getLocalId_(obj);
-    } else if(rdm.GoogleDocProvider.globallySetup_ &&
+    if(rdm.GoogleDocProvider.globallySetup_ &&
       gapi.drive.realtime.custom.isCustomObject(obj)) {
       return gapi.drive.realtime.custom.getId(obj);
-    } else {
-      throw 'Object ' + obj + ' is not a custom object';
     }
   },
-
-  getLocalId_: function(obj) {
-    return obj.id_;
-  },
-
-
-  /**
-   * Maps from object ids to the models that created the objects
-   * @private
-   */
-  customObjectModels_: {},
 
   /**
    * Returns the model for the given custom object.
    */
   getModel: function(obj) {
-    if(rdm.custom.isCustomObject_(obj)) {
-      return rdm.custom.getLocalModel_(obj);
-    } else if(rdm.GoogleDocProvider.globallySetup_ &&
+    if(rdm.GoogleDocProvider.globallySetup_ &&
       gapi.drive.realtime.custom.isCustomObject(obj)) {
       return gapi.drive.realtime.custom.getModel(obj);
-    } else {
-      throw 'Object ' + obj + ' is not a custom object';
     }
-  },
-
-  getLocalModel_: function(obj) {
-    return rdm.custom.customObjectModels_['' + rdm.custom.getLocalId_(obj)];
   }
 };

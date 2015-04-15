@@ -13,6 +13,7 @@
 // limitations under the License.
 
 goog.provide('rdm.PersistentDocProvider');
+
 goog.require('rdm.DocumentProvider');
 goog.require('rdm.BatchStrategy');
 

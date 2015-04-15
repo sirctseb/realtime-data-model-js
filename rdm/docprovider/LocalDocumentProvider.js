@@ -14,9 +14,6 @@
 
 goog.provide('rdm.LocalDocumentProvider');
 goog.require('rdm.DocumentProvider');
-goog.require('rdm.CustomObject');
-goog.require('rdm.Model');
-goog.require('rdm.Document');
 
 /**
  * A class to create local documents with no persistence
@@ -36,31 +33,15 @@ rdm.LocalDocumentProvider = function(data) {
 goog.inherits(rdm.LocalDocumentProvider, rdm.DocumentProvider);
 
 rdm.LocalDocumentProvider.prototype.loadDocument = function(onLoaded, opt_initializerFn, opt_errorFn) {
-  // create the model object
-  var model = new rdm.Model();
-  // create the document
-  this.document = new rdm.Document(model);
-  // initialize with data if provided
-  if(this.initData_) {
-    model.initializeFromJson_(this.initData_);
-  } else {
-    // otherwise initialize the empty model with callback
-    model.initialize_(opt_initializerFn);
-  }
-  // call the loaded callback
-  onLoaded(this.document);
+  // TODO this.initData_ != null case, use gapi.drive.realtime.loadFromJson
+  var this_ = this;
+  gapi.drive.realtime.newInMemoryDocument(function(doc) {
+    this_.document = doc;
+    onLoaded(doc);
+  }, opt_initializerFn, opt_errorFn);
 };
 
 rdm.LocalDocumentProvider.prototype.exportDocument = function(onExported) {
-  var result = {
-    // TODO what to put in appId?
-    'appId':'local',
-    // TODO what to put in revision?
-    'revision':1,
-    'data': {
-    }
-  };
-  var ids = {};
-  result['data'] = this.document.getModel().getRoot().export(ids);
+  var result = this.document.getModel().toJson();
   onExported(result);
 };

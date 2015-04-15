@@ -37,9 +37,9 @@ onFileLoaded = function(doc) {
       // test that undo/redo state is what we strictEqual
       strictEqual(doc.getModel().canUndo, true);
       strictEqual(doc.getModel().canRedo, false);
-      doc.getModel().removeEventListener(rdm.EventType.UNDO_REDO_STATE_CHANGED, undo);
+      doc.getModel().removeEventListener(gapi.drive.realtime.EventType.UNDO_REDO_STATE_CHANGED, undo);
     };
-    doc.getModel().addEventListener(rdm.EventType.UNDO_REDO_STATE_CHANGED, undo);
+    doc.getModel().addEventListener(gapi.drive.realtime.EventType.UNDO_REDO_STATE_CHANGED, undo);
     doc.getModel().redo();
     strictEqual(doc.getModel().getRoot().get('text').getText(), 'redid');
     doc.getModel().undo();
@@ -48,17 +48,17 @@ onFileLoaded = function(doc) {
     expect(2);
     list.clear();
     var listVR = function(e) {
-      strictEqual(e.type, rdm.EventType.VALUES_REMOVED);
+      strictEqual(e.type, gapi.drive.realtime.EventType.VALUES_REMOVED);
     };
     var listVA = function(e) {
-      strictEqual(e.type, rdm.EventType.VALUES_ADDED);
+      strictEqual(e.type, gapi.drive.realtime.EventType.VALUES_ADDED);
     };
-    list.addEventListener(rdm.EventType.VALUES_REMOVED, listVR);
-    list.addEventListener(rdm.EventType.VALUES_ADDED, listVA);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, listVR);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, listVA);
     list.push('value');
     doc.getModel().undo();
-    list.removeEventListener(rdm.EventType.VALUES_REMOVED, listVR);
-    list.removeEventListener(rdm.EventType.VALUES_ADDED, listVA);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, listVR);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, listVA);
   });
   test('event order during undo', function() {
     map.clear();
@@ -75,11 +75,11 @@ onFileLoaded = function(doc) {
     list.push('value');
     map.set('key2', 'value2');
     doc.getModel().endCompoundOperation();
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    list.addEventListener(rdm.EventType.VALUES_REMOVED, listVR);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, listVR);
     doc.getModel().undo();
-    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    list.removeEventListener(rdm.EventType.VALUES_REMOVED, listVR);
+    map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, listVR);
     strictEqual(orderString, 'mapVCkey2listVRvaluemapVCkey1');
   });
   test('event order with event handler', function() {
@@ -99,8 +99,8 @@ onFileLoaded = function(doc) {
     var listVS = function(e) {
       orderString += 'listVS' + e.newValues[0];
     };
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    list.addEventListener(rdm.EventType.VALUES_SET, listVS);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, listVS);
     map.set('key', 'val');
     strictEqual(list.get(0), 2);
     strictEqual(orderString, 'mapVClistVS2');
@@ -112,20 +112,20 @@ onFileLoaded = function(doc) {
     doc.getModel().redo();
     strictEqual(list.get(0), 2);
     strictEqual(orderString, 'listVS2');
-    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
+    map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_SET, listVS);
   });
   test('Undo outside root graph', function() {
     expect(2);
     var str = doc.getModel().createString('string');
     var deleted = function(event) {
-      strictEqual(event.type, rdm.EventType.TEXT_DELETED);
+      strictEqual(event.type, gapi.drive.realtime.EventType.TEXT_DELETED);
       strictEqual(event.text, 'added');
     };
     str.append('added');
-    str.addEventListener(rdm.EventType.TEXT_DELETED, deleted);
+    str.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, deleted);
     doc.getModel().undo();
-    str.removeEventListener(rdm.EventType.TEXT_DELETED, deleted);
+    str.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, deleted);
   });
 
   module('Compound Operations');
@@ -158,17 +158,17 @@ onFileLoaded = function(doc) {
     var mapOC = function(e) {
       strictEqual(e.type, 'object_changed');
     };
-    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    map.addEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
+    doc.getModel().getRoot().addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, rootOC);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
+    map.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, mapOC);
     doc.getModel().beginCompoundOperation();
     map.set('compound1', 'val1');
     map.set('compound2', 'val2');
     doc.getModel().endCompoundOperation();
     doc.getModel().undo();
-    doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
-    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
-    map.removeEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
+    doc.getModel().getRoot().removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, rootOC);
+    map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
+    map.removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, mapOC);
   });
   test('Compound list, string, map', function() {
     map.clear();
@@ -213,13 +213,13 @@ onFileLoaded = function(doc) {
     var mapOC = function(e) {
       strictEqual(e.type, 'object_changed');
     };
-    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
-    map.addEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
-    list.addEventListener(rdm.EventType.OBJECT_CHANGED, listOC);
+    doc.getModel().getRoot().addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, rootOC);
+    map.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, mapOC);
+    list.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, listOC);
     doc.getModel().undo();
-    doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, rootOC);
-    map.removeEventListener(rdm.EventType.OBJECT_CHANGED, mapOC);
-    list.removeEventListener(rdm.EventType.OBJECT_CHANGED, listOC);
+    doc.getModel().getRoot().removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, rootOC);
+    map.removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, mapOC);
+    list.removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, listOC);
   });
   test('nested compound operations', function() {
     map.clear();
@@ -254,14 +254,14 @@ onFileLoaded = function(doc) {
     var deleted = function(event) {
       strictEqual(event.text, 'append');
     };
-    string.addEventListener(rdm.EventType.TEXT_DELETED, deleted);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, deleted);
 
     doc.getModel().beginCompoundOperation();
     doc.getModel().endCompoundOperation();
 
     doc.getModel().undo();
 
-    string.removeEventListener(rdm.EventType.TEXT_DELETED, deleted);
+    string.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, deleted);
   });
 
   module('CollaborativeString', {
@@ -295,14 +295,14 @@ onFileLoaded = function(doc) {
     var ssInsert = function(event) {
       strictEqual(event.index, 4);
       strictEqual(event.text, ' append ');
-      string.removeEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
-      string.removeEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     };
     var ssDelete = function(event) {
       fail("delete should not be call");
     };//, count: 0));
-    string.addEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
-    string.addEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     string.insertString(4, ' append ');
   });
   test('onTextDeleted', function() {
@@ -313,11 +313,11 @@ onFileLoaded = function(doc) {
     var ssDelete = function(event) {
       strictEqual(event.index, 4);
       strictEqual(event.text, 'te');
-      string.removeEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
-      string.removeEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+      string.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     };
-    string.addEventListener(rdm.EventType.TEXT_INSERTED, ssInsert);
-    string.addEventListener(rdm.EventType.TEXT_DELETED, ssDelete);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, ssInsert);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, ssDelete);
     string.removeRange(4, 6);
   });
   test('string diff', function() {
@@ -328,9 +328,9 @@ onFileLoaded = function(doc) {
       });
     };
     string.setText('Hello Realtime World!');
-    string.addEventListener(rdm.EventType.OBJECT_CHANGED, sOC);
+    string.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, sOC);
     string.setText('redid');
-    string.removeEventListener(rdm.EventType.OBJECT_CHANGED, sOC);
+    string.removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, sOC);
     var json = '[{"type":"text_deleted","text":"Hello R","index":0},{"type":"text_inserted","text":"r","index":0},{"type":"text_deleted","text":"alt","index":2},{"type":"text_inserted","text":"d","index":2},{"type":"text_deleted","text":"me World!","index":4},{"type":"text_inserted","text":"d","index":4}]';
     deepEqual(events, JSON.parse(json));
   });
@@ -416,9 +416,9 @@ onFileLoaded = function(doc) {
       deepEqual(event.values, [0]);
       strictEqual(event.index, 0);
     };
-    list.addEventListener(rdm.EventType.VALUES_SET, set);
-    list.addEventListener(rdm.EventType.VALUES_ADDED, added);
-    list.addEventListener(rdm.EventType.VALUES_REMOVED, removed);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, set);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, added);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, removed);
     // TODO rt implementation hangs on index = -1
     // list.move(-1, 0);
     // throws(function() {
@@ -430,9 +430,9 @@ onFileLoaded = function(doc) {
     deepEqual(list.asArray(), [0,1,2]);
     list.move(0,2);
     deepEqual(list.asArray(), [1,0,2]);
-    list.removeEventListener(rdm.EventType.VALUES_SET, set);
-    list.removeEventListener(rdm.EventType.VALUES_ADDED, added);
-    list.removeEventListener(rdm.EventType.VALUES_REMOVED, removed);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_SET, set);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, added);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, removed);
   });
   test('moveToList(index, destination, destinationIndex)', function() {
     list.clear();
@@ -486,9 +486,9 @@ onFileLoaded = function(doc) {
     };
     list.clear();
     list.pushAll([0,1,2,3]);
-    list.addEventListener(rdm.EventType.VALUES_ADDED, added);
-    list.addEventListener(rdm.EventType.VALUES_REMOVED, removed);
-    list.addEventListener(rdm.EventType.VALUES_SET, set);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, added);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, removed);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, set);
     list.replaceRange(1, [4,5]);
     deepEqual(list.asArray(), [0,4,5,3]);
     throws(function() {
@@ -498,9 +498,9 @@ onFileLoaded = function(doc) {
     throws(function() {
       list.replaceRange(-1, [1,2]);
     }, /Index: -1, Size: 4/);
-    list.removeEventListener(rdm.EventType.VALUES_ADDED, added);
-    list.removeEventListener(rdm.EventType.VALUES_REMOVED, removed);
-    list.removeEventListener(rdm.EventType.VALUES_SET, set);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, added);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, removed);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_SET, set);
   });
   test('set(value)', function() {
     list.set(0, 'new s1');
@@ -511,9 +511,9 @@ onFileLoaded = function(doc) {
     var ss = function(event) {
       strictEqual(event.index, 1);
       deepEqual(event.values, ['s2']);
-      list.removeEventListener(rdm.EventType.VALUES_ADDED, ss);
+      list.removeEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, ss);
     };
-    list.addEventListener(rdm.EventType.VALUES_ADDED, ss);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, ss);
     list.push('s2');
   });
   test('onValuesRemoved', function() {
@@ -521,9 +521,9 @@ onFileLoaded = function(doc) {
     var ss = function(event) {
       strictEqual(event.index, 0);
       deepEqual(event.values, ['s1']);
-      list.removeEventListener(rdm.EventType.VALUES_REMOVED, ss);
+      list.removeEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, ss);
     };
-    list.addEventListener(rdm.EventType.VALUES_REMOVED, ss);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, ss);
     list.clear();
   });
   test('onValuesSet', function() {
@@ -532,32 +532,32 @@ onFileLoaded = function(doc) {
       strictEqual(event.index, 0);
       deepEqual(event.oldValues, ['s1']);
       deepEqual(event.newValues, ['s2']);
-      list.removeEventListener(rdm.EventType.VALUES_SET, ss);
+      list.removeEventListener(gapi.drive.realtime.EventType.VALUES_SET, ss);
     };
-    list.addEventListener(rdm.EventType.VALUES_SET, ss);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, ss);
     list.set(0, 's2');
   });
   test('propagation', function() {
     expect(1);
     var ss = function(event) {
-      strictEqual(event.events[0].type, rdm.EventType.VALUES_ADDED);
+      strictEqual(event.events[0].type, gapi.drive.realtime.EventType.VALUES_ADDED);
     };
-    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, ss);
+    doc.getModel().getRoot().addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ss);
 
     list.push('value');
 
-    doc.getModel().getRoot().removeEventListener(rdm.EventType.OBJECT_CHANGED, ss);
+    doc.getModel().getRoot().removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ss);
   });
   test('same value', function() {
     expect(4);
     var listVS = function(e) {
-      strictEqual(e.type, rdm.EventType.VALUES_SET);
+      strictEqual(e.type, gapi.drive.realtime.EventType.VALUES_SET);
       strictEqual(e.newValues[0], 1);
     };
-    list.addEventListener(rdm.EventType.VALUES_SET, listVS);
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, listVS);
     list.set(0, 1);
     list.set(0, 1);
-    list.removeEventListener(rdm.EventType.VALUES_SET, listVS);
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_SET, listVS);
   });
   test('set out of range', function() {
     throws(function() {
@@ -639,9 +639,9 @@ onFileLoaded = function(doc) {
       strictEqual(event.property, 'key1');
       strictEqual(event.newValue, 5);
       strictEqual(event.oldValue, 4);
-      map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssChanged);
+      map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssChanged);
     };
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssChanged);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssChanged);
     map.set('key1',5);
   });
   test('onValueChanged add', function() {
@@ -650,9 +650,9 @@ onFileLoaded = function(doc) {
       strictEqual(event.property, 'prop');
       strictEqual(event.newValue, 'newVal');
       strictEqual(event.oldValue, null);
-      map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssAdd);
+      map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssAdd);
     };
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssAdd);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssAdd);
     map.set('prop','newVal');
   });
   test('onValueChanged remove', function() {
@@ -661,9 +661,9 @@ onFileLoaded = function(doc) {
       strictEqual(event.property, 'key1');
       strictEqual(event.oldValue, 4);
       strictEqual(event.newValue, null);
-      map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssRemove);
+      map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssRemove);
     };
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssRemove);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssRemove);
     map.delete('key1');
   });
   test('onValueChanged clear', function() {
@@ -672,12 +672,11 @@ onFileLoaded = function(doc) {
     var ssClear = function(event) {
       strictEqual(event.newValue, null);
     }; //, count: 2));
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, ssClear);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssClear);
     map.clear();
-    map.removeEventListener(rdm.EventType.VALUE_CHANGED, ssClear);
+    map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, ssClear);
   });
   test('map length on null assignment', function() {
-    // TODO this is different than native maps. but that is a rt problem, not rdm.
     strictEqual(map.size, 1);
     map.set('key1',null);
     strictEqual(map.size, 0);
@@ -701,9 +700,9 @@ onFileLoaded = function(doc) {
       strictEqual(e.newValue, 'val3');
       strictEqual(e.oldValue, 'val2');
     };
-    map.addEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    map.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
     strictEqual(map.set('key1', 'val1'), 'val1');
-    map.removeEventListener(rdm.EventType.VALUE_CHANGED, mapVC);
+    map.removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, mapVC);
   });
   test('undo to absent', function() {
     map.clear();
@@ -775,9 +774,9 @@ onFileLoaded = function(doc) {
       strictEqual(event.oldIndex, 5);
       strictEqual(event.newIndex, 7);
       strictEqual(ref.index, 7);
-      ref.removeEventListener(rdm.EventType.REFERENCE_SHIFTED,ssRef);
+      ref.removeEventListener(gapi.drive.realtime.EventType.REFERENCE_SHIFTED,ssRef);
     };
-    ref.addEventListener(rdm.EventType.REFERENCE_SHIFTED,ssRef);
+    ref.addEventListener(gapi.drive.realtime.EventType.REFERENCE_SHIFTED,ssRef);
     string.insertString(0, "xx");
   });
   test('Assign index', function() {
@@ -837,9 +836,9 @@ onFileLoaded = function(doc) {
     var stringEvent = function(e) {
       order = order + 'stringEvent';
     }
-    string.addEventListener(rdm.EventType.OBJECT_CHANGED, stringEvent);
-    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootBubble);
-    doc.getModel().getRoot().addEventListener(rdm.EventType.OBJECT_CHANGED, rootCapture, true);
+    string.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, stringEvent);
+    doc.getModel().getRoot().addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, rootBubble);
+    doc.getModel().getRoot().addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, rootCapture, true);
     string.insertString(0, 'x');
     strictEqual(order, 'rootCapturestringEventrootBubble');
   });
@@ -848,9 +847,9 @@ onFileLoaded = function(doc) {
     var handler = function(e) {
       strictEqual(string.getText(), 'def');
     };
-    string.addEventListener(rdm.EventType.TEXT_DELETED, handler);
+    string.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, handler);
     string.setText('def');
-    string.removeEventListener(rdm.EventType.TEXT_DELETED, handler);
+    string.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, handler);
   });
 
   module('Custom');
@@ -867,17 +866,17 @@ onFileLoaded = function(doc) {
     var oc_handler = function(e) {
       strictEqual(e.events[0].type, 'value_changed');
     };
-    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.OBJECT_CHANGED, oc_handler);
+    doc.getModel().getRoot().get('book').addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, oc_handler);
     var vc_handler = function(e) {
       strictEqual(e.property, 'title');
       strictEqual(e.oldValue, 'Foundation');
       strictEqual(e.newValue, 'title');
     };
-    doc.getModel().getRoot().get('book').addEventListener(rdm.EventType.VALUE_CHANGED, vc_handler);
+    doc.getModel().getRoot().get('book').addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, vc_handler);
     doc.getModel().getRoot().get('book')['title'] = 'title';
     strictEqual(doc.getModel().getRoot().get('book').title, 'title');
-    doc.getModel().getRoot().get('book').removeEventListener(rdm.EventType.OBJECT_CHANGED, oc_handler);
-    doc.getModel().getRoot().get('book').removeEventListener(rdm.EventType.VALUE_CHANGED, vc_handler);
+    doc.getModel().getRoot().get('book').removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, oc_handler);
+    doc.getModel().getRoot().get('book').removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, vc_handler);
   });
   test('custom.getModel', function() {
     strictEqual(doc.getModel(), rdm.custom.getModel(doc.getModel().getRoot().get('book')));
@@ -901,10 +900,10 @@ onFileLoaded = function(doc) {
     var ssObjChanged = function(e) {
       strictEqual(e.events[0].type, 'text_inserted');
       doc.getModel().getRoot().get('map').removeEventListener(
-        rdm.EventType.OBJECT_CHANGED,
+        gapi.drive.realtime.EventType.OBJECT_CHANGED,
         ssObjChanged);
     };
-    doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssObjChanged);
+    doc.getModel().getRoot().get('map').addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ssObjChanged);
     doc.getModel().getRoot().get('map').get('duplicate1').append('whatever');
   });
   test('Once in two maps each', function() {
@@ -920,26 +919,26 @@ onFileLoaded = function(doc) {
       strictEqual(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('dupmap1').addEventListener(
-      rdm.EventType.OBJECT_CHANGED, ssObjChanged1);
+      gapi.drive.realtime.EventType.OBJECT_CHANGED, ssObjChanged1);
     var ssObjChanged2 = function(e) {
       strictEqual(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('dupmap2').addEventListener(
-      rdm.EventType.OBJECT_CHANGED, ssObjChanged2);
+      gapi.drive.realtime.EventType.OBJECT_CHANGED, ssObjChanged2);
     var ssRootChanged = function(e) {
       strictEqual(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').addEventListener(
-      rdm.EventType.OBJECT_CHANGED, ssRootChanged);
+      gapi.drive.realtime.EventType.OBJECT_CHANGED, ssRootChanged);
     doc.getModel().getRoot().get('map').get('dupmap2').get('str').append('hello');
     doc.getModel().getRoot().get('map').get('dupmap2').removeEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssObjChanged2);
     doc.getModel().getRoot().get('map').get('dupmap1').removeEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssObjChanged1);
     doc.getModel().getRoot().get('map').removeEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssRootChanged);
   });
   test('String in map and sub map', function() {
@@ -959,38 +958,38 @@ onFileLoaded = function(doc) {
       strictEqual(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').addEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssMapChanged);
     var ssSubMapChanged = function(e) {
       strictEqual(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').addEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssSubMapChanged);
     var ssSubSubMapChanged = function(e) {
       strictEqual(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').get('subsubmap').addEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssSubSubMapChanged);
     var ssStringChanged = function(e) {
       strictEqual(e.events[0].type, 'text_inserted');
     };
     doc.getModel().getRoot().get('map').get('mapwithsub').get('str').addEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssStringChanged);
     str.append('something');
     doc.getModel().getRoot().get('map').get('mapwithsub').removeEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssMapChanged);
     doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').removeEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssSubMapChanged);
     doc.getModel().getRoot().get('map').get('mapwithsub').get('submap').get('subsubmap').removeEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssSubSubMapChanged);
     doc.getModel().getRoot().get('map').get('mapwithsub').get('str').removeEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       ssStringChanged);
   });
   test('loop length 2', function() {
@@ -1003,21 +1002,21 @@ onFileLoaded = function(doc) {
     var ssMap1 = function(e) {
       strictEqual(e.events[0].type, 'value_changed');
     };
-    map1.addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap1);
+    map1.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ssMap1);
     var ssMap2 = function(e) {
       strictEqual(e.events[0].type, 'value_changed');
     };
-    map2.addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap2);
+    map2.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ssMap2);
     var ssMap = function(e) {
       strictEqual(e.events[0].type, 'value_changed');
     };
-    doc.getModel().getRoot().get('map').addEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
+    doc.getModel().getRoot().get('map').addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ssMap);
 
     map1.set('text', 'text value');
 
-    doc.getModel().getRoot().get('map').removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap);
-    map1.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap1);
-    map2.removeEventListener(rdm.EventType.OBJECT_CHANGED, ssMap2);
+    doc.getModel().getRoot().get('map').removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ssMap);
+    map1.removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ssMap1);
+    map2.removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, ssMap2);
   });
   module('Weird');
   test('Map in self', function() {
@@ -1027,10 +1026,10 @@ onFileLoaded = function(doc) {
       strictEqual(e.events[0].type, 'value_changed');
     };
     doc.getModel().getRoot().addEventListener(
-      rdm.EventType.OBJECT_CHANGED,
+      gapi.drive.realtime.EventType.OBJECT_CHANGED,
       rootChanged);
     doc.getModel().getRoot().get('self').set('key', 'val');
-    doc.getModel().getRoot().get('self').removeEventListener(rdm.EventType.OBJECT_CHANGED, rootChanged);
+    doc.getModel().getRoot().get('self').removeEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, rootChanged);
   });
 
   module('Collaborators');
@@ -1112,13 +1111,13 @@ onFileLoaded = function(doc) {
   test('EventType', function() {
     // TODO this doesn't check for values on gapi side that are missing on our side
     // TODO if we assume they are duplicated on the gapi side, we could go by the counts
-    for(var type in rdm.EventType) {
-      strictEqual(rdm.EventType[type], gapi.drive.realtime.EventType[type]);
+    for(var type in gapi.drive.realtime.EventType) {
+      strictEqual(gapi.drive.realtime.EventType[type], gapi.drive.realtime.EventType[type]);
     }
   });
   test('ErrorType', function() {
-    for(var type in rdm.ErrorType) {
-      strictEqual(rdm.ErrorType[type], gapi.drive.realtime.ErrorType[type]);
+    for(var type in gapi.drive.realtime.ErrorType) {
+      strictEqual(gapi.drive.realtime.ErrorType[type], gapi.drive.realtime.ErrorType[type]);
     }
   });
 
