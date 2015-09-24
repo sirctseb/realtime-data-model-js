@@ -263,6 +263,30 @@ onFileLoaded = function(doc) {
 
     string.removeEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, deleted);
   });
+  test('Compound Operation Names', function() {
+    var va = function(event) {
+      deepEqual(event.compoundOperationNames, ['outer', 'inner']);
+    };
+    list.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, va);
+
+    doc.getModel().beginCompoundOperation('outer');
+    doc.getModel().beginCompoundOperation('inner');
+    list.push(0);
+    doc.getModel().endCompoundOperation();
+    doc.getModel().endCompoundOperation();
+
+    list.removeEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, va);
+  });
+  test('Compound Operation Names in undo', function() {
+    doc.getModel().beginCompoundOperation('a name');
+    doc.getModel().getRoot().set('key','value');
+    doc.getModel().endCompoundOperation();
+    var vc = function(event) {
+      deepEqual(event.compoundOperationNames, ['a name']); };
+    doc.getModel().getRoot().addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, vc);
+    doc.getModel().undo();
+    doc.getModel().getRoot().removeEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, vc);
+  });
 
   module('CollaborativeString', {
     setup: function() {
@@ -1121,27 +1145,34 @@ onFileLoaded = function(doc) {
     }
   });
 
-  module('Close');
-  test('Access existing list length', function() {
-    doc.close();
-    throws(function() {
-      list.length;
-    }, 'Document is closed.');
+  module('Model');
+  test('getObject', function() {
+    strictEqual(gapi.drive.realtime.Model.getObject(
+                  doc.getModel(), doc.getModel().getRoot().id).id,
+                doc.getModel().getRoot().id)  ;
   });
-  test('Access existing string', function() {
-    throws(function() {
-      string.getText();
-    }, 'Document is closed.');
-  });
-  test('Access model', function() {
-    throws(function() {
-      doc.getModel();
-    }, 'Document is closed.');
-  });
-  test('Close again', function() {
-    expect(0);
-    doc.close();
-  });
+
+  // module('Close');
+  // test('Access existing list length', function() {
+  //   doc.close();
+  //   throws(function() {
+  //     list.length;
+  //   }, 'Document is closed.');
+  // });
+  // test('Access existing string', function() {
+  //   throws(function() {
+  //     string.getText();
+  //   }, 'Document is closed.');
+  // });
+  // test('Access model', function() {
+  //   throws(function() {
+  //     doc.getModel();
+  //   }, 'Document is closed.');
+  // });
+  // test('Close again', function() {
+  //   expect(0);
+  //   doc.close();
+  // });
 
   module('Local');
   test('Local document from data', function() {

@@ -33,6 +33,7 @@ rdm.LocalDocumentProvider = function(data) {
 goog.inherits(rdm.LocalDocumentProvider, rdm.DocumentProvider);
 
 rdm.LocalDocumentProvider.prototype.loadDocument = function(onLoaded, opt_initializerFn, opt_errorFn) {
+  // TODO this now depends on having realtime api loaded
   // TODO this.initData_ != null case, use gapi.drive.realtime.loadFromJson
   var this_ = this;
   gapi.drive.realtime.newInMemoryDocument(function(doc) {
